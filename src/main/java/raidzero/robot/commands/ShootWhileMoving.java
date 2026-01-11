@@ -3,6 +3,7 @@ package raidzero.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -23,7 +24,7 @@ public class ShootWhileMoving extends Command {
         m_turret = turret;
         m_drive = drive;
 
-        //TODO: Add requirements I forgot how to do this lol
+        // TODO: Add requirements I forgot how to do this lol
     }
 
     @Override
@@ -33,13 +34,20 @@ public class ShootWhileMoving extends Command {
         Pose2d currentPose = m_drive.getState().Pose;
         ChassisSpeeds robotSpeeds = m_drive.getState().Speeds;
 
+        // Consider Latency
+        double latencySeconds = 0.040; // Make constant? Get from NetworkTables? Physically test?
+        Pose2d futurePose = currentPose.exp(
+                new Twist2d(
+                        robotSpeeds.vxMetersPerSecond * latencySeconds,
+                        robotSpeeds.vyMetersPerSecond * latencySeconds,
+                        robotSpeeds.omegaRadiansPerSecond * latencySeconds));
+
         // Rotation Compensation
         Translation2d turretOffset = Constants.Turret.TURRET_OFFSET;
         ChassisSpeeds turretPhysicalSpeeds = new ChassisSpeeds(
-            robotSpeeds.vxMetersPerSecond - (robotSpeeds.omegaRadiansPerSecond * turretOffset.getY()),
-            robotSpeeds.vyMetersPerSecond + (robotSpeeds.omegaRadiansPerSecond * turretOffset.getX()),
-            robotSpeeds.omegaRadiansPerSecond
-        );
+                robotSpeeds.vxMetersPerSecond - (robotSpeeds.omegaRadiansPerSecond * turretOffset.getY()),
+                robotSpeeds.vyMetersPerSecond + (robotSpeeds.omegaRadiansPerSecond * turretOffset.getX()),
+                robotSpeeds.omegaRadiansPerSecond);
 
         ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(turretPhysicalSpeeds,
                 m_drive.getState().Pose.getRotation());
@@ -53,7 +61,7 @@ public class ShootWhileMoving extends Command {
         }
 
         // Dist to Target
-        double staticDist = currentPose.getTranslation().getDistance(actualGoal);
+        double staticDist = futurePose.getTranslation().getDistance(actualGoal);
         double shotTime = Constants.Shooter.TOF_TABLE.get(staticDist);
 
         // VirtualGoal = ActualGoal - (RobotVelocity * TimeOfFlight)
@@ -62,7 +70,7 @@ public class ShootWhileMoving extends Command {
         Translation2d virtualGoal = new Translation2d(virtualX, virtualY);
 
         // Aiming
-        Translation2d delta = virtualGoal.minus(currentPose.getTranslation());
+        Translation2d delta = virtualGoal.minus(futurePose.getTranslation());
         double virtualDist = delta.getNorm();
         Rotation2d targetYaw = delta.getAngle();
 
