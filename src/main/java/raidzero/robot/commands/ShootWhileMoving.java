@@ -75,6 +75,7 @@ public class ShootWhileMoving extends Command {
         Rotation2d targetYaw = delta.getAngle();
 
         // Commands
+        // NOTE: Based on shooter design, spin-up might be direct or indirect. Order may change/matter.
         m_turret.setYaw(targetYaw);
 
         double targetPitch = Constants.Shooter.PITCH_TABLE.get(virtualDist);
