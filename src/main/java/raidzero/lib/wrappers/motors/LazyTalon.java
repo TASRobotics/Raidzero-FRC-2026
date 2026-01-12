@@ -158,12 +158,12 @@ public class LazyTalon implements LazyCTRE<TalonFX, FeedbackSensorSourceValue>, 
     }
 
     @Override
-    public void moveWithVelocity(AngularVelocity velocity) {
+    public void setVelocity(AngularVelocity velocity) {
         motor.setControl(new MotionMagicVelocityVoltage(velocity));
     }
 
     @Override
-    public void set(double speed) {
+    public void setPercent(double speed) {
         motor.set(speed);
     }
 

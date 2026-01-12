@@ -24,14 +24,14 @@ public interface LazyMotor<T> {
      *
      * @param velocity the target velocity for motion magic control
      */
-    public void moveWithVelocity(AngularVelocity velocity);
+    public void setVelocity(AngularVelocity velocity);
 
     /**
      * Sets the motor to the target speed
 
      * @param speed the speed in percent of max speed [0, 1]
      */
-    public void set(double speed);
+    public void setPercent(double speed);
 
     /**
      * Stops the motor
