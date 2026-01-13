@@ -24,6 +24,10 @@ public class Shooter extends R0Subsystem<ShooterIO> {
         });
     }
 
+    public Command setVelocity(AngularVelocity rps) {
+        return run(() -> io.setVelocity(rps));
+    }
+
     public Command setSpeed(double percent) {
         return run(() -> io.setPercent(percent));
     }

@@ -24,6 +24,10 @@ public interface TurretIO extends SubsystemIO {
 
     Angle getYaw();
 
+    void setPitch(Angle pitch);
+
+    void setYaw(Angle yaw);
+
     Angle getPitch();
 
     void moveTo(Angle pitch, Angle Yaw);
@@ -33,6 +37,8 @@ public interface TurretIO extends SubsystemIO {
     Distance getHubDistance();
 
     boolean hasHubLOS();
+
+    void stopMotors();
 
     public class Real implements TurretIO {
         private LazyTalon yaw, pitch;
@@ -89,6 +95,16 @@ public interface TurretIO extends SubsystemIO {
         @Override
         public Angle getPitch() {
             return pitch.getFeedbackPosition();
+        }
+
+        @Override
+        public void setPitch(Angle pitch) {
+            this.pitch.moveTo(pitch);
+        }
+
+        @Override
+        public void setYaw(Angle yaw) {
+            this.yaw.moveTo(yaw);
         }
 
         @Override
@@ -181,8 +197,15 @@ public interface TurretIO extends SubsystemIO {
             yaw.updateTelemetry(Yaw.TELEMETRY);
             pitch.updateTelemetry(Pitch.TELEMETRY);
         }
+
+        @Override
+        public void stopMotors() {
+            yaw.stop();
+            pitch.stop();
+        }
     }
 
     public class Sim extends Real {
     }
+
 }

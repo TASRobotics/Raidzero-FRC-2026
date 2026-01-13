@@ -1,4 +1,8 @@
-package raidzero.robot.commands;
+package raidzero.robot.subsystems.turret.commands;
+
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,6 +14,8 @@ import raidzero.robot.Constants;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.turret.Shooter;
 import raidzero.robot.subsystems.turret.Turret;
+import raidzero.robot.subsystems.turret.TurretConstants;
+import raidzero.robot.subsystems.turret.TurretConstants.Limelight;
 
 public class ShootWhileClimbing extends Command {
 
@@ -36,7 +42,7 @@ public class ShootWhileClimbing extends Command {
         Pose2d currentPose = swerve.getState().Pose;
         staticYaw = actualGoal.minus(currentPose.getTranslation()).getAngle();
         
-        turret.setYaw(staticYaw);
+        turret.setYaw(staticYaw.getMeasure());
     }
 
     @Override
@@ -45,15 +51,14 @@ public class ShootWhileClimbing extends Command {
         double currentHeight = swerve.getRobotHeightMeters(); //method for ben to make
         double verticalVelocity = swerve.getVerticalVelocityMetersPerSecond(); //method for ben to make
         
-        double latencySeconds = 0.040; // Make constant? Get from NetworkTables? Physically test?
-        double futureHeight = currentHeight + (verticalVelocity * 0.040);
+        double futureHeight = currentHeight + (verticalVelocity * Limelight.LATENCY.in(Seconds));
 
-        double basePitch = Constants.Shooter.CLIMB_PITCH_TABLE.get(futureHeight);
-        double baseRPS = Constants.Shooter.CLIMB_RPS_TABLE.get(futureHeight);
+        double basePitch = TurretConstants.Setpoints.CLIMB_PITCH_TABLE.get(futureHeight);
+        double baseRPS = TurretConstants.Setpoints.CLIMB_RPS_TABLE.get(futureHeight);
 
-        turret.setYaw(staticYaw); 
-        turret.setPitch(basePitch); // May need an adjusted pitch because of lean
-        shooter.setSpeed(baseRPS); // May need an adjusted RPM cause of shooter physics
+        turret.setYaw(staticYaw.getMeasure()); 
+        turret.setPitch(Degrees.of(basePitch)); // May need an adjusted pitch because of lean
+        shooter.setVelocity(RotationsPerSecond.of(baseRPS)); // May need an adjusted RPM cause of shooter physics
     }
 
     @Override

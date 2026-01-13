@@ -27,6 +27,23 @@ public class Turret extends R0Subsystem<TurretIO> {
 
             io.moveTo(targetPitch, targetYaw);
         });
+
+    }
+
+    public Command moveTo(Angle pitch, Angle yaw) {
+        return run(() -> io.moveTo(pitch, yaw));
+    }
+
+    public void setYaw(Angle yaw) {
+        io.setYaw(yaw);
+    }
+    
+    public void setPitch(Angle pitch) {
+        io.setPitch(pitch);
+    }
+
+    public Command stop() {
+        return run(() -> io.stopMotors());
     }
 
     public Distance getHubDistance() {
@@ -51,4 +68,5 @@ public class Turret extends R0Subsystem<TurretIO> {
         }
         return system;
     }
+
 }

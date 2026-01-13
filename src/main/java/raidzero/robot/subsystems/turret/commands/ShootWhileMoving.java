@@ -1,4 +1,7 @@
-package raidzero.robot.commands;
+package raidzero.robot.subsystems.turret.commands;
+
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,47 +13,45 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.robot.Constants;
 import raidzero.robot.subsystems.drive.Swerve;
-import raidzero.robot.subsystems.turret.Shooter;
 import raidzero.robot.subsystems.turret.Turret;
+import raidzero.robot.subsystems.turret.TurretConstants;
+import raidzero.robot.subsystems.turret.TurretConstants.Limelight;
+import raidzero.robot.subsystems.turret.TurretConstants.Setpoints;
 
 public class ShootWhileMoving extends Command {
 
-    private final Shooter m_shooter;
-    private final Turret m_turret;
-    private final Swerve m_drive;
+    private final Turret turret;
+    private final Swerve swerve;
 
-    public ShootWhileMoving(Shooter shooter, Turret turret, Swerve drive) {
-        m_shooter = shooter;
-        m_turret = turret;
-        m_drive = drive;
+    public ShootWhileMoving(Turret turret, Swerve swerve) {
+        this.turret = turret;
+        this.swerve = swerve;
 
-        // TODO: Add requirements I forgot how to do this lol
+        this.addRequirements(turret);
     }
 
     @Override
     public void execute() {
 
         // State
-        Pose2d currentPose = m_drive.getState().Pose;
-        ChassisSpeeds robotSpeeds = m_drive.getState().Speeds;
+        Pose2d currentPose = swerve.getState().Pose;
+        ChassisSpeeds robotSpeeds = swerve.getState().Speeds;
 
         // Consider Latency
-        double latencySeconds = 0.040; // Make constant? Get from NetworkTables? Physically test?
         Pose2d futurePose = currentPose.exp(
                 new Twist2d(
-                        robotSpeeds.vxMetersPerSecond * latencySeconds,
-                        robotSpeeds.vyMetersPerSecond * latencySeconds,
-                        robotSpeeds.omegaRadiansPerSecond * latencySeconds));
+                        robotSpeeds.vxMetersPerSecond * Limelight.LATENCY.in(Seconds),
+                        robotSpeeds.vyMetersPerSecond * Limelight.LATENCY.in(Seconds),
+                        robotSpeeds.omegaRadiansPerSecond * Limelight.LATENCY.in(Seconds)));
 
         // Rotation Compensation
-        Translation2d turretOffset = Constants.Turret.TURRET_OFFSET;
         ChassisSpeeds turretPhysicalSpeeds = new ChassisSpeeds(
-                robotSpeeds.vxMetersPerSecond - (robotSpeeds.omegaRadiansPerSecond * turretOffset.getY()),
-                robotSpeeds.vyMetersPerSecond + (robotSpeeds.omegaRadiansPerSecond * turretOffset.getX()),
+                robotSpeeds.vxMetersPerSecond - (robotSpeeds.omegaRadiansPerSecond * Setpoints.TURRET_OFFSET.getY()),
+                robotSpeeds.vyMetersPerSecond + (robotSpeeds.omegaRadiansPerSecond * Setpoints.TURRET_OFFSET.getX()),
                 robotSpeeds.omegaRadiansPerSecond);
 
         ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(turretPhysicalSpeeds,
-                m_drive.getState().Pose.getRotation());
+                swerve.getState().Pose.getRotation());
 
         // Actual Target
         Translation2d actualGoal = new Translation2d();
@@ -62,7 +63,7 @@ public class ShootWhileMoving extends Command {
 
         // Dist to Target
         double staticDist = futurePose.getTranslation().getDistance(actualGoal);
-        double shotTime = Constants.Shooter.TOF_TABLE.get(staticDist);
+        double shotTime = Setpoints.TOF_TABLE.get(staticDist);
 
         // VirtualGoal = ActualGoal - (RobotVelocity * TimeOfFlight)
         double virtualX = actualGoal.getX() - (fieldSpeeds.vxMetersPerSecond * shotTime);
@@ -76,18 +77,14 @@ public class ShootWhileMoving extends Command {
 
         // Commands
         // NOTE: Based on shooter design, spin-up might be direct or indirect. Order may change/matter.
-        m_turret.setYaw(targetYaw);
+        turret.setYaw(targetYaw.getMeasure());
 
-        double targetPitch = Constants.Shooter.PITCH_TABLE.get(virtualDist);
-        m_turret.setPitch(targetPitch);
-
-        double targetRPS = Constants.Shooter.RPS_TABLE.get(virtualDist);
-        m_shooter.setSpeed(targetRPS);
+        double targetPitch = TurretConstants.Setpoints.PITCH_TABLE.get(virtualDist);
+        turret.setPitch(Degrees.of(targetPitch));
     }
 
     @Override
     public void end(boolean interrupted) {
-        m_shooter.stop();
-        m_turret.stop();
+        turret.stop();
     }
 }

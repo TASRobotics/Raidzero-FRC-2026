@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
@@ -116,6 +117,8 @@ public class TurretConstants {
     public static final class Limelight {
         public static final Angle MOUNT_ANGLE = Degrees.of(45.0);
 
+        public static final Time LATENCY = Seconds.of(0.040); // Make constant? Get from NetworkTables? Physically test?
+
         public static final String LIMELIGHT_NAME = "turret"; 
 
         public static final int[] RED_ALLIANCE_TAG_IDS = { 10, 11, 8 };
@@ -126,5 +129,9 @@ public class TurretConstants {
         public static final InterpolatingDoubleTreeMap PITCH_TABLE = new InterpolatingDoubleTreeMap();
         public static final InterpolatingDoubleTreeMap RPS_TABLE = new InterpolatingDoubleTreeMap();
         public static final InterpolatingDoubleTreeMap TOF_TABLE = new InterpolatingDoubleTreeMap();
+        public static final InterpolatingDoubleTreeMap CLIMB_PITCH_TABLE = new InterpolatingDoubleTreeMap();
+        public static final InterpolatingDoubleTreeMap CLIMB_RPS_TABLE = new InterpolatingDoubleTreeMap();
+
+        public static final Translation2d TURRET_OFFSET = new Translation2d(0, 0);
     }
 }
