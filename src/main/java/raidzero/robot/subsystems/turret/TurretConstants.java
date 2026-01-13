@@ -1,23 +1,22 @@
 package raidzero.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
-import java.util.HashMap;
-
-import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.units.measure.Velocity;
 import raidzero.lib.wrappers.motors.LazyMotor.MotorTelemetry;
 
 public class TurretConstants {
@@ -50,7 +49,14 @@ public class TurretConstants {
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(1.0);
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(1.0);
 
+        public static final int CANCODER_ID = 10;
+        public static final FeedbackSensorSourceValue CANCODER_TYPE = FeedbackSensorSourceValue.FusedCANcoder;
+
+        public static final double MAGNET_OFFSET = 0;
+        public static final SensorDirectionValue CANCODER_SENSOR_DIRECTION = SensorDirectionValue.CounterClockwise_Positive;
+
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
+
     }
 
     public static final class Pitch {
@@ -88,32 +94,37 @@ public class TurretConstants {
     public static final class Shooter {
         public static final int MOTOR_ID = 12;
 
+        public static final double P = 1.0;
+        public static final double I = 0.0;
+        public static final double D = 0.0;
+
+        public static final AngularAcceleration MAX_ACCELERATION = RotationsPerSecondPerSecond.of(1.0);
+        public static final double MAX_JERK = 0.0;
+
         public static final double SENSOR_TO_MECHANISM_RATIO = 1.0;
         public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
         public static final Time SUPPLY_CURRENT_LOWER_TIME = Seconds.of(0.0);
-        
+
         public static final AngularVelocity MAX_SHOOTER_VELOCITY = RotationsPerSecond.of(100);
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
     }
 
     public static final class Limelight {
+        public static final Angle MOUNT_ANGLE = Degrees.of(45.0);
 
+        public static final String LIMELIGHT_NAME = "turret"; 
+
+        public static final int[] RED_ALLIANCE_TAG_IDS = { 10, 11, 8 };
+        public static final int[] BLUE_ALLIANCE_TAG_IDS = { 25, 27, 24 };
     }
 
     public static final class Setpoints {
-        
+        public static final InterpolatingDoubleTreeMap PITCH_TABLE = new InterpolatingDoubleTreeMap();
+        public static final InterpolatingDoubleTreeMap RPS_TABLE = new InterpolatingDoubleTreeMap();
+        public static final InterpolatingDoubleTreeMap TOF_TABLE = new InterpolatingDoubleTreeMap();
     }
-
-    public class ShooterSetting {
-        public Angle pitch, yaw;
-        public AngularVelocity shooterVelocity;
-
-        public LinearVelocity xExitVelocity, yExitVelocity;
-
-    }
-
 }

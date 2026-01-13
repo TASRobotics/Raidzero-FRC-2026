@@ -81,8 +81,8 @@ public class ShootWhileMoving extends Command {
         double targetPitch = Constants.Shooter.PITCH_TABLE.get(virtualDist);
         m_turret.setPitch(targetPitch);
 
-        double targetRPM = Constants.Shooter.RPM_TABLE.get(virtualDist);
-        m_shooter.setRPM(targetRPM);
+        double targetRPS = Constants.Shooter.RPS_TABLE.get(virtualDist);
+        m_shooter.setSpeed(targetRPS);
     }
 
     @Override
