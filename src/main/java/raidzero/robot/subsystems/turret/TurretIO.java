@@ -30,6 +30,12 @@ public interface TurretIO extends SubsystemIO {
 
     Angle getPitch();
 
+    int getStartupTag();
+
+    Angle getAngleForStartup();
+
+    void setStartupYaw(Angle yaw);
+
     void moveTo(Angle pitch, Angle Yaw);
 
     Angle getYawFromTarget();
@@ -95,6 +101,70 @@ public interface TurretIO extends SubsystemIO {
         @Override
         public Angle getPitch() {
             return pitch.getFeedbackPosition();
+        }
+
+        @Override
+        public int getStartupTag() {
+            if (!LimelightHelpers.getTV(Limelight.LIMELIGHT_NAME)) {
+                return -1; // No valid target
+            }
+
+            LimelightHelpers.RawFiducial[] fiducials = LimelightHelpers.getRawFiducials(Limelight.LIMELIGHT_NAME);
+
+            if (fiducials == null || fiducials.length == 0) {
+                return -1; // No fiducials detected
+            }
+
+            // Find the closest valid startup tag
+            int bestTagId = -1;
+            double closestDistance = Double.MAX_VALUE;
+
+            for (LimelightHelpers.RawFiducial fiducial : fiducials) {
+                if (isValidStartupTag(fiducial.id) && fiducial.distToCamera < closestDistance) {
+                    closestDistance = fiducial.distToCamera;
+                    bestTagId = fiducial.id;
+                }
+            }
+
+            return bestTagId;
+        }
+
+        private boolean isValidStartupTag(int tagId) {
+            for (int validId : Limelight.STARTUP_REFERENCE_TAG_IDS) {
+                if (tagId == validId) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public Angle getAngleForStartup() {
+            int startupTagId = getStartupTag();
+
+            if (startupTagId == -1) {
+                return Degrees.of(0); // No valid startup tag found
+            }
+
+            LimelightHelpers.RawFiducial[] fiducials = LimelightHelpers.getRawFiducials(Limelight.LIMELIGHT_NAME);
+
+            if (fiducials == null || fiducials.length == 0) {
+                return Degrees.of(0);
+            }
+
+            // Find the fiducial matching our startup tag and return its TX
+            for (LimelightHelpers.RawFiducial fiducial : fiducials) {
+                if (fiducial.id == startupTagId) {
+                    return Degrees.of(fiducial.txnc);
+                }
+            }
+
+            return Degrees.of(0); // Shouldn't reach here, but fallback
+        }
+
+        @Override
+        public void setStartupYaw(Angle yaw) {
+            this.yaw.getMotor().setPosition(yaw);
         }
 
         @Override

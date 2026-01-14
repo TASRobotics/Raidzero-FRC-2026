@@ -6,13 +6,17 @@ package raidzero.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import raidzero.robot.subsystems.turret.Turret;
 
 public class RobotContainer {
-  public RobotContainer() {
-    configureBindings();
-  }
+  private static Turret turret = Turret.system();
 
-  private void configureBindings() {}
+  public RobotContainer() {
+    Bindings.applyDefaultCommands();
+    Bindings.applyButtonBindings();
+
+    turret.setStartupAngle();
+  }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");

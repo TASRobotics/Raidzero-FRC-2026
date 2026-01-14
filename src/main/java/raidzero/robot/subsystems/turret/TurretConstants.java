@@ -119,16 +119,22 @@ public class TurretConstants {
 
         public static final Time LATENCY = Seconds.of(0.040); // Make constant? Get from NetworkTables? Physically test?
 
-        public static final String LIMELIGHT_NAME = "turret"; 
+        public static final String LIMELIGHT_NAME = "turret";
 
         public static final int[] RED_ALLIANCE_TAG_IDS = { 10, 11, 8 };
         public static final int[] BLUE_ALLIANCE_TAG_IDS = { 25, 27, 24 };
+
+        public static final int[] STARTUP_REFERENCE_TAG_IDS = { 2, 8, 24, 18 };
     }
 
     public static final class Setpoints {
+        // yaw corections from the april tag location in the off-angles
+        public static final InterpolatingDoubleTreeMap YAW_CORRECTION_TABLE = new InterpolatingDoubleTreeMap();
+
         public static final InterpolatingDoubleTreeMap PITCH_TABLE = new InterpolatingDoubleTreeMap();
         public static final InterpolatingDoubleTreeMap RPS_TABLE = new InterpolatingDoubleTreeMap();
         public static final InterpolatingDoubleTreeMap TOF_TABLE = new InterpolatingDoubleTreeMap();
+
         public static final InterpolatingDoubleTreeMap CLIMB_PITCH_TABLE = new InterpolatingDoubleTreeMap();
         public static final InterpolatingDoubleTreeMap CLIMB_RPS_TABLE = new InterpolatingDoubleTreeMap();
 

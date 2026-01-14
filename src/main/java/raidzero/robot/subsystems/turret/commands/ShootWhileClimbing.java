@@ -29,8 +29,6 @@ public class ShootWhileClimbing extends Command {
         addRequirements(Shooter.system(), Turret.system());
     }
 
-    // Hi please ignore the red lines it should get fixed when theo merges
-
     @Override
     public void initialize() {
         // Goal

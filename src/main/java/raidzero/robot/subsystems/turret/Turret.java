@@ -1,33 +1,111 @@
 package raidzero.robot.subsystems.turret;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
 
 import com.ctre.phoenix6.Utils;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.R0Subsystem;
+import raidzero.robot.Constants;
+import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.turret.TurretConstants.Setpoints;
 
 public class Turret extends R0Subsystem<TurretIO> {
     private static Turret system;
+    private static Swerve swerve = Swerve.system();
 
     public Command aim() {
         return run(() -> {
             Angle yawOffset = io.getYawFromTarget();
-
+            Distance hubDistance = io.getHubDistance();
             Angle currentYaw = io.getYaw();
-            Angle targetYaw = currentYaw.plus(yawOffset);
 
-            Distance distFromTarget = io.getHubDistance();
-            Angle targetPitch = Rotations.of(Setpoints.PITCH_TABLE.get(distFromTarget.in(Meters)));
+            Angle targetYaw = currentYaw
+                    .plus(yawOffset)
+                    .plus(Degrees.of(Setpoints.YAW_CORRECTION_TABLE.get(yawOffset.in(Degrees))))
+                    .plus(calculateKineticLead(currentYaw, hubDistance));
+
+            Angle targetPitch = Rotations.of(
+                    Setpoints.PITCH_TABLE.get(hubDistance.in(Meters)));
 
             io.moveTo(targetPitch, targetYaw);
         });
+    }
 
+    /**
+     * Calcualtes the kinetic lead needed for kinetic shooting
+     * 
+     * @param turretYaw   the current turret yaw (robot-relative)
+     * @param hubDistance
+     * @return the correction angle
+     */
+    private Angle calculateKineticLead(Angle turretYaw, Distance hubDistance) {
+        if (hubDistance.in(Meters) <= 0.1) {
+            return Degrees.of(0);
+        }
+
+        ChassisSpeeds robotSpeeds = swerve.getState().Speeds;
+
+        // Get time of flight estimate
+        double shotTime = Setpoints.TOF_TABLE.get(hubDistance.in(Meters));
+
+        // Account for turret offset from robot center (rotation compensation)
+        ChassisSpeeds turretPhysicalSpeeds = new ChassisSpeeds(
+                robotSpeeds.vxMetersPerSecond - (robotSpeeds.omegaRadiansPerSecond * Setpoints.TURRET_OFFSET.getY()),
+                robotSpeeds.vyMetersPerSecond + (robotSpeeds.omegaRadiansPerSecond * Setpoints.TURRET_OFFSET.getX()),
+                robotSpeeds.omegaRadiansPerSecond);
+
+        // Convert to field-relative speeds
+        ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
+                turretPhysicalSpeeds,
+                swerve.getState().Pose.getRotation());
+
+        // The turret yaw (robot-relative) + robot heading = field-relative aim
+        // direction
+        double robotHeadingRad = swerve.getState().Pose.getRotation().getRadians();
+        double turretFieldAngleRad = robotHeadingRad + turretYaw.in(Degrees) * Math.PI / 180.0;
+
+        // Direction vector toward target (unit vector)
+        double toTargetX = Math.cos(turretFieldAngleRad);
+        double toTargetY = Math.sin(turretFieldAngleRad);
+
+        // Perpendicular direction (90° CCW = left of aim direction)
+        double perpX = -toTargetY;
+        double perpY = toTargetX;
+
+        // Project robot velocity onto perpendicular axis (sideways motion relative to
+        // target)
+        // Positive = moving left relative to target, negative = moving right
+        double sidewaysSpeed = fieldSpeeds.vxMetersPerSecond * perpX + fieldSpeeds.vyMetersPerSecond * perpY;
+
+        // How far sideways the robot will move during shot flight
+        double sidewaysDisplacement = sidewaysSpeed * shotTime;
+
+        // Calculate lead angle: atan(sideways displacement / distance)
+        // Negative because if we're moving left, we need to aim right (lead the target)
+        double leadRad = Math.atan2(-sidewaysDisplacement, hubDistance.in(Meters));
+
+        return Radians.of(leadRad);
+    }
+
+    public void setStartupAngle() {
+        Pose2d swervePose = swerve.getState().Pose;
+        int startupTag = io.getStartupTag();
+
+        Angle llAngle = io.getAngleForStartup();
+        Angle swerveRelativeAngle = (swervePose.minus(Constants.Field.TAG_POSES[startupTag])).getRotation().getMeasure();
+
+        io.setStartupYaw(swerveRelativeAngle.plus(llAngle));
     }
 
     public Command moveTo(Angle pitch, Angle yaw) {
@@ -37,7 +115,7 @@ public class Turret extends R0Subsystem<TurretIO> {
     public void setYaw(Angle yaw) {
         io.setYaw(yaw);
     }
-    
+
     public void setPitch(Angle pitch) {
         io.setPitch(pitch);
     }
