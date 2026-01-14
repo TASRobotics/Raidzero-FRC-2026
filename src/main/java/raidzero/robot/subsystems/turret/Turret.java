@@ -8,8 +8,6 @@ import static edu.wpi.first.units.Units.Rotations;
 import com.ctre.phoenix6.Utils;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
@@ -24,6 +22,11 @@ public class Turret extends R0Subsystem<TurretIO> {
     private static Turret system;
     private static Swerve swerve = Swerve.system();
 
+    /**
+     * Aims the turret at the hub and holds position if there is no hub LOS
+     * 
+     * @return a {@link Command} to be scheduled and run
+     */
     public Command aim() {
         return run(() -> {
             Angle yawOffset = io.getYawFromTarget();
@@ -46,7 +49,7 @@ public class Turret extends R0Subsystem<TurretIO> {
      * Calcualtes the kinetic lead needed for kinetic shooting
      * 
      * @param turretYaw   the current turret yaw (robot-relative)
-     * @param hubDistance
+     * @param hubDistance the distance from the hub
      * @return the correction angle
      */
     private Angle calculateKineticLead(Angle turretYaw, Distance hubDistance) {
@@ -98,36 +101,67 @@ public class Turret extends R0Subsystem<TurretIO> {
         return Radians.of(leadRad);
     }
 
+    /**
+     * Calculates the angle that the turret is at relative to the robot using the
+     * bot's startup position & turret limelight angle
+     */
     public void setStartupAngle() {
         Pose2d swervePose = swerve.getState().Pose;
         int startupTag = io.getStartupTag();
 
         Angle llAngle = io.getAngleForStartup();
-        Angle swerveRelativeAngle = (swervePose.minus(Constants.Field.TAG_POSES[startupTag])).getRotation().getMeasure();
+        Angle swerveRelativeAngle = (swervePose.minus(Constants.Field.TAG_POSES[startupTag])).getRotation()
+                .getMeasure();
 
         io.setStartupYaw(swerveRelativeAngle.plus(llAngle));
     }
 
+    /**
+     * Moves the pitch and yaw 
+     * @param pitch 
+     * @param yaw
+     * @return a {@link Command} to be scheduled and run
+     */
     public Command moveTo(Angle pitch, Angle yaw) {
         return run(() -> io.moveTo(pitch, yaw));
     }
 
+    /**
+     * Moves the yaw to the specified angle
+     * @param yaw 
+     */
     public void setYaw(Angle yaw) {
         io.setYaw(yaw);
     }
 
+    /**
+     * Moves the pitch to the specified angle
+     * @param pitch
+     */
     public void setPitch(Angle pitch) {
         io.setPitch(pitch);
     }
 
+    /**
+     * Stops both the pitch and the yaw motors
+     * @return a {@link Command} to be scheduled and run
+     */
     public Command stop() {
         return run(() -> io.stopMotors());
     }
 
+    /**
+     * Gets the distance from the hub april tag to the turret
+     * @return 
+     */
     public Distance getHubDistance() {
         return io.getHubDistance();
     }
 
+    /**
+     * Checks if the turret limelight can see the hub april tags on the scoring side
+     * @return a {@link Trigger} object
+     */
     public Trigger hasHubLOS() {
         return new Trigger(() -> io.hasHubLOS());
     }
