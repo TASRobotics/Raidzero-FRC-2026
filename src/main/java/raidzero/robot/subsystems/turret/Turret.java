@@ -7,14 +7,12 @@ import static edu.wpi.first.units.Units.Rotations;
 
 import com.ctre.phoenix6.Utils;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.R0Subsystem;
-import raidzero.robot.Constants;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.turret.TurretConstants.Setpoints;
 
@@ -106,14 +104,10 @@ public class Turret extends R0Subsystem<TurretIO> {
      * bot's startup position & turret limelight angle
      */
     public void setStartupAngle() {
-        Pose2d swervePose = swerve.getState().Pose;
-        int startupTag = io.getStartupTag();
-
+        Angle swerveAngle = swerve.getState().Pose.getRotation().getMeasure();
         Angle llAngle = io.getAngleForStartup();
-        Angle swerveRelativeAngle = (swervePose.minus(Constants.Field.TAG_POSES[startupTag])).getRotation()
-                .getMeasure();
 
-        io.setStartupYaw(swerveRelativeAngle.plus(llAngle));
+        io.setStartupYaw(swerveAngle.minus(llAngle));
     }
 
     /**

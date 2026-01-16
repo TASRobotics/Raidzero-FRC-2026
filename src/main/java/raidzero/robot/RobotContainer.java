@@ -6,16 +6,14 @@ package raidzero.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import raidzero.robot.subsystems.turret.Turret;
 
 public class RobotContainer {
-  private static Turret turret = Turret.system();
 
   public RobotContainer() {
-    Bindings.applyDefaultCommands();
-    Bindings.applyButtonBindings();
+    Superstructure.applyDefaultCommands();
+    Superstructure.applyButtonBindings();
 
-    turret.setStartupAngle();
+    Superstructure.runSubsystemInitRoutines();
   }
 
   public Command getAutonomousCommand() {
