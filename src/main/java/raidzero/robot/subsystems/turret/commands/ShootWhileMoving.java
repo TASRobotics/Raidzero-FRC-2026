@@ -85,7 +85,7 @@ public class ShootWhileMoving extends Command {
 
         // Aiming
         Translation2d delta = virtualGoal.minus(futurePose.getTranslation());
-        double virtualDist = delta.getNorm();
+        virtualDist = delta.getNorm();
         Rotation2d targetYaw = delta.getAngle();
 
         // Commands
