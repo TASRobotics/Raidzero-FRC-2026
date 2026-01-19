@@ -61,14 +61,27 @@ public class ShootWhileMoving extends Command {
             actualGoal = Constants.Field.GOAL_LOCATION_BLUE;
         }
 
-        // Dist to Target
+        // --- ITERATIVE TIME OF FLIGHT CALCULATION ---
+        // 1. Initial guess at TOF based on current distance
         double staticDist = futurePose.getTranslation().getDistance(actualGoal);
         double shotTime = Setpoints.TOF_TABLE.get(staticDist);
+        
+        double virtualDist = staticDist;
+        Translation2d virtualGoal = actualGoal;
 
-        // VirtualGoal = ActualGoal - (RobotVelocity * TimeOfFlight)
-        double virtualX = actualGoal.getX() - (fieldSpeeds.vxMetersPerSecond * shotTime);
-        double virtualY = actualGoal.getY() - (fieldSpeeds.vyMetersPerSecond * shotTime);
-        Translation2d virtualGoal = new Translation2d(virtualX, virtualY);
+        // 2. Iterate to find the "converged" virtual distance
+        // Doing this three times is usually enough for FRC speeds to hit sub-centimeter accuracy
+        for (int i = 0; i < 3; i++) {
+            double virtualX = actualGoal.getX() - (fieldSpeeds.vxMetersPerSecond * shotTime);
+            double virtualY = actualGoal.getY() - (fieldSpeeds.vyMetersPerSecond * shotTime);
+            virtualGoal = new Translation2d(virtualX, virtualY);
+
+            // Re-calculate distance to the virtual goal
+            virtualDist = virtualGoal.getDistance(futurePose.getTranslation());
+            
+            // Update shotTime based on the distance the ball actually needs to travel
+            shotTime = Setpoints.TOF_TABLE.get(virtualDist);
+        }
 
         // Aiming
         Translation2d delta = virtualGoal.minus(futurePose.getTranslation());
