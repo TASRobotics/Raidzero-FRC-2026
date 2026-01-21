@@ -6,8 +6,10 @@ import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFXS;
+import com.ctre.phoenix6.signals.AdvancedHallSupportValue;
 import com.ctre.phoenix6.signals.ExternalFeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -52,6 +54,8 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
         motorConfiguration.CurrentLimits.SupplyCurrentLowerTime = 0.0;
 
         motorConfiguration.ClosedLoopGeneral.ContinuousWrap = true;
+
+        motorConfiguration.Commutation.AdvancedHallSupport = AdvancedHallSupportValue.Enabled;
 
         motor = new TalonFXS(motorID);
         motor.setNeutralMode(NeutralModeValue.Brake);
@@ -162,6 +166,10 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     @Override
     public void moveTo(Angle setpoint) {
         motor.setControl(new MotionMagicExpoVoltage(setpoint));
+    }
+
+    public void moveWithMMVolt(Angle setpoint) {
+        motor.setControl(new MotionMagicVoltage(setpoint));
     }
 
     @Override

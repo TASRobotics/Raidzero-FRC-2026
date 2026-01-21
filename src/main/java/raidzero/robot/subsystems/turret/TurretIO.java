@@ -6,11 +6,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import raidzero.lib.LimelightHelpers;
 import raidzero.lib.SubsystemIO;
-import raidzero.lib.wrappers.motors.LazyTalon;
+import raidzero.lib.wrappers.motors.LazyFXS;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static raidzero.robot.subsystems.turret.TurretConstants.Yaw;
@@ -19,6 +20,7 @@ import static raidzero.robot.subsystems.turret.TurretConstants.Pitch;
 import static raidzero.robot.subsystems.turret.TurretConstants.Limelight;
 
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.MotorArrangementValue;
 
 public interface TurretIO extends SubsystemIO {
 
@@ -47,11 +49,12 @@ public interface TurretIO extends SubsystemIO {
     void stopMotors();
 
     public class Real implements TurretIO {
-        private LazyTalon yaw, pitch;
+        private LazyFXS yaw, pitch;
 
         public Real() {
-            yaw = new LazyTalon(
+            yaw = new LazyFXS(
                     Yaw.MOTOR_ID,
+                    MotorArrangementValue.Minion_JST,
                     Yaw.SENSOR_TO_MECHANISM_RATIO,
                     Yaw.INVERTED,
                     Yaw.STATOR_CURRENT_LIMIT.in(Amps), Yaw.SUPPLY_CURRENT_LIMIT.in(Amps))
@@ -62,10 +65,12 @@ public interface TurretIO extends SubsystemIO {
                             GravityTypeValue.Elevator_Static,
                             Yaw.CRUISE_VELOCITY.in(RotationsPerSecond),
                             Yaw.ACCELERATION.in(RotationsPerSecondPerSecond))
-                    .withCANCoder(Yaw.CANCODER_ID, Yaw.CANCODER_TYPE, Yaw.MAGNET_OFFSET, Yaw.CANCODER_SENSOR_DIRECTION)
+                    .withSoftLimits(true, Yaw.FORWARD_SOFT_LIMIT.in(Rotations), true,
+                            Yaw.REVERSE_SOFT_LIMIT.in(Rotations))
                     .build();
 
-            pitch = new LazyTalon(Pitch.MOTOR_ID, Pitch.SENSOR_TO_MECHANISM_RATIO, Pitch.INVERTED,
+            pitch = new LazyFXS(Pitch.MOTOR_ID, MotorArrangementValue.Minion_JST, Pitch.SENSOR_TO_MECHANISM_RATIO,
+                    Pitch.INVERTED,
                     Pitch.STATOR_CURRENT_LIMIT.in(Amps),
                     Pitch.SUPPLY_CURRENT_LIMIT.in(Amps))
                     .withMotionMagicConfiguration(Pitch.P, Pitch.I, Pitch.D, Pitch.S, Pitch.G, Pitch.V, Pitch.A,
@@ -174,13 +179,24 @@ public interface TurretIO extends SubsystemIO {
 
         @Override
         public void setYaw(Angle yaw) {
-            this.yaw.moveTo(yaw);
+
+            double yawRotations = yaw.in(Rotations);
+            double forwardLimit = Yaw.FORWARD_SOFT_LIMIT.in(Rotations);
+            double reverseLimit = Yaw.REVERSE_SOFT_LIMIT.in(Rotations);
+            
+            // Wrap to [0, 1) range, then shift to [reverseLimit, reverseLimit + 1)
+            double wrapped = ((yawRotations - reverseLimit) % 1.0 + 1.0) % 1.0 + reverseLimit;
+            
+            // Clamp to soft limits
+            double clamped = Math.max(reverseLimit, Math.min(forwardLimit, wrapped));
+            
+            this.yaw.moveTo(Rotations.of(clamped));
         }
 
         @Override
         public void moveTo(Angle pitch, Angle yaw) {
-            this.yaw.moveTo(yaw);
-            this.pitch.moveTo(pitch);
+            this.setPitch(pitch);
+            this.setYaw(yaw);
         }
 
         @Override

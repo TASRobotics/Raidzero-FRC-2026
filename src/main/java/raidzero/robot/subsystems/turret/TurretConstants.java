@@ -1,6 +1,7 @@
 package raidzero.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -24,7 +25,7 @@ public class TurretConstants {
     public static final class Yaw {
         public static final int MOTOR_ID = 10;
 
-        public static final double SENSOR_TO_MECHANISM_RATIO = 1.0;
+        public static final double SENSOR_TO_MECHANISM_RATIO = 12.0 / 250.0;
         public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
@@ -44,8 +45,8 @@ public class TurretConstants {
         public static final double EXPO_V = 10.0;
         public static final double EXPO_A = 10.0;
 
-        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(1.0);
-        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-1.0);
+        public static final Angle FORWARD_SOFT_LIMIT = Degrees.of(100.0);
+        public static final Angle REVERSE_SOFT_LIMIT = Degrees.of(-100.0);
 
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(1.0);
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(1.0);
@@ -63,7 +64,7 @@ public class TurretConstants {
     public static final class Pitch {
         public static final int MOTOR_ID = 11;
 
-        public static final double SENSOR_TO_MECHANISM_RATIO = 1.0;
+        public static final double SENSOR_TO_MECHANISM_RATIO = (15.0 / 27.0) * (8.0 / 215.0);
         public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
@@ -94,6 +95,7 @@ public class TurretConstants {
 
     public static final class Shooter {
         public static final int MOTOR_ID = 12;
+        public static final int FOLLOW_ID = 13;
 
         public static final double P = 1.0;
         public static final double I = 0.0;
@@ -112,6 +114,17 @@ public class TurretConstants {
         public static final AngularVelocity MAX_SHOOTER_VELOCITY = RotationsPerSecond.of(100);
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
+    }
+
+    public static final class Indexer {
+        public static final int MOTOR_ID = 15;
+
+        public static final double SENSOR_TO_MECHANISM_RATIO = 1.0;
+
+        public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
+
+        public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
+        public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
     }
 
     public static final class Limelight {
@@ -140,4 +153,5 @@ public class TurretConstants {
 
         public static final Translation2d TURRET_OFFSET = new Translation2d(0, 0);
     }
+
 }
