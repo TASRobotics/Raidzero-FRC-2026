@@ -65,7 +65,7 @@ public interface TurretIO extends SubsystemIO {
                     .withCANCoder(Yaw.CANCODER_ID, Yaw.CANCODER_TYPE, Yaw.MAGNET_OFFSET, Yaw.CANCODER_SENSOR_DIRECTION)
                     .build();
 
-            yaw = new LazyTalon(Pitch.MOTOR_ID, Pitch.SENSOR_TO_MECHANISM_RATIO, Pitch.INVERTED,
+            pitch = new LazyTalon(Pitch.MOTOR_ID, Pitch.SENSOR_TO_MECHANISM_RATIO, Pitch.INVERTED,
                     Pitch.STATOR_CURRENT_LIMIT.in(Amps),
                     Pitch.SUPPLY_CURRENT_LIMIT.in(Amps))
                     .withMotionMagicConfiguration(Pitch.P, Pitch.I, Pitch.D, Pitch.S, Pitch.G, Pitch.V, Pitch.A,
