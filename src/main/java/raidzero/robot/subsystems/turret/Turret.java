@@ -44,21 +44,18 @@ public class Turret extends R0Subsystem<TurretIO> {
     }
 
     /**
-     * Calcualtes the kinetic lead needed for kinetic shooting
-     * 
+     * Calculates the kinetic lead needed for kinetic shooting
      * @param turretYaw   the current turret yaw (robot-relative)
      * @param hubDistance the distance from the hub
      * @return the correction angle
      */
     private Angle calculateKineticLead(Angle turretYaw, Distance hubDistance) {
-        if (hubDistance.in(Meters) <= 0.1) {
+        double distMeters = hubDistance.in(Meters);
+        if (distMeters <= 0.1) {
             return Degrees.of(0);
         }
 
         ChassisSpeeds robotSpeeds = swerve.getState().Speeds;
-
-        // Get time of flight estimate
-        double shotTime = Setpoints.TOF_TABLE.get(hubDistance.in(Meters));
 
         // Account for turret offset from robot center (rotation compensation)
         ChassisSpeeds turretPhysicalSpeeds = new ChassisSpeeds(
@@ -71,30 +68,47 @@ public class Turret extends R0Subsystem<TurretIO> {
                 turretPhysicalSpeeds,
                 swerve.getState().Pose.getRotation());
 
-        // The turret yaw (robot-relative) + robot heading = field-relative aim
-        // direction
+        // Field-relative aim direction
         double robotHeadingRad = swerve.getState().Pose.getRotation().getRadians();
-        double turretFieldAngleRad = robotHeadingRad + turretYaw.in(Degrees) * Math.PI / 180.0;
+        double turretFieldAngleRad = robotHeadingRad + turretYaw.in(Radians);
 
         // Direction vector toward target (unit vector)
         double toTargetX = Math.cos(turretFieldAngleRad);
         double toTargetY = Math.sin(turretFieldAngleRad);
 
-        // Perpendicular direction (90° CCW = left of aim direction)
+        // Perpendicular direction (90° CCW)
         double perpX = -toTargetY;
         double perpY = toTargetX;
 
-        // Project robot velocity onto perpendicular axis (sideways motion relative to
-        // target)
-        // Positive = moving left relative to target, negative = moving right
+        // Project velocities
         double sidewaysSpeed = fieldSpeeds.vxMetersPerSecond * perpX + fieldSpeeds.vyMetersPerSecond * perpY;
+        double radialSpeed = fieldSpeeds.vxMetersPerSecond * toTargetX + fieldSpeeds.vyMetersPerSecond * toTargetY;
+
+        // --- ITERATIVE TIME OF FLIGHT CALCULATION ---
+        // 1. Initial guess at TOF based on current distance
+        double shotTime = Setpoints.TOF_TABLE.get(distMeters);
+        double virtualDist = distMeters;
+
+        // 2. Iterate to find the "converged" virtual distance
+        for (int i = 0; i < 3; i++) {
+            // Calculate where the robot will be relative to the hub after shotTime
+            // Moving toward/away from hub (radial) and side-to-side (sideways)
+            double virtualX = distMeters - (radialSpeed * shotTime);
+            double virtualY = -(sidewaysSpeed * shotTime);
+            
+            // Re-calculate the actual distance the ball travels through the air
+            virtualDist = Math.sqrt(Math.pow(virtualX, 2) + Math.pow(virtualY, 2));
+            
+            // Update shotTime based on the distance the ball actually needs to travel
+            shotTime = Setpoints.TOF_TABLE.get(virtualDist);
+        }
+        // --------------------------------------------
 
         // How far sideways the robot will move during shot flight
         double sidewaysDisplacement = sidewaysSpeed * shotTime;
 
-        // Calculate lead angle: atan(sideways displacement / distance)
-        // Negative because if we're moving left, we need to aim right (lead the target)
-        double leadRad = Math.atan2(-sidewaysDisplacement, hubDistance.in(Meters));
+        // Calculate lead angle
+        double leadRad = Math.atan2(-sidewaysDisplacement, distMeters);
 
         return Radians.of(leadRad);
     }
