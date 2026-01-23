@@ -48,6 +48,8 @@ public interface TurretIO extends SubsystemIO {
 
     void stopMotors();
 
+    void setStartupPitch(Angle startingAngle);
+
     public class Real implements TurretIO {
         private LazyFXS yaw, pitch;
 
@@ -75,7 +77,7 @@ public interface TurretIO extends SubsystemIO {
                     Pitch.SUPPLY_CURRENT_LIMIT.in(Amps))
                     .withMotionMagicConfiguration(Pitch.P, Pitch.I, Pitch.D, Pitch.S, Pitch.G, Pitch.V, Pitch.A,
                             Pitch.EXPO_V,
-                            Pitch.EXPO_A, GravityTypeValue.Elevator_Static,
+                            Pitch.EXPO_A, Pitch.GRAVITY_TYPE,
                             Pitch.CRUISE_VELOCITY.in(RotationsPerSecond),
                             Pitch.ACCELERATION.in(RotationsPerSecondPerSecond))
                     .build();
@@ -174,7 +176,8 @@ public interface TurretIO extends SubsystemIO {
 
         @Override
         public void setPitch(Angle pitch) {
-            this.pitch.moveTo(pitch);
+            // this.pitch.moveTo(pitch);
+            this.pitch.moveWithMMVolt(pitch);
         }
 
         @Override
@@ -183,14 +186,19 @@ public interface TurretIO extends SubsystemIO {
             double yawRotations = yaw.in(Rotations);
             double forwardLimit = Yaw.FORWARD_SOFT_LIMIT.in(Rotations);
             double reverseLimit = Yaw.REVERSE_SOFT_LIMIT.in(Rotations);
-            
+
             // Wrap to [0, 1) range, then shift to [reverseLimit, reverseLimit + 1)
-            double wrapped = ((yawRotations - reverseLimit) % 1.0 + 1.0) % 1.0 + reverseLimit;
-            
+            double reverseWrapped = ((yawRotations - reverseLimit) % 1.0 + 1.0) % 1.0 + reverseLimit;
+            double forwardWrapped = ((yawRotations - forwardLimit) % 1.0 + 1.0) % 1.0 + forwardLimit;
+
+            double bestWrapped = Math.min(getYaw().in(Rotations) - reverseWrapped,
+                    getYaw().in(Rotations) - forwardWrapped);
+
             // Clamp to soft limits
-            double clamped = Math.max(reverseLimit, Math.min(forwardLimit, wrapped));
-            
-            this.yaw.moveTo(Rotations.of(clamped));
+            double clamped = Math.max(reverseLimit, Math.min(forwardLimit, bestWrapped));
+
+            // this.yaw.moveTo(Rotations.of(clamped));
+            this.yaw.moveWithMMVolt(Rotations.of(clamped));
         }
 
         @Override
@@ -289,9 +297,15 @@ public interface TurretIO extends SubsystemIO {
             yaw.stop();
             pitch.stop();
         }
+
+        @Override
+        public void setStartupPitch(Angle startingAngle) {
+            pitch.getMotor().setPosition(startingAngle);
+        }
     }
 
     public class Sim extends Real {
     }
+
 
 }
