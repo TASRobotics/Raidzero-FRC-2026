@@ -135,7 +135,7 @@ public class TurretConstants {
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(50);
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(30);
 
-        public static final double P = 0.0;
+        public static final double P = 0.295;
         public static final double I = 0.0;
         public static final double D = 0.0;
 
@@ -152,8 +152,8 @@ public class TurretConstants {
 
 
 
-        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(94.0); // 94
-        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(188.0); //increase me for more acceleration
+        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(94.0); // 94 @ 12 V
+        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(188.0); //increasable
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
     }
