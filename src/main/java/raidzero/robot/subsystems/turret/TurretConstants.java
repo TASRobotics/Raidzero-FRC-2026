@@ -25,6 +25,7 @@ import raidzero.lib.wrappers.motors.LazyMotor.MotorTelemetry;
 public class TurretConstants {
     public static final class Yaw {
         public static final int MOTOR_ID = 10;
+        public static final String CAN_BUS_NAME = "canShoot";
 
         public static final double SENSOR_TO_MECHANISM_RATIO = 250.0 / 10.0;
         public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
@@ -63,6 +64,7 @@ public class TurretConstants {
 
     public static final class Pitch {
         public static final int MOTOR_ID = 11;
+        public static final String CAN_BUS_NAME = "canShoot";
 
         public static final double SENSOR_TO_MECHANISM_RATIO = (27.0 / 15.0) * (215.0 / 8.0);
         public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
@@ -100,6 +102,7 @@ public class TurretConstants {
     public static final class Shooter {
         public static final int MOTOR_ID = 12;
         public static final int FOLLOW_ID = 13;
+        public static final String CAN_BUS_NAME = "canShoot";
 
         public static final double P = 0.22;
         public static final double I = 0.0;
@@ -110,7 +113,7 @@ public class TurretConstants {
         public static final double V = 0.11;
         public static final double A = 0.0;
 
-        public static final AngularAcceleration MAX_ACCELERATION = RotationsPerSecondPerSecond.of(1.0);
+        public static final AngularAcceleration MAX_ACCELERATION = RotationsPerSecondPerSecond.of(7000);
         public static final double MAX_JERK = 0.0;
 
         public static final double SENSOR_TO_MECHANISM_RATIO = 1.0;
@@ -127,13 +130,14 @@ public class TurretConstants {
 
     public static final class Indexer {
         public static final int MOTOR_ID = 15;
+        public static final String CAN_BUS_NAME = "canShoot";
 
         public static final double SENSOR_TO_MECHANISM_RATIO = 1.0;
 
         public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
-        public static final Current STATOR_CURRENT_LIMIT = Amps.of(50);
-        public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(30);
+        public static final Current STATOR_CURRENT_LIMIT = Amps.of(30);
+        public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
 
         public static final double P = 0.295;
         public static final double I = 0.0;

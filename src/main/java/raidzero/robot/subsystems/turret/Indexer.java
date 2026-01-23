@@ -1,7 +1,12 @@
 package raidzero.robot.subsystems.turret;
 
+import static edu.wpi.first.units.Units.Rotation;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.ctre.phoenix6.Utils;
 
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.lib.R0Subsystem;
 
@@ -9,8 +14,8 @@ public class Indexer extends R0Subsystem<IndexerIO> {
     private static Indexer system;
 
 
-    public Command go(double percent) {
-        return run(() -> io.go(percent));
+    public Command go(AngularVelocity speed) {
+        return run(() -> io.go(speed));
     }
 
     public Command stop() {
@@ -29,5 +34,10 @@ public class Indexer extends R0Subsystem<IndexerIO> {
                 system = new Indexer(new IndexerIO.Real());
         }
         return system;
+    }
+    @Override
+    public void periodic() {
+        super.periodic();
+        SmartDashboard.putNumber("Indexer Velocity", io.getVelocity().in(RotationsPerSecond));
     }
 }

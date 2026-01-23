@@ -18,8 +18,8 @@ import raidzero.robot.subsystems.turret.Shooter;
 import raidzero.robot.subsystems.turret.Turret;
 
 public class Superstructure {
-      // private static Turret turret = Turret.system();
-      // private static Shooter shooter = Shooter.system();
+      private static Turret turret = Turret.system();
+      private static Shooter shooter = Shooter.system();
       private static Swerve swerve = Swerve.system();
       private static Indexer indexer = Indexer.system();
 
@@ -61,7 +61,7 @@ public class Superstructure {
 
       public static void applyDefaultCommands() {
             // turret.setDefaultCommand(turret.aim());
-            // shooter.setDefaultCommand(shooter.stop());
+            shooter.setDefaultCommand(shooter.stop());
             // swerve.setDefaultCommand(swerve.applyRequest(() -> brake));
 
             // CAN_SHOOT.whileTrue(shooter.shoot());
@@ -82,6 +82,7 @@ public class Superstructure {
             // .withRotationalRate(-driver.getRightX() * MaxAngularRate)));
             // }
 
-            driver.a().whileTrue(indexer.go(0.5));
+            driver.a().whileTrue(indexer.go(RotationsPerSecond.of(45)));
+            driver.b().whileTrue(shooter.shoot(RotationsPerSecond.of(50)));
       }
 }

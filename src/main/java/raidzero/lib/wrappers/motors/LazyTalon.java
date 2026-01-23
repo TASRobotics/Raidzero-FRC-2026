@@ -27,15 +27,24 @@ public class LazyTalon implements LazyCTRE<TalonFX, FeedbackSensorSourceValue>, 
     private CANcoderConfiguration canCoderConfiguration;
 
     /**
-     * Constructs a LazyTalon instance with the specified motor identifier and configuration parameters.
+     * Constructs a LazyTalon instance with the specified motor identifier and
+     * configuration parameters.
      *
-     * @param motorID the device id of the motor controller
-     * @param sensorToMechanismRatio the gear ratio of the sensor to the mechanism (tell the mech team (driven / driving) * planetary product)
-     * @param invertedValue what direction that is positive for the motor
-     * @param statorCurrentLimit the maximum stator current
-     * @param supplyCurrentLimit the maximum supply current
+     * @param motorID                the device id of the motor controller
+     * @param sensorToMechanismRatio the gear ratio of the sensor to the mechanism
+     *                               (tell the mech team (driven / driving) *
+     *                               planetary product)
+     * @param invertedValue          what direction that is positive for the motor
+     * @param statorCurrentLimit     the maximum stator current
+     * @param supplyCurrentLimit     the maximum supply current
      */
-    public LazyTalon(int motorID, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
+    public LazyTalon(int motorID, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit,
+            double supplyCurrentLimit) {
+                this(motorID, "", sensorToMechanismRatio, invertedValue, statorCurrentLimit, supplyCurrentLimit);
+    }
+
+    public LazyTalon(int motorID, String canBus, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit,
+            double supplyCurrentLimit) {
         this.motorID = motorID;
 
         motorConfiguration = new TalonFXConfiguration();
@@ -47,7 +56,7 @@ public class LazyTalon implements LazyCTRE<TalonFX, FeedbackSensorSourceValue>, 
         motorConfiguration.CurrentLimits.SupplyCurrentLimit = supplyCurrentLimit;
         motorConfiguration.CurrentLimits.SupplyCurrentLowerTime = 0.0;
 
-        motor = new TalonFX(motorID);
+        motor = new TalonFX(motorID, canBus);
         motor.setNeutralMode(NeutralModeValue.Brake);
     }
 
@@ -63,7 +72,8 @@ public class LazyTalon implements LazyCTRE<TalonFX, FeedbackSensorSourceValue>, 
     }
 
     @Override
-    public LazyTalon withCANCoder(int CANCoderID, FeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection) {
+    public LazyTalon withCANCoder(int CANCoderID, FeedbackSensorSourceValue sensorType, double magnetOffset,
+            SensorDirectionValue sensorDirection) {
         canCoderConfiguration = new CANcoderConfiguration();
         canCoderConfiguration.MagnetSensor.MagnetOffset = magnetOffset;
         canCoderConfiguration.MagnetSensor.SensorDirection = sensorDirection;
@@ -78,7 +88,8 @@ public class LazyTalon implements LazyCTRE<TalonFX, FeedbackSensorSourceValue>, 
     }
 
     @Override
-    public LazyTalon withCANCoder(int CANCoderID, FeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio) {
+    public LazyTalon withCANCoder(int CANCoderID, FeedbackSensorSourceValue sensorType, double magnetOffset,
+            SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio) {
         withCANCoder(CANCoderID, sensorType, magnetOffset, sensorDirection);
 
         canCoderConfiguration.MagnetSensor.AbsoluteSensorDiscontinuityPoint = discontinuityPoint;
@@ -90,7 +101,8 @@ public class LazyTalon implements LazyCTRE<TalonFX, FeedbackSensorSourceValue>, 
     }
 
     @Override
-    public LazyTalon withMotionMagicConfiguration(double p, double i, double d, double s, double g, double v, double a, double expoV, double expoA, GravityTypeValue gravityType, double cruiseVelocity, double maxAcceleration) {
+    public LazyTalon withMotionMagicConfiguration(double p, double i, double d, double s, double g, double v, double a,
+            double expoV, double expoA, GravityTypeValue gravityType, double cruiseVelocity, double maxAcceleration) {
         motorConfiguration.Slot0.kP = p;
         motorConfiguration.Slot0.kI = i;
         motorConfiguration.Slot0.kD = d;
@@ -110,7 +122,9 @@ public class LazyTalon implements LazyCTRE<TalonFX, FeedbackSensorSourceValue>, 
     }
 
     @Override
-    public LazyTalon withLimitSwitch(boolean forwardLimitEnable, boolean forwardLimitAutosetPositionEnable, double forwardLimitAutosetPositionValue, boolean reverseLimitEnable, boolean reverseLimitAutosetPositionEnable, double reverseLimitAutosetPositionValue) {
+    public LazyTalon withLimitSwitch(boolean forwardLimitEnable, boolean forwardLimitAutosetPositionEnable,
+            double forwardLimitAutosetPositionValue, boolean reverseLimitEnable,
+            boolean reverseLimitAutosetPositionEnable, double reverseLimitAutosetPositionValue) {
         motorConfiguration.HardwareLimitSwitch.ForwardLimitEnable = forwardLimitEnable;
         motorConfiguration.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = forwardLimitAutosetPositionEnable;
         motorConfiguration.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = forwardLimitAutosetPositionValue;
@@ -123,7 +137,8 @@ public class LazyTalon implements LazyCTRE<TalonFX, FeedbackSensorSourceValue>, 
     }
 
     @Override
-    public LazyTalon withSoftLimits(boolean forwardSoftLimitEnable, double forwardSoftLimit, boolean reverseSoftLimitEnable, double reverseSoftLimit) {
+    public LazyTalon withSoftLimits(boolean forwardSoftLimitEnable, double forwardSoftLimit,
+            boolean reverseSoftLimitEnable, double reverseSoftLimit) {
         motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = forwardSoftLimitEnable;
         motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = forwardSoftLimit;
 

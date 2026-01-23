@@ -56,6 +56,7 @@ public interface TurretIO extends SubsystemIO {
         public Real() {
             yaw = new LazyFXS(
                     Yaw.MOTOR_ID,
+                    Yaw.CAN_BUS_NAME,
                     MotorArrangementValue.Minion_JST,
                     Yaw.SENSOR_TO_MECHANISM_RATIO,
                     Yaw.INVERTED,
@@ -71,7 +72,7 @@ public interface TurretIO extends SubsystemIO {
                             Yaw.REVERSE_SOFT_LIMIT.in(Rotations))
                     .build();
 
-            pitch = new LazyFXS(Pitch.MOTOR_ID, MotorArrangementValue.Minion_JST, Pitch.SENSOR_TO_MECHANISM_RATIO,
+            pitch = new LazyFXS(Pitch.MOTOR_ID, Pitch.CAN_BUS_NAME, MotorArrangementValue.Minion_JST, Pitch.SENSOR_TO_MECHANISM_RATIO,
                     Pitch.INVERTED,
                     Pitch.STATOR_CURRENT_LIMIT.in(Amps),
                     Pitch.SUPPLY_CURRENT_LIMIT.in(Amps))

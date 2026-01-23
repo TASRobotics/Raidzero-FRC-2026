@@ -33,14 +33,23 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     /**
      * Constructs a LazyFXS instance with the specified motor configurations
      *
-     * @param motorID the device id of the motor controller
-     * @param motorArrangement what type of motor the FXS is connected to
-     * @param sensorToMechanismRatio the gear ratio of the sensor to the mechanism (tell the mech team (driven / driving) * planetary product)
-     * @param invertedValue what direction that is positive for the motor
-     * @param statorCurrentLimit the maximum stator current
-     * @param supplyCurrentLimit the maximum supply current
+     * @param motorID                the device id of the motor controller
+     * @param motorArrangement       what type of motor the FXS is connected to
+     * @param sensorToMechanismRatio the gear ratio of the sensor to the mechanism
+     *                               (tell the mech team (driven / driving) *
+     *                               planetary product)
+     * @param invertedValue          what direction that is positive for the motor
+     * @param statorCurrentLimit     the maximum stator current
+     * @param supplyCurrentLimit     the maximum supply current
      */
-    public LazyFXS(int motorID, MotorArrangementValue motorArrangement, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
+    public LazyFXS(int motorID, MotorArrangementValue motorArrangement, double sensorToMechanismRatio,
+            InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
+        this(motorID, "", motorArrangement, sensorToMechanismRatio, invertedValue, statorCurrentLimit,
+                supplyCurrentLimit);
+    }
+
+    public LazyFXS(int motorID, String canBus, MotorArrangementValue motorArrangement, double sensorToMechanismRatio,
+            InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
         this.motorID = motorID;
 
         motorConfiguration = new TalonFXSConfiguration();
@@ -57,7 +66,7 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
 
         motorConfiguration.Commutation.AdvancedHallSupport = AdvancedHallSupportValue.Enabled;
 
-        motor = new TalonFXS(motorID);
+        motor = new TalonFXS(motorID, canBus);
         motor.setNeutralMode(NeutralModeValue.Brake);
     }
 
@@ -74,7 +83,8 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     }
 
     @Override
-    public LazyFXS withCANCoder(int CANCoderID, ExternalFeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection) {
+    public LazyFXS withCANCoder(int CANCoderID, ExternalFeedbackSensorSourceValue sensorType, double magnetOffset,
+            SensorDirectionValue sensorDirection) {
         canCoderConfiguration = new CANcoderConfiguration();
         canCoderConfiguration.MagnetSensor.MagnetOffset = magnetOffset;
         canCoderConfiguration.MagnetSensor.SensorDirection = sensorDirection;
@@ -89,7 +99,8 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     }
 
     @Override
-    public LazyFXS withCANCoder(int CANCoderID, ExternalFeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio) {
+    public LazyFXS withCANCoder(int CANCoderID, ExternalFeedbackSensorSourceValue sensorType, double magnetOffset,
+            SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio) {
         withCANCoder(CANCoderID, sensorType, magnetOffset, sensorDirection);
 
         canCoderConfiguration.MagnetSensor.AbsoluteSensorDiscontinuityPoint = discontinuityPoint;
@@ -101,7 +112,8 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     }
 
     @Override
-    public LazyFXS withMotionMagicConfiguration(double p, double i, double d, double s, double g, double v, double a, double expoV, double expoA, GravityTypeValue gravityType, double cruiseVelocity, double maxAcceleration) {
+    public LazyFXS withMotionMagicConfiguration(double p, double i, double d, double s, double g, double v, double a,
+            double expoV, double expoA, GravityTypeValue gravityType, double cruiseVelocity, double maxAcceleration) {
         motorConfiguration.Slot0.kP = p;
         motorConfiguration.Slot0.kI = i;
         motorConfiguration.Slot0.kD = d;
@@ -128,7 +140,9 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     }
 
     @Override
-    public LazyFXS withLimitSwitch(boolean forwardLimitEnable, boolean forwardLimitAutosetPositionEnable, double forwardLimitAutosetPositionValue, boolean reverseLimitEnable, boolean reverseLimitAutosetPositionEnable, double reverseLimitAutosetPositionValue) {
+    public LazyFXS withLimitSwitch(boolean forwardLimitEnable, boolean forwardLimitAutosetPositionEnable,
+            double forwardLimitAutosetPositionValue, boolean reverseLimitEnable,
+            boolean reverseLimitAutosetPositionEnable, double reverseLimitAutosetPositionValue) {
         motorConfiguration.HardwareLimitSwitch.ForwardLimitEnable = forwardLimitEnable;
         motorConfiguration.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = forwardLimitAutosetPositionEnable;
         motorConfiguration.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = forwardLimitAutosetPositionValue;
@@ -141,7 +155,8 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     }
 
     @Override
-    public LazyFXS withSoftLimits(boolean forwardSoftLimitEnable, double forwardSoftLimit, boolean reverseSoftLimitEnable, double reverseSoftLimit) {
+    public LazyFXS withSoftLimits(boolean forwardSoftLimitEnable, double forwardSoftLimit,
+            boolean reverseSoftLimitEnable, double reverseSoftLimit) {
         motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = forwardSoftLimitEnable;
         motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = forwardSoftLimit;
 

@@ -19,8 +19,11 @@ public interface ShooterIO extends SubsystemIO {
 
     void stop();
 
+    AngularVelocity getVelocity();
+
     public class Real implements ShooterIO {
-        LazyTalon flywheel = new LazyTalon(MOTOR_ID, SENSOR_TO_MECHANISM_RATIO, INVERTED, STATOR_CURRENT_LIMIT.in(Amps),
+        LazyTalon flywheel = new LazyTalon(MOTOR_ID, CAN_BUS_NAME, SENSOR_TO_MECHANISM_RATIO, INVERTED,
+                STATOR_CURRENT_LIMIT.in(Amps),
                 SUPPLY_CURRENT_LIMIT.in(Amps))
                 .withMotionMagicConfiguration(P, I, D, 0, 0, 0, 0, 0, 0, GravityTypeValue.Elevator_Static, 0,
                         MAX_ACCELERATION.in(RotationsPerSecondPerSecond))
@@ -41,6 +44,10 @@ public interface ShooterIO extends SubsystemIO {
             flywheel.stop();
         }
 
+        public AngularVelocity getVelocity() {
+            return flywheel.getFeedbackVelocity();
+        }
+
         @Override
         public void updateTelemetry() {
             flywheel.updateTelemetry(TELEMETRY);
@@ -50,4 +57,5 @@ public interface ShooterIO extends SubsystemIO {
 
     public class Sim extends Real {
     }
+
 }
