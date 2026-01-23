@@ -25,7 +25,7 @@ public interface ShooterIO extends SubsystemIO {
         LazyTalon flywheel = new LazyTalon(MOTOR_ID, CAN_BUS_NAME, SENSOR_TO_MECHANISM_RATIO, INVERTED,
                 STATOR_CURRENT_LIMIT.in(Amps),
                 SUPPLY_CURRENT_LIMIT.in(Amps))
-                .withMotionMagicConfiguration(P, I, D, 0, 0, 0, 0, 0, 0, GravityTypeValue.Elevator_Static, 0,
+                .withMotionMagicConfiguration(P, I, D, S, G, V, A, 0, 0, GravityTypeValue.Elevator_Static, 0,
                         MAX_ACCELERATION.in(RotationsPerSecondPerSecond))
                 .build();
 

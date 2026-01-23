@@ -110,7 +110,7 @@ public class TurretConstants {
 
         public static final double S = 0.0;
         public static final double G = 0.0;
-        public static final double V = 0.11;
+        public static final double V = 0.112;
         public static final double A = 0.0;
 
         public static final AngularAcceleration MAX_ACCELERATION = RotationsPerSecondPerSecond.of(7000);
@@ -136,8 +136,8 @@ public class TurretConstants {
 
         public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
-        public static final Current STATOR_CURRENT_LIMIT = Amps.of(30);
-        public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
+        public static final Current STATOR_CURRENT_LIMIT = Amps.of(50);
+        public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(30);
 
         public static final double P = 0.295;
         public static final double I = 0.0;
