@@ -139,9 +139,9 @@ public class TurretConstants {
         public static final double I = 0.0;
         public static final double D = 0.0;
 
-        public static final double S = 0.0;
+        public static final double S = 0.25;
         public static final double G = 0.0;
-        public static final double V = 0.0;
+        public static final double V = 0.127;
         public static final double A = 0.0;
 
         public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Elevator_Static;
@@ -152,8 +152,8 @@ public class TurretConstants {
 
 
 
-        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(0.0); // 94
-        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(0.0); //188
+        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(94.0); // 94
+        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(188.0); //increase me for more acceleration
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
     }
