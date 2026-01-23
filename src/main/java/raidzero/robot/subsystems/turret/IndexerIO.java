@@ -4,7 +4,13 @@ import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static raidzero.robot.subsystems.turret.TurretConstants.Indexer.*;
+import static raidzero.robot.subsystems.turret.TurretConstants.Shooter.TELEMETRY;
+
+import com.ctre.phoenix6.signals.GravityTypeValue;
+
 
 public interface IndexerIO extends SubsystemIO {
 
@@ -17,6 +23,7 @@ public interface IndexerIO extends SubsystemIO {
         public Real() {
             motor = new LazyTalon(MOTOR_ID, SENSOR_TO_MECHANISM_RATIO, INVERTED, STATOR_CURRENT_LIMIT.in(Amps),
                     SUPPLY_CURRENT_LIMIT.in(Amps)).build();
+                    motor.withMotionMagicConfiguration(P, I, D, S, G, V, A, 0, 0, GravityTypeValue.Elevator_Static, CRUISE_VELOCITY.in(RotationsPerSecond), ACCELERATION.in(RotationsPerSecondPerSecond));
         }
 
         public void go(double percent) {
@@ -29,7 +36,7 @@ public interface IndexerIO extends SubsystemIO {
 
         @Override
         public void updateTelemetry() {
-            motor.updateTelemetry(null);
+            motor.updateTelemetry(TELEMETRY);
         }
 
     }

@@ -132,8 +132,30 @@ public class TurretConstants {
 
         public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
-        public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
-        public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
+        public static final Current STATOR_CURRENT_LIMIT = Amps.of(50);
+        public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(30);
+
+        public static final double P = 0.0;
+        public static final double I = 0.0;
+        public static final double D = 0.0;
+
+        public static final double S = 0.0;
+        public static final double G = 0.0;
+        public static final double V = 0.0;
+        public static final double A = 0.0;
+
+        public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Elevator_Static;
+
+        // * NOTE: This should start at 10 and go down to increase speed
+        public static final double EXPO_V = 10.0;
+        public static final double EXPO_A = 10.0;
+
+
+
+        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(0.0); // 94
+        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(0.0); //188
+
+        public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
     }
 
     public static final class Limelight {
