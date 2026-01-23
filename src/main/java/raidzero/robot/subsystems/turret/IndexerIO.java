@@ -7,7 +7,6 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static raidzero.robot.subsystems.turret.TurretConstants.Indexer.*;
-import static raidzero.robot.subsystems.turret.TurretConstants.Shooter.TELEMETRY;
 
 import com.ctre.phoenix6.signals.GravityTypeValue;
 
@@ -26,8 +25,7 @@ public interface IndexerIO extends SubsystemIO {
 
         public Real() {
             motor = new LazyTalon(MOTOR_ID, CAN_BUS_NAME, SENSOR_TO_MECHANISM_RATIO, INVERTED, STATOR_CURRENT_LIMIT.in(Amps),
-                    SUPPLY_CURRENT_LIMIT.in(Amps)).build();
-                    motor.withMotionMagicConfiguration(P, I, D, S, G, V, A, 0, 0, GravityTypeValue.Elevator_Static, CRUISE_VELOCITY.in(RotationsPerSecond), ACCELERATION.in(RotationsPerSecondPerSecond));
+                    SUPPLY_CURRENT_LIMIT.in(Amps)).withMotionMagicConfiguration(P, I, D, S, G, V, A, 0.0, 0.0, GravityTypeValue.Elevator_Static, CRUISE_VELOCITY.in(RotationsPerSecond), ACCELERATION.in(RotationsPerSecondPerSecond)).build();           
         }
 
         public void go(AngularVelocity velocity) {
