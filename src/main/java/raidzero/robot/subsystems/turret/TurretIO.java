@@ -157,6 +157,7 @@ public interface TurretIO extends SubsystemIO {
         @Override
         public void stopMotors() {
             yaw.stop();
+            yaw.getMotor();
             pitch.stop();
         }
 

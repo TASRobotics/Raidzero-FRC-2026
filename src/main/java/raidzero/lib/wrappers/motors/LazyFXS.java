@@ -62,7 +62,7 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
         motorConfiguration.CurrentLimits.SupplyCurrentLimit = supplyCurrentLimit;
         motorConfiguration.CurrentLimits.SupplyCurrentLowerTime = 0.0;
 
-        motorConfiguration.ClosedLoopGeneral.ContinuousWrap = true;
+        motorConfiguration.ClosedLoopGeneral.ContinuousWrap = false;
 
         motorConfiguration.Commutation.AdvancedHallSupport = AdvancedHallSupportValue.Enabled;
 

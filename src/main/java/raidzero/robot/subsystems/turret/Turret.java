@@ -5,7 +5,10 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
 
+import javax.xml.crypto.KeySelector.Purpose;
+
 import com.ctre.phoenix6.Utils;
+import com.pathplanner.lib.path.RotationTarget;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
@@ -21,8 +24,8 @@ import raidzero.robot.subsystems.turret.TurretConstants.Yaw;
 
 public class Turret extends R0Subsystem<TurretIO> {
     private static Turret system;
-    private boolean isSpinningAround = false;
-    private Angle currentTarget = Rotations.of(0.0);
+    private boolean spinnySpin = false;
+    private Angle spinnySpinTarget = Rotations.of(0.0);
     private static Swerve swerve = Swerve.system();
 
     /**
@@ -34,16 +37,15 @@ public class Turret extends R0Subsystem<TurretIO> {
         return run(() -> {
             // Distance hubDistance = io.getHubDistance();
 
-            Angle targetYaw = calculateTurretWrap();
-
-            SmartDashboard.putNumber("Target Yaw", targetYaw.in(Degrees));
+            // Angle targetYaw = calculateTurretWrap();
+            // SmartDashboard.putNumber("Target Yaw", targetYaw.in(Rotations));
 
             // Angle targetPitch = Rotations.of(
             // Setpoints.PITCH_TABLE.get(hubDistance.in(Meters)));
             // SmartDashboard.putNumber("Target Pitch", targetPitch.in(Degrees));
 
             // io.moveTo(targetPitch, targetYaw);
-            io.setYaw(targetYaw);
+            io.setYaw(calculateTurretWrap());
         });
     }
 
@@ -56,37 +58,42 @@ public class Turret extends R0Subsystem<TurretIO> {
         double yawOffsetRotations = yawOffset.in(Rotations);
         double currentYawRotations = io.getYaw().in(Rotations);
 
-        double desiredYawRotations = currentYawRotations - yawOffsetRotations;
-        double targetYawRotations = currentYawRotations;
-
         double forwardLimit = Yaw.FORWARD_SOFT_LIMIT.in(Rotations);
         double reverseLimit = Yaw.REVERSE_SOFT_LIMIT.in(Rotations);
 
+        if (spinnySpin) {
+            // double distanceToTarget = Math.abs(currentYawRotations - spinnySpinTarget.in(Rotations));
+            if (io.hasHubLOS() && Math.signum(currentYawRotations) == Math.signum(spinnySpinTarget.in(Rotations))) { // Close enough, stop spinning
+                spinnySpin = false;
+            } else {
+                return spinnySpinTarget;
+            }
+        }
+
+        double desiredYawRotations = currentYawRotations - yawOffsetRotations;
+
         if (desiredYawRotations <= forwardLimit && desiredYawRotations >= reverseLimit) {
             return Rotations.of(desiredYawRotations);
-        } else if (desiredYawRotations < reverseLimit) {
-            // Wrap forward by 1 rotation
-            targetYawRotations = desiredYawRotations + 1.0;
-            // Clamp if still out of bounds
-            if (targetYawRotations > forwardLimit) {
-                targetYawRotations = forwardLimit;
-                return Yaw.FORWARD_SOFT_LIMIT;
-            }
-
-            return Rotations.of(targetYawRotations);
-
-        } else if (desiredYawRotations > forwardLimit) {
-            // Wrap forward by 1 rotation
-            targetYawRotations = desiredYawRotations + 1.0;
-            // Clamp if still out of bounds
-            if (targetYawRotations > forwardLimit) {
-                targetYawRotations = forwardLimit;
-                return Yaw.FORWARD_SOFT_LIMIT;
-            }
-
-            return Rotations.of(targetYawRotations);
         }
-        return io.getYaw();
+
+        double wrappedTarget;
+        if (desiredYawRotations < reverseLimit) {
+            wrappedTarget = desiredYawRotations + 1.0;
+        } else {
+            wrappedTarget = desiredYawRotations - 1.0;
+        }
+
+        if (wrappedTarget >= reverseLimit && wrappedTarget <= forwardLimit) {
+            spinnySpin = true;
+            spinnySpinTarget = Rotations.of(wrappedTarget);
+            return spinnySpinTarget;
+        }
+
+        if (desiredYawRotations > forwardLimit) {
+            return Yaw.FORWARD_SOFT_LIMIT;
+        } else {
+            return Yaw.REVERSE_SOFT_LIMIT;
+        }
     }
 
     /**
@@ -237,7 +244,7 @@ public class Turret extends R0Subsystem<TurretIO> {
 
         SmartDashboard.putNumber("Turret Angle", io.getYaw().in(Rotations));
 
-        SmartDashboard.putBoolean("Is spinning", isSpinningAround);
+        SmartDashboard.putBoolean("Hub LOS", io.hasHubLOS());
     }
 
     private Turret(TurretIO io) {

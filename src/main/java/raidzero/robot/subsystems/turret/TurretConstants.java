@@ -53,7 +53,7 @@ public class TurretConstants {
         public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.45);
 
         // public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(3.0); // max is 3.2
-        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(0.5); // max is 3.2
+        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(3.2); // max is 3.2
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(6.0); // max is 10
 
         public static final int CANCODER_ID = 10;
