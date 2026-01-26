@@ -10,10 +10,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 public class RobotContainer {
 
   public RobotContainer() {
+    Superstructure.runSubsystemInitRoutines();
     Superstructure.applyDefaultCommands();
     Superstructure.applyButtonBindings();
 
-    Superstructure.runSubsystemInitRoutines();
   }
 
   public Command getAutonomousCommand() {

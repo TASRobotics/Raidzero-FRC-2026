@@ -2,8 +2,6 @@ package raidzero.robot.subsystems.turret;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import raidzero.lib.LimelightHelpers;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyFXS;
@@ -32,10 +30,6 @@ public interface TurretIO extends SubsystemIO {
 
     Angle getPitch();
 
-    int getStartupTag();
-
-    Angle getAngleForStartup();
-
     void setStartupYaw(Angle yaw);
 
     void moveTo(Angle pitch, Angle Yaw);
@@ -50,17 +44,19 @@ public interface TurretIO extends SubsystemIO {
 
     void setStartupPitch(Angle startingAngle);
 
+    void runYawSimple(double percent);
+
     public class Real implements TurretIO {
         private LazyFXS yaw, pitch;
 
         public Real() {
             yaw = new LazyFXS(
-                    Yaw.MOTOR_ID,
-                    Yaw.CAN_BUS_NAME,
+                    Yaw.MOTOR_ID, Yaw.CAN_BUS_NAME,
                     MotorArrangementValue.Minion_JST,
                     Yaw.SENSOR_TO_MECHANISM_RATIO,
                     Yaw.INVERTED,
-                    Yaw.STATOR_CURRENT_LIMIT.in(Amps), Yaw.SUPPLY_CURRENT_LIMIT.in(Amps))
+                    Yaw.STATOR_CURRENT_LIMIT.in(Amps),
+                    Yaw.SUPPLY_CURRENT_LIMIT.in(Amps))
                     .withMotionMagicConfiguration(
                             Yaw.P, Yaw.I, Yaw.D,
                             Yaw.S, Yaw.G, Yaw.V, Yaw.A,
@@ -68,37 +64,26 @@ public interface TurretIO extends SubsystemIO {
                             GravityTypeValue.Elevator_Static,
                             Yaw.CRUISE_VELOCITY.in(RotationsPerSecond),
                             Yaw.ACCELERATION.in(RotationsPerSecondPerSecond))
-                    .withSoftLimits(true, Yaw.FORWARD_SOFT_LIMIT.in(Rotations), true,
-                            Yaw.REVERSE_SOFT_LIMIT.in(Rotations))
+                    .withSoftLimits(
+                            true, Yaw.FORWARD_SOFT_LIMIT.in(Rotations),
+                            true, Yaw.REVERSE_SOFT_LIMIT.in(Rotations))
                     .build();
 
-            pitch = new LazyFXS(Pitch.MOTOR_ID, Pitch.CAN_BUS_NAME, MotorArrangementValue.Minion_JST, Pitch.SENSOR_TO_MECHANISM_RATIO,
+            pitch = new LazyFXS(
+                    Pitch.MOTOR_ID, Pitch.CAN_BUS_NAME,
+                    MotorArrangementValue.Minion_JST,
+                    Pitch.SENSOR_TO_MECHANISM_RATIO,
                     Pitch.INVERTED,
                     Pitch.STATOR_CURRENT_LIMIT.in(Amps),
                     Pitch.SUPPLY_CURRENT_LIMIT.in(Amps))
-                    .withMotionMagicConfiguration(Pitch.P, Pitch.I, Pitch.D, Pitch.S, Pitch.G, Pitch.V, Pitch.A,
-                            Pitch.EXPO_V,
-                            Pitch.EXPO_A, Pitch.GRAVITY_TYPE,
+                    .withMotionMagicConfiguration(
+                            Pitch.P, Pitch.I, Pitch.D,
+                            Pitch.S, Pitch.G, Pitch.V, Pitch.A,
+                            Pitch.EXPO_V, Pitch.EXPO_A,
+                            Pitch.GRAVITY_TYPE,
                             Pitch.CRUISE_VELOCITY.in(RotationsPerSecond),
                             Pitch.ACCELERATION.in(RotationsPerSecondPerSecond))
                     .build();
-        }
-
-        private int[] getTargetTagIds() {
-            var alliance = DriverStation.getAlliance();
-            if (alliance.isPresent() && alliance.get() == Alliance.Red) {
-                return Limelight.RED_ALLIANCE_TAG_IDS;
-            }
-            return Limelight.BLUE_ALLIANCE_TAG_IDS;
-        }
-
-        private boolean isValidTagId(int tagId) {
-            for (int validId : getTargetTagIds()) {
-                if (tagId == validId) {
-                    return true;
-                }
-            }
-            return false;
         }
 
         @Override
@@ -109,65 +94,6 @@ public interface TurretIO extends SubsystemIO {
         @Override
         public Angle getPitch() {
             return pitch.getFeedbackPosition();
-        }
-
-        @Override
-        public int getStartupTag() {
-            if (!LimelightHelpers.getTV(Limelight.LIMELIGHT_NAME)) {
-                return -1; // No valid target
-            }
-
-            LimelightHelpers.RawFiducial[] fiducials = LimelightHelpers.getRawFiducials(Limelight.LIMELIGHT_NAME);
-
-            if (fiducials == null || fiducials.length == 0) {
-                return -1; // No fiducials detected
-            }
-
-            // Find the closest valid startup tag
-            int bestTagId = -1;
-            double closestDistance = Double.MAX_VALUE;
-
-            for (LimelightHelpers.RawFiducial fiducial : fiducials) {
-                if (isValidStartupTag(fiducial.id) && fiducial.distToCamera < closestDistance) {
-                    closestDistance = fiducial.distToCamera;
-                    bestTagId = fiducial.id;
-                }
-            }
-
-            return bestTagId;
-        }
-
-        private boolean isValidStartupTag(int tagId) {
-            for (int validId : Limelight.STARTUP_REFERENCE_TAG_IDS) {
-                if (tagId == validId) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public Angle getAngleForStartup() {
-            int startupTagId = getStartupTag();
-
-            if (startupTagId == -1) {
-                return Degrees.of(0); // No valid startup tag found
-            }
-
-            LimelightHelpers.RawFiducial[] fiducials = LimelightHelpers.getRawFiducials(Limelight.LIMELIGHT_NAME);
-
-            if (fiducials == null || fiducials.length == 0) {
-                return Degrees.of(0);
-            }
-
-            // Find the fiducial matching our startup tag and return its TX
-            for (LimelightHelpers.RawFiducial fiducial : fiducials) {
-                if (fiducial.id == startupTagId) {
-                    return Degrees.of(fiducial.txnc);
-                }
-            }
-
-            return Degrees.of(0); // Shouldn't reach here, but fallback
         }
 
         @Override
@@ -183,23 +109,7 @@ public interface TurretIO extends SubsystemIO {
 
         @Override
         public void setYaw(Angle yaw) {
-
-            double yawRotations = yaw.in(Rotations);
-            double forwardLimit = Yaw.FORWARD_SOFT_LIMIT.in(Rotations);
-            double reverseLimit = Yaw.REVERSE_SOFT_LIMIT.in(Rotations);
-
-            // Wrap to [0, 1) range, then shift to [reverseLimit, reverseLimit + 1)
-            double reverseWrapped = ((yawRotations - reverseLimit) % 1.0 + 1.0) % 1.0 + reverseLimit;
-            double forwardWrapped = ((yawRotations - forwardLimit) % 1.0 + 1.0) % 1.0 + forwardLimit;
-
-            double bestWrapped = Math.min(getYaw().in(Rotations) - reverseWrapped,
-                    getYaw().in(Rotations) - forwardWrapped);
-
-            // Clamp to soft limits
-            double clamped = Math.max(reverseLimit, Math.min(forwardLimit, bestWrapped));
-
-            // this.yaw.moveTo(Rotations.of(clamped));
-            this.yaw.moveWithMMVolt(Rotations.of(clamped));
+            this.yaw.moveWithMMVolt(yaw);
         }
 
         @Override
@@ -214,27 +124,7 @@ public interface TurretIO extends SubsystemIO {
                 return Degrees.of(0);
             }
 
-            LimelightHelpers.RawFiducial[] fiducials = LimelightHelpers.getRawFiducials(Limelight.LIMELIGHT_NAME);
-
-            if (fiducials == null || fiducials.length == 0) {
-                return Degrees.of(0);
-            }
-
-            LimelightHelpers.RawFiducial bestFiducial = null;
-            double bestArea = 0;
-
-            for (LimelightHelpers.RawFiducial fiducial : fiducials) {
-                if (isValidTagId(fiducial.id) && fiducial.ta > bestArea) {
-                    bestArea = fiducial.ta;
-                    bestFiducial = fiducial;
-                }
-            }
-
-            if (bestFiducial == null) {
-                return Degrees.of(0);
-            }
-
-            return Degrees.of(bestFiducial.txnc);
+            return Degrees.of(LimelightHelpers.getTX(Limelight.LIMELIGHT_NAME));
         }
 
         @Override
@@ -243,48 +133,19 @@ public interface TurretIO extends SubsystemIO {
                 return Meters.of(0);
             }
 
-            LimelightHelpers.RawFiducial[] fiducials = LimelightHelpers.getRawFiducials(Limelight.LIMELIGHT_NAME);
+            double ty = LimelightHelpers.getTY(Limelight.LIMELIGHT_NAME);
 
-            if (fiducials == null || fiducials.length == 0) {
-                return Meters.of(0);
-            }
+            double totalAngleRadians = Math.toRadians(Limelight.MOUNT_ANGLE.in(Degrees) + ty);
 
-            LimelightHelpers.RawFiducial bestFiducial = null;
-            double bestArea = 0;
+            double heightDifference = Limelight.HUB_HEIGHT.in(Meters) - Limelight.CAMERA_HEIGHT.in(Meters);
+            double distance = heightDifference / Math.tan(totalAngleRadians);
 
-            for (LimelightHelpers.RawFiducial fiducial : fiducials) {
-                if (isValidTagId(fiducial.id) && fiducial.ta > bestArea) {
-                    bestArea = fiducial.ta;
-                    bestFiducial = fiducial;
-                }
-            }
-
-            if (bestFiducial == null) {
-                return Meters.of(0);
-            }
-
-            return Meters.of(bestFiducial.distToCamera);
+            return Meters.of(distance);
         }
 
         @Override
         public boolean hasHubLOS() {
-            if (!LimelightHelpers.getTV(Limelight.LIMELIGHT_NAME)) {
-                return false;
-            }
-
-            LimelightHelpers.RawFiducial[] fiducials = LimelightHelpers.getRawFiducials(Limelight.LIMELIGHT_NAME);
-
-            if (fiducials == null || fiducials.length == 0) {
-                return false;
-            }
-
-            for (LimelightHelpers.RawFiducial fiducial : fiducials) {
-                if (isValidTagId(fiducial.id)) {
-                    return true;
-                }
-            }
-
-            return false;
+            return LimelightHelpers.getTV(Limelight.LIMELIGHT_NAME);
         }
 
         @Override
@@ -303,10 +164,13 @@ public interface TurretIO extends SubsystemIO {
         public void setStartupPitch(Angle startingAngle) {
             pitch.getMotor().setPosition(startingAngle);
         }
+
+        @Override
+        public void runYawSimple(double percent) {
+            yaw.setPercent(percent);
+        }
     }
 
     public class Sim extends Real {
     }
-
-
 }

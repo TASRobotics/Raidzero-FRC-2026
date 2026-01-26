@@ -1,8 +1,9 @@
 package raidzero.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
@@ -19,6 +20,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import raidzero.lib.wrappers.motors.LazyMotor.MotorTelemetry;
 
@@ -47,11 +49,12 @@ public class TurretConstants {
         public static final double EXPO_V = 10.0;
         public static final double EXPO_A = 10.0;
 
-        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(0.5);
-        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.55);
+        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(0.54);
+        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.45);
 
-        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(3.0); // max is 3.2
-        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(5.0); // max is 10
+        // public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(3.0); // max is 3.2
+        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(0.5); // max is 3.2
+        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(6.0); // max is 10
 
         public static final int CANCODER_ID = 10;
         public static final FeedbackSensorSourceValue CANCODER_TYPE = FeedbackSensorSourceValue.FusedCANcoder;
@@ -154,25 +157,27 @@ public class TurretConstants {
         public static final double EXPO_V = 10.0;
         public static final double EXPO_A = 10.0;
 
-
-
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(94.0); // 94 @ 12 V
-        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(188.0); //increasable
+        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(188.0); // increasable
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
     }
 
     public static final class Limelight {
-        public static final Angle MOUNT_ANGLE = Degrees.of(45.0);
+        public static final Angle MOUNT_ANGLE = Degrees.of(5.0);
 
         public static final Time LATENCY = Seconds.of(0.040); // Make constant? Get from NetworkTables? Physically test?
 
-        public static final String LIMELIGHT_NAME = "turret";
+        public static final String LIMELIGHT_NAME = "limelight-turret";
 
         public static final int[] RED_ALLIANCE_TAG_IDS = { 10, 11, 8 };
         public static final int[] BLUE_ALLIANCE_TAG_IDS = { 25, 27, 24 };
 
         public static final int[] STARTUP_REFERENCE_TAG_IDS = { 2, 8, 24, 18 };
+
+        public static final Distance HUB_HEIGHT = Inches.of(44.25);
+
+        public static final Distance CAMERA_HEIGHT = Meters.of(0.77); 
     }
 
     public static final class Setpoints {

@@ -7,10 +7,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.drive.TunerConstants;
 import raidzero.robot.subsystems.turret.Indexer;
@@ -56,7 +53,7 @@ public class Superstructure {
       // .and(hoardingToggle);
 
       public static void runSubsystemInitRoutines() {
-            // turret.setStartupAngle();
+            turret.setStartupAngle();
       }
 
       public static void applyDefaultCommands() {
@@ -72,6 +69,8 @@ public class Superstructure {
                                     .withRotationalRate(-driver.getRightX() * MaxAngularRate)));
 
             indexer.setDefaultCommand(indexer.stop());
+
+            turret.setDefaultCommand(turret.stop());
       }
 
       public static void applyButtonBindings() {
@@ -84,5 +83,9 @@ public class Superstructure {
 
             driver.a().whileTrue(indexer.go(RotationsPerSecond.of(45)));
             driver.b().whileTrue(shooter.shoot(RotationsPerSecond.of(50)));
+            driver.y().whileTrue(turret.aim());
+            driver.rightBumper().whileTrue(turret.moveSimple(-0.1));
+            driver.leftBumper().whileTrue(turret.moveSimple(0.1));
+            
       }
 }

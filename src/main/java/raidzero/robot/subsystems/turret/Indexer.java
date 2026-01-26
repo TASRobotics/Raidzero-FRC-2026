@@ -1,6 +1,5 @@
 package raidzero.robot.subsystems.turret;
 
-import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;

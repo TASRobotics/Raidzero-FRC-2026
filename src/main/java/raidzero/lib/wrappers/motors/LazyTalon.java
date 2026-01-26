@@ -40,10 +40,11 @@ public class LazyTalon implements LazyCTRE<TalonFX, FeedbackSensorSourceValue>, 
      */
     public LazyTalon(int motorID, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit,
             double supplyCurrentLimit) {
-                this(motorID, "", sensorToMechanismRatio, invertedValue, statorCurrentLimit, supplyCurrentLimit);
+        this(motorID, "", sensorToMechanismRatio, invertedValue, statorCurrentLimit, supplyCurrentLimit);
     }
 
-    public LazyTalon(int motorID, String canBus, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit,
+    public LazyTalon(int motorID, String canBus, double sensorToMechanismRatio, InvertedValue invertedValue,
+            double statorCurrentLimit,
             double supplyCurrentLimit) {
         this.motorID = motorID;
 
@@ -57,7 +58,6 @@ public class LazyTalon implements LazyCTRE<TalonFX, FeedbackSensorSourceValue>, 
         motorConfiguration.CurrentLimits.SupplyCurrentLowerTime = 0.0;
 
         motor = new TalonFX(motorID, canBus);
-        motor.setNeutralMode(NeutralModeValue.Brake);
     }
 
     @Override
@@ -163,6 +163,7 @@ public class LazyTalon implements LazyCTRE<TalonFX, FeedbackSensorSourceValue>, 
     @Override
     public LazyTalon build() {
         motor.getConfigurator().apply(motorConfiguration);
+        motor.setNeutralMode(NeutralModeValue.Brake);
 
         return this;
     }

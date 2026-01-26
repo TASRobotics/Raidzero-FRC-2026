@@ -67,7 +67,6 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
         motorConfiguration.Commutation.AdvancedHallSupport = AdvancedHallSupportValue.Enabled;
 
         motor = new TalonFXS(motorID, canBus);
-        motor.setNeutralMode(NeutralModeValue.Brake);
     }
 
     @Override
@@ -174,6 +173,7 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     @Override
     public LazyFXS build() {
         motor.getConfigurator().apply(motorConfiguration);
+        motor.setNeutralMode(NeutralModeValue.Brake);
 
         return this;
     }
