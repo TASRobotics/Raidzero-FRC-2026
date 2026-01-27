@@ -36,14 +36,23 @@ public class TurretConstants {
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
         public static final Time SUPPLY_CURRENT_LOWER_TIME = Seconds.of(0.0);
 
-        public static final double P = 20.0;
-        public static final double I = 0.0;
-        public static final double D = 0.0;
+        public static final double positionP = 20.0;
+        public static final double positionI = 0.0;
+        public static final double positionD = 0.0;
 
-        public static final double S = 0.23;
-        public static final double G = 0.0; // * NOTE: this should be 0
-        public static final double V = 0.0;
-        public static final double A = 0.0;
+        public static final double positionS = 0.23;
+        public static final double positionG = 0.0; // * NOTE: this should be 0
+        public static final double positionV = 0.0;
+        public static final double positionA = 0.0;
+
+        public static final double velocityP = 2.0;
+        public static final double velocityI = 0.0;
+        public static final double velocityD = 0.0;
+
+        public static final double velocityS = 0.23;
+        public static final double velocityG = 0.0; // * NOTE: this should be 0
+        public static final double velocityV = 2.25;
+        public static final double velocityA = 0.0;
 
         // * NOTE: This should start at 10 and go down to increase speed
         public static final double EXPO_V = 10.0;

@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.ParentConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 /**
  * I call it an interface for wrapping CTRE motors, rhymes with Grug
@@ -46,8 +47,7 @@ public interface LazyCTRE<T, S> {
     public LazyCTRE<T, S> withCANCoder(int CANCoderID, S sensorType, double magnetOffset, SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio);
 
     /**
-     * Configures the motion magic parameters for this motor's motion prifiling
-     *
+     * Configures the PID and Feedforward gains for this motor
      * @param p the proportional gain
      * @param i the integral gain
      * @param d the derivative gain
@@ -56,11 +56,34 @@ public interface LazyCTRE<T, S> {
      * @param v the velocity feed forward (voltage required to maintain a 1 rotation/s angular velocity in mechanism rotations)
      * @param a the velocity feed forward (voltage required to maintain a 1 rotation/s^2 angular acceleration in mechanism rotations)
      * @param gravityType what type of gravity feed forward to use
+     * @param staticSignValue the sign of the static friction feed forward
+     * @param slotNumber the slot number to use for the PIDF gains
+     * @return this motor instance for method chaining
+     */
+    public LazyCTRE<T, S> withPIDFConfiguration(double p, double i, double d, double s, double g, double v, double a, GravityTypeValue gravityType, StaticFeedforwardSignValue staticSignValue, int slotNumber);
+    
+    /**
+     * Configures the motion magic parameters for this motor's motion prifiling
+     *
+     * @param expoV the exponent of the velocity feed forward
+     * @param expoA the exponent of the acceleration feed forward
      * @param cruiseVelocity the maximum velocity of the mechanism in rotations/s
      * @param maxAcceleration the maximum acceleration of the mechanism in rotations/s^2
      * @return this motor instance for method chaining
      */
-    public LazyCTRE<T, S> withMotionMagicConfiguration(double p, double i, double d, double s, double g, double v, double a, double expoV, double expoA, GravityTypeValue gravityType, double cruiseVelocity, double maxAcceleration);
+    public LazyCTRE<T, S> withMotionMagicConfiguration(double expoV, double expoA, double cruiseVelocity, double maxAcceleration);
+
+    /**
+     * Configures the motion magic parameters for this motor's motion prifiling
+     *
+     * @param expoV the exponent of the velocity feed forward
+     * @param expoA the exponent of the acceleration feed forward
+     * @param cruiseVelocity the maximum velocity of the mechanism in rotations/s
+     * @param maxAcceleration the maximum acceleration of the mechanism in rotations/s^2
+     * @param jerk the maximum jerk of the mechanism in rotations/s^3
+     * @return this motor instance for method chaining
+     */
+    public LazyCTRE<T, S> withMotionMagicConfiguration(double expoV, double expoA, double cruiseVelocity, double maxAcceleration, double jerk);
 
     /**
      * Configures the forward and reverse hardware limit switches

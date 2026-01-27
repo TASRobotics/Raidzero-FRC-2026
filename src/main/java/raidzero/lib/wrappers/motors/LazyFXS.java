@@ -1,5 +1,7 @@
 package raidzero.lib.wrappers.motors;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.ParentConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
@@ -16,9 +18,12 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceValue>, LazyMotor<TalonFXS> {
     private TalonFXS motor, follower;
@@ -111,22 +116,63 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     }
 
     @Override
-    public LazyFXS withMotionMagicConfiguration(double p, double i, double d, double s, double g, double v, double a,
-            double expoV, double expoA, GravityTypeValue gravityType, double cruiseVelocity, double maxAcceleration) {
-        motorConfiguration.Slot0.kP = p;
-        motorConfiguration.Slot0.kI = i;
-        motorConfiguration.Slot0.kD = d;
-        motorConfiguration.Slot0.kS = s;
-        motorConfiguration.Slot0.kG = g;
-        motorConfiguration.Slot0.kV = v;
-        motorConfiguration.Slot0.kA = a;
-        motorConfiguration.Slot0.GravityType = gravityType;
+    public LazyFXS withPIDFConfiguration(double p, double i, double d, double s, double g, double v, double a, GravityTypeValue gravityType, StaticFeedforwardSignValue staticSignValue, int slotNumber) {
+        switch (slotNumber) {
+            case 0:
+                motorConfiguration.Slot0.kP = p;
+                motorConfiguration.Slot0.kI = i;
+                motorConfiguration.Slot0.kD = d;
+                motorConfiguration.Slot0.kS = s;
+                motorConfiguration.Slot0.kG = g;
+                motorConfiguration.Slot0.kV = v;
+                motorConfiguration.Slot0.kA = a;
+                motorConfiguration.Slot0.GravityType = gravityType;
+                motorConfiguration.Slot0.StaticFeedforwardSign = staticSignValue;
+                break;
+            case 1:
+                motorConfiguration.Slot1.kP = p;
+                motorConfiguration.Slot1.kI = i;
+                motorConfiguration.Slot1.kD = d;
+                motorConfiguration.Slot1.kS = s;
+                motorConfiguration.Slot1.kG = g;
+                motorConfiguration.Slot1.kV = v;
+                motorConfiguration.Slot1.kA = a;
+                motorConfiguration.Slot1.GravityType = gravityType;
+                motorConfiguration.Slot1.StaticFeedforwardSign = staticSignValue;
+                break;
+            case 2:
+                motorConfiguration.Slot2.kP = p;
+                motorConfiguration.Slot2.kI = i;
+                motorConfiguration.Slot2.kD = d;
+                motorConfiguration.Slot2.kS = s;
+                motorConfiguration.Slot2.kG = g;
+                motorConfiguration.Slot2.kV = v;
+                motorConfiguration.Slot2.kA = a;
+                motorConfiguration.Slot2.GravityType = gravityType;
+                motorConfiguration.Slot2.StaticFeedforwardSign = staticSignValue;
+                break;
+            default:
+                DriverStation.reportWarning("PDF Slot number is invalid for device ID: " + motorID, true);
+        }
 
+        return this;
+    }
+
+    @Override
+    public LazyFXS withMotionMagicConfiguration(double expoV, double expoA, double cruiseVelocity, double maxAcceleration) {
         motorConfiguration.MotionMagic.MotionMagicCruiseVelocity = cruiseVelocity;
         motorConfiguration.MotionMagic.MotionMagicAcceleration = maxAcceleration;
 
         motorConfiguration.MotionMagic.MotionMagicExpo_kV = expoV;
         motorConfiguration.MotionMagic.MotionMagicExpo_kA = expoA;
+
+        return this;
+    }
+
+    @Override
+    public LazyFXS withMotionMagicConfiguration(double expoV, double expoA, double cruiseVelocity, double maxAcceleration, double jerk) {
+        withMotionMagicConfiguration(expoV, expoA, cruiseVelocity, maxAcceleration);
+        motorConfiguration.MotionMagic.MotionMagicJerk = jerk;
 
         return this;
     }
@@ -188,8 +234,8 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     }
 
     @Override
-    public void setVelocity(AngularVelocity velocity) {
-        motor.setControl(new MotionMagicVelocityVoltage(velocity).withEnableFOC(true));
+    public void setVelocity(AngularVelocity velocity, int slotNumber) {
+        motor.setControl(new MotionMagicVelocityVoltage(velocity.in(RotationsPerSecond)).withEnableFOC(true).withSlot(slotNumber));
     }
 
     @Override

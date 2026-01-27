@@ -24,7 +24,7 @@ public interface LazyMotor<T> {
      *
      * @param velocity the target velocity for motion magic control
      */
-    public void setVelocity(AngularVelocity velocity);
+    public void setVelocity(AngularVelocity velocity, int slotNumber);
 
     /**
      * Sets the motor to the target speed

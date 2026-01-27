@@ -1,6 +1,7 @@
 package raidzero.robot.subsystems.turret;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import raidzero.lib.LimelightHelpers;
 import raidzero.lib.SubsystemIO;
@@ -19,6 +20,7 @@ import static raidzero.robot.subsystems.turret.TurretConstants.Limelight;
 
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 public interface TurretIO extends SubsystemIO {
 
@@ -27,6 +29,8 @@ public interface TurretIO extends SubsystemIO {
     void setPitch(Angle pitch);
 
     void setYaw(Angle yaw);
+
+    void setYawVelocity(AngularVelocity yawVelocity, int slotNumber);
 
     Angle getPitch();
 
@@ -57,11 +61,19 @@ public interface TurretIO extends SubsystemIO {
                     Yaw.INVERTED,
                     Yaw.STATOR_CURRENT_LIMIT.in(Amps),
                     Yaw.SUPPLY_CURRENT_LIMIT.in(Amps))
-                    .withMotionMagicConfiguration(
-                            Yaw.P, Yaw.I, Yaw.D,
-                            Yaw.S, Yaw.G, Yaw.V, Yaw.A,
-                            Yaw.EXPO_V, Yaw.EXPO_A,
+                    .withPIDFConfiguration(
+                            Yaw.positionP, Yaw.positionI, Yaw.positionD,
+                            Yaw.positionS, Yaw.positionG, Yaw.positionV, Yaw.positionA,
                             GravityTypeValue.Elevator_Static,
+                            StaticFeedforwardSignValue.UseClosedLoopSign,
+                            0)
+                    .withPIDFConfiguration(Yaw.velocityP, Yaw.velocityI, Yaw.velocityD,
+                        Yaw.velocityS, Yaw.velocityG, Yaw.velocityV, Yaw.velocityA,
+                        GravityTypeValue.Elevator_Static,
+                        StaticFeedforwardSignValue.UseVelocitySign,
+                        2)
+                    .withMotionMagicConfiguration(
+                            Yaw.EXPO_V, Yaw.EXPO_A,
                             Yaw.CRUISE_VELOCITY.in(RotationsPerSecond),
                             Yaw.ACCELERATION.in(RotationsPerSecondPerSecond))
                     .withSoftLimits(
@@ -76,11 +88,14 @@ public interface TurretIO extends SubsystemIO {
                     Pitch.INVERTED,
                     Pitch.STATOR_CURRENT_LIMIT.in(Amps),
                     Pitch.SUPPLY_CURRENT_LIMIT.in(Amps))
-                    .withMotionMagicConfiguration(
+                    .withPIDFConfiguration(
                             Pitch.P, Pitch.I, Pitch.D,
                             Pitch.S, Pitch.G, Pitch.V, Pitch.A,
+                            GravityTypeValue.Elevator_Static,
+                            StaticFeedforwardSignValue.UseClosedLoopSign,
+                            0)
+                    .withMotionMagicConfiguration(
                             Pitch.EXPO_V, Pitch.EXPO_A,
-                            Pitch.GRAVITY_TYPE,
                             Pitch.CRUISE_VELOCITY.in(RotationsPerSecond),
                             Pitch.ACCELERATION.in(RotationsPerSecondPerSecond))
                     .build();
@@ -110,6 +125,11 @@ public interface TurretIO extends SubsystemIO {
         @Override
         public void setYaw(Angle yaw) {
             this.yaw.moveWithMMVolt(yaw);
+        }
+
+        @Override
+        public void setYawVelocity(AngularVelocity yawVelocity, int slotNumber) {
+            this.yaw.setVelocity(yawVelocity, slotNumber);
         }
 
         @Override
