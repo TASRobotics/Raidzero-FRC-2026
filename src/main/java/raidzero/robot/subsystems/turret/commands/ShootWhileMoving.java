@@ -90,7 +90,7 @@ public class ShootWhileMoving extends Command {
 
         // Commands
         // NOTE: Based on shooter design, spin-up might be direct or indirect. Order may change/matter.
-        turret.setYaw(targetYaw.getMeasure());
+        turret.moveYawTo(targetYaw.getMeasure());
 
         double targetPitch = TurretConstants.Setpoints.PITCH_TABLE.get(virtualDist);
         turret.setPitch(Degrees.of(targetPitch));

@@ -13,6 +13,7 @@ import raidzero.robot.subsystems.drive.TunerConstants;
 import raidzero.robot.subsystems.turret.Indexer;
 import raidzero.robot.subsystems.turret.Shooter;
 import raidzero.robot.subsystems.turret.Turret;
+import raidzero.robot.subsystems.turret.commands.Aim;
 
 public class Superstructure {
       private static Turret turret = Turret.system();
@@ -70,7 +71,7 @@ public class Superstructure {
 
             indexer.setDefaultCommand(indexer.stop());
 
-            turret.setDefaultCommand(turret.stop());
+            turret.setDefaultCommand(new Aim());
       }
 
       public static void applyButtonBindings() {
@@ -83,7 +84,8 @@ public class Superstructure {
 
             driver.a().whileTrue(indexer.go(RotationsPerSecond.of(45)));
             driver.b().whileTrue(shooter.shoot(RotationsPerSecond.of(50)));
-            driver.y().whileTrue(turret.aim());
+            driver.y().whileTrue(turret.stop());
+
             driver.rightBumper().whileTrue(turret.moveSimple(-0.1));
             driver.leftBumper().whileTrue(turret.moveSimple(0.1));
             

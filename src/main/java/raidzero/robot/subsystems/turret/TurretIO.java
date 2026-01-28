@@ -46,6 +46,8 @@ public interface TurretIO extends SubsystemIO {
 
     void stopMotors();
 
+    AngularVelocity getYawVelocity();
+
     void setStartupPitch(Angle startingAngle);
 
     void runYawSimple(double percent);
@@ -119,17 +121,17 @@ public interface TurretIO extends SubsystemIO {
         @Override
         public void setPitch(Angle pitch) {
             // this.pitch.moveTo(pitch);
-            this.pitch.moveWithMMVolt(pitch);
+            this.pitch.moveWithMMVolt(pitch, 0);
         }
 
         @Override
         public void setYaw(Angle yaw) {
-            this.yaw.moveWithMMVolt(yaw);
+            this.yaw.moveWithMMVolt(yaw, Yaw.POSITION_SLOT);
         }
 
         @Override
         public void setYawVelocity(AngularVelocity yawVelocity) {
-            this.yaw.setVelocity(yawVelocity, 2);
+            this.yaw.setVelocity(yawVelocity, Yaw.VELOCITY_SLOT);
         }
 
         @Override
@@ -189,6 +191,11 @@ public interface TurretIO extends SubsystemIO {
         @Override
         public void runYawSimple(double percent) {
             yaw.setPercent(percent);
+        }
+
+        @Override
+        public AngularVelocity getYawVelocity() {
+            return yaw.getFeedbackVelocity();
         }
     }
 

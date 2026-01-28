@@ -40,7 +40,7 @@ public class ShootWhileClimbing extends Command {
         Pose2d currentPose = swerve.getState().Pose;
         staticYaw = actualGoal.minus(currentPose.getTranslation()).getAngle();
         
-        turret.setYaw(staticYaw.getMeasure());
+        turret.moveYawTo(staticYaw.getMeasure());
     }
 
     @Override
@@ -54,7 +54,7 @@ public class ShootWhileClimbing extends Command {
         double basePitch = TurretConstants.Setpoints.CLIMB_PITCH_TABLE.get(futureHeight);
         double baseRPS = TurretConstants.Setpoints.CLIMB_RPS_TABLE.get(futureHeight);
 
-        turret.setYaw(staticYaw.getMeasure()); 
+        turret.moveYawTo(staticYaw.getMeasure()); 
         turret.setPitch(Degrees.of(basePitch)); // May need an adjusted pitch because of lean
         shooter.setVelocity(RotationsPerSecond.of(baseRPS)); // May need an adjusted RPM cause of shooter physics
     }

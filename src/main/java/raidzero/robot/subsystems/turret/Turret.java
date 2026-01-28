@@ -4,14 +4,13 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
-
-import javax.xml.crypto.KeySelector.Purpose;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;
-import com.pathplanner.lib.path.RotationTarget;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,80 +19,22 @@ import raidzero.lib.R0Subsystem;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.turret.TurretConstants.Pitch;
 import raidzero.robot.subsystems.turret.TurretConstants.Setpoints;
-import raidzero.robot.subsystems.turret.TurretConstants.Yaw;
 
 public class Turret extends R0Subsystem<TurretIO> {
     private static Turret system;
-    private boolean spinnySpin = false;
-    private Angle spinnySpinTarget = Rotations.of(0.0);
     private static Swerve swerve = Swerve.system();
 
-    /**
-     * Aims the turret at the hub and holds position if there is no hub LOS
-     * 
-     * @return a {@link Command} to be scheduled and run
-     */
-    public Command aim() {
-        return run(() -> {
-            // Distance hubDistance = io.getHubDistance();
-
-            // Angle targetYaw = calculateTurretWrap();
-            // SmartDashboard.putNumber("Target Yaw", targetYaw.in(Rotations));
-
-            // Angle targetPitch = Rotations.of(
-            // Setpoints.PITCH_TABLE.get(hubDistance.in(Meters)));
-            // SmartDashboard.putNumber("Target Pitch", targetPitch.in(Degrees));
-
-            // io.moveTo(targetPitch, targetYaw);
-            io.setYaw(calculateTurretWrap());
-        });
-    }
 
     public Command moveSimple(double percent) {
         return run(() -> io.runYawSimple(percent));
     }
 
-    private Angle calculateTurretWrap() {
-        Angle yawOffset = io.getYawFromTarget();
-        double yawOffsetRotations = yawOffset.in(Rotations);
-        double currentYawRotations = io.getYaw().in(Rotations);
+    public Angle getYawFromTarget() {
+        return io.getYawFromTarget();
+    }
 
-        double forwardLimit = Yaw.FORWARD_SOFT_LIMIT.in(Rotations);
-        double reverseLimit = Yaw.REVERSE_SOFT_LIMIT.in(Rotations);
-
-        if (spinnySpin) {
-            // double distanceToTarget = Math.abs(currentYawRotations - spinnySpinTarget.in(Rotations));
-            if (io.hasHubLOS() && Math.signum(currentYawRotations) == Math.signum(spinnySpinTarget.in(Rotations))) { // Close enough, stop spinning
-                spinnySpin = false;
-            } else {
-                return spinnySpinTarget;
-            }
-        }
-
-        double desiredYawRotations = currentYawRotations - yawOffsetRotations;
-
-        if (desiredYawRotations <= forwardLimit && desiredYawRotations >= reverseLimit) {
-            return Rotations.of(desiredYawRotations);
-        }
-
-        double wrappedTarget;
-        if (desiredYawRotations < reverseLimit) {
-            wrappedTarget = desiredYawRotations + 1.0;
-        } else {
-            wrappedTarget = desiredYawRotations - 1.0;
-        }
-
-        if (wrappedTarget >= reverseLimit && wrappedTarget <= forwardLimit) {
-            spinnySpin = true;
-            spinnySpinTarget = Rotations.of(wrappedTarget);
-            return spinnySpinTarget;
-        }
-
-        if (desiredYawRotations > forwardLimit) {
-            return Yaw.FORWARD_SOFT_LIMIT;
-        } else {
-            return Yaw.REVERSE_SOFT_LIMIT;
-        }
+    public Angle getCurrentYaw() {
+        return io.getYaw();
     }
 
     /**
@@ -195,8 +136,12 @@ public class Turret extends R0Subsystem<TurretIO> {
      * 
      * @param yaw
      */
-    public void setYaw(Angle yaw) {
+    public void moveYawTo(Angle yaw) {
         io.setYaw(yaw);
+    }
+
+    public void setYawVelocity(AngularVelocity velocity) {
+        io.setYawVelocity(velocity);
     }
 
     /**
@@ -239,10 +184,12 @@ public class Turret extends R0Subsystem<TurretIO> {
     public void periodic() {
         super.periodic();
 
-        SmartDashboard.putNumber("LL Turret Angle", io.getYawFromTarget().in(Degrees));
+        SmartDashboard.putNumber("LL Turret Angle", io.getYawFromTarget().in(Rotations));
         SmartDashboard.putNumber("LL Turret Distance", io.getHubDistance().in(Meters));
 
         SmartDashboard.putNumber("Turret Angle", io.getYaw().in(Rotations));
+
+        SmartDashboard.putNumber("Turret Yaw Velocity", io.getYawVelocity().in(RotationsPerSecond));
 
         SmartDashboard.putBoolean("Hub LOS", io.hasHubLOS());
     }

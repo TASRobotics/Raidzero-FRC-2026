@@ -39,7 +39,7 @@ public class TurretConstants {
 
         public static final int POSITION_SLOT = 0;
 
-        public static final double POSITION_P = 20.0;
+        public static final double POSITION_P = 25.0;
         public static final double POSITION_I = 0.0;
         public static final double POSITION_D = 0.0;
 
@@ -60,6 +60,9 @@ public class TurretConstants {
         public static final double VELOCITY_G = 0.0; // * NOTE: this should be 0
         public static final double VELOCITY_V = 2.25;
         public static final double VELOCITY_A = 0.0;
+
+        public static final Angle POSITION_TOLERANCE = Rotations.of(0.6);
+        public static final AngularVelocity MIN_UNWRAP_VELOCITY = RotationsPerSecond.of(1.2);
 
         public static final GravityTypeValue VELOCITY_GRAVITY_TYPE_VALUE = GravityTypeValue.Elevator_Static;
         public static final StaticFeedforwardSignValue VELOCITY_S_SIGN = StaticFeedforwardSignValue.UseClosedLoopSign;

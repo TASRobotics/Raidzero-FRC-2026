@@ -229,13 +229,13 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
         motor.setControl(new MotionMagicExpoVoltage(setpoint).withEnableFOC(true));
     }
 
-    public void moveWithMMVolt(Angle setpoint) {
-        motor.setControl(new MotionMagicVoltage(setpoint).withEnableFOC(true));
+    public void moveWithMMVolt(Angle setpoint, int slotNumber) {
+        motor.setControl(new MotionMagicVoltage(setpoint).withEnableFOC(true).withSlot(slotNumber));
     }
 
     @Override
     public void setVelocity(AngularVelocity velocity, int slotNumber) {
-        motor.setControl(new MotionMagicVelocityVoltage(velocity.in(RotationsPerSecond)).withEnableFOC(true).withSlot(slotNumber));
+        motor.setControl(new MotionMagicVelocityVoltage(velocity).withEnableFOC(true).withSlot(slotNumber));
     }
 
     @Override
