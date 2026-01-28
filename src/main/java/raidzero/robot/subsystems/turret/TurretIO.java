@@ -30,7 +30,7 @@ public interface TurretIO extends SubsystemIO {
 
     void setYaw(Angle yaw);
 
-    void setYawVelocity(AngularVelocity yawVelocity, int slotNumber);
+    void setYawVelocity(AngularVelocity yawVelocity);
 
     Angle getPitch();
 
@@ -62,16 +62,16 @@ public interface TurretIO extends SubsystemIO {
                     Yaw.STATOR_CURRENT_LIMIT.in(Amps),
                     Yaw.SUPPLY_CURRENT_LIMIT.in(Amps))
                     .withPIDFConfiguration(
-                            Yaw.positionP, Yaw.positionI, Yaw.positionD,
-                            Yaw.positionS, Yaw.positionG, Yaw.positionV, Yaw.positionA,
+                            Yaw.POSITION_P, Yaw.POSITION_I, Yaw.POSITION_D,
+                            Yaw.POSITION_S, Yaw.POSITION_G, Yaw.POSITION_V, Yaw.POSITION_A,
                             GravityTypeValue.Elevator_Static,
                             StaticFeedforwardSignValue.UseClosedLoopSign,
-                            0)
-                    .withPIDFConfiguration(Yaw.velocityP, Yaw.velocityI, Yaw.velocityD,
-                        Yaw.velocityS, Yaw.velocityG, Yaw.velocityV, Yaw.velocityA,
+                            Yaw.POSITION_SLOT)
+                    .withPIDFConfiguration(Yaw.VELOCITY_P, Yaw.VELOCITY_I, Yaw.VELOCITY_D,
+                        Yaw.VELOCITY_S, Yaw.VELOCITY_G, Yaw.VELOCITY_V, Yaw.VELOCITY_A,
                         GravityTypeValue.Elevator_Static,
                         StaticFeedforwardSignValue.UseVelocitySign,
-                        2)
+                        Yaw.VELOCITY_SLOT)
                     .withMotionMagicConfiguration(
                             Yaw.EXPO_V, Yaw.EXPO_A,
                             Yaw.CRUISE_VELOCITY.in(RotationsPerSecond),
@@ -128,8 +128,8 @@ public interface TurretIO extends SubsystemIO {
         }
 
         @Override
-        public void setYawVelocity(AngularVelocity yawVelocity, int slotNumber) {
-            this.yaw.setVelocity(yawVelocity, slotNumber);
+        public void setYawVelocity(AngularVelocity yawVelocity) {
+            this.yaw.setVelocity(yawVelocity, 2);
         }
 
         @Override

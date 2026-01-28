@@ -13,6 +13,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -36,32 +37,42 @@ public class TurretConstants {
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
         public static final Time SUPPLY_CURRENT_LOWER_TIME = Seconds.of(0.0);
 
-        public static final double positionP = 20.0;
-        public static final double positionI = 0.0;
-        public static final double positionD = 0.0;
+        public static final int POSITION_SLOT = 0;
 
-        public static final double positionS = 0.23;
-        public static final double positionG = 0.0; // * NOTE: this should be 0
-        public static final double positionV = 0.0;
-        public static final double positionA = 0.0;
+        public static final double POSITION_P = 20.0;
+        public static final double POSITION_I = 0.0;
+        public static final double POSITION_D = 0.0;
 
-        public static final double velocityP = 2.0;
-        public static final double velocityI = 0.0;
-        public static final double velocityD = 0.0;
+        public static final double POSITION_S = 0.23;
+        public static final double POSITION_G = 0.0; // * NOTE: this should be 0
+        public static final double POSITION_V = 0.0;
+        public static final double POSITION_A = 0.0;
 
-        public static final double velocityS = 0.23;
-        public static final double velocityG = 0.0; // * NOTE: this should be 0
-        public static final double velocityV = 2.25;
-        public static final double velocityA = 0.0;
+        public static final GravityTypeValue POSITION_GRAVITY_TYPE_VALUE = GravityTypeValue.Elevator_Static;
+        public static final StaticFeedforwardSignValue POSITION_S_SIGN = StaticFeedforwardSignValue.UseClosedLoopSign;
+
+        public static final int VELOCITY_SLOT = 2;
+        public static final double VELOCITY_P = 2.0;
+        public static final double VELOCITY_I = 0.0;
+        public static final double VELOCITY_D = 0.0;
+
+        public static final double VELOCITY_S = 0.23;
+        public static final double VELOCITY_G = 0.0; // * NOTE: this should be 0
+        public static final double VELOCITY_V = 2.25;
+        public static final double VELOCITY_A = 0.0;
+
+        public static final GravityTypeValue VELOCITY_GRAVITY_TYPE_VALUE = GravityTypeValue.Elevator_Static;
+        public static final StaticFeedforwardSignValue VELOCITY_S_SIGN = StaticFeedforwardSignValue.UseClosedLoopSign;
 
         // * NOTE: This should start at 10 and go down to increase speed
         public static final double EXPO_V = 10.0;
         public static final double EXPO_A = 10.0;
 
-        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(0.54);
-        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.45);
+        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(0.67);
+        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.58);
 
-        // public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(3.0); // max is 3.2
+        // public static final AngularVelocity CRUISE_VELOCITY =
+        // RotationsPerSecond.of(3.0); // max is 3.2
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(3.2); // max is 3.2
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(6.0); // max is 10
 
@@ -186,7 +197,7 @@ public class TurretConstants {
 
         public static final Distance HUB_HEIGHT = Inches.of(44.25);
 
-        public static final Distance CAMERA_HEIGHT = Meters.of(0.77); 
+        public static final Distance CAMERA_HEIGHT = Meters.of(0.77);
     }
 
     public static final class Setpoints {
