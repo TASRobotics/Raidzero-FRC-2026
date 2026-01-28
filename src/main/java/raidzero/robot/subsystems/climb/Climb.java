@@ -39,6 +39,18 @@ public class Climb implements Subsystem {
         return ranges;
     }
 
+    public boolean isLeftOf() {
+        return ranges[0].getIsDetected().getValue() && ranges[1].getIsDetected().getValue();
+    }
+
+    public boolean isRightOf() {
+        return ranges[1].getIsDetected().getValue() && ranges[2].getIsDetected().getValue();
+    }
+
+    public boolean isCentered() {
+        return !ranges[0].getIsDetected().getValue() && ranges[1].getIsDetected().getValue() && !ranges[2].getIsDetected().getValue();
+    }
+
     private TalonFXConfiguration winchConfiguration() {
         TalonFXConfiguration configuration = new TalonFXConfiguration()
             .withOpenLoopRamps(
