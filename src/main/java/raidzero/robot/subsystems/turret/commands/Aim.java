@@ -45,7 +45,7 @@ public class Aim extends Command {
             aimPose = new Pose2d(aimPose.getTranslation(), targetFieldAngle);
         } else if (aimPose != null) {
             // Keep the old field angle (lock direction)
-            // currently nothing needs to happen, just don't update aimPose
+            targetFieldAngle = aimPose.getRotation();
         } else {
             // not needed, as likely aimPose will never be null
             // if it is null and we don't have a LOS just skip this iteration
