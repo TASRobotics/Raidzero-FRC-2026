@@ -10,6 +10,7 @@ import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.UpdateModeValue;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
@@ -65,6 +66,16 @@ public class Climb implements Subsystem {
 
     public boolean isCentered() {
         return !ranges[0].getIsDetected().getValue() && ranges[1].getIsDetected().getValue() && !ranges[2].getIsDetected().getValue();
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("leftof", this.isLeftOf());
+        SmartDashboard.putBoolean("rightof", this.isRightOf());
+        SmartDashboard.putBoolean("centered", this.isCentered());
+        SmartDashboard.putNumber("left dist", ranges[0].getDistance().getValueAsDouble());
+        SmartDashboard.putNumber("center dist", ranges[1].getDistance().getValueAsDouble());
+        SmartDashboard.putNumber("right dist", ranges[2].getDistance().getValueAsDouble());
     }
 
     private TalonFXConfiguration winchConfiguration() {
