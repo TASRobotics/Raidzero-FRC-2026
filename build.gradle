@@ -159,6 +159,8 @@ spotless {
 
     java {
         importOrder()
+        targetExclude "**/TunerConstants.java", "**/Telemetry.java", "**/LimelightHelpers.java",
+                    "**/Elastic.java"
         eclipse().configFile rootProject.file("eclipse-formatter.xml")
         toggleOffOn()
         trimTrailingWhitespace()
