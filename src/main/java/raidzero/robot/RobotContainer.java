@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import raidzero.robot.subsystems.climb.Climb;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.drive.TunerConstants;
 
@@ -33,6 +34,7 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public final Swerve drivetrain = TunerConstants.createDrivetrain();
+    public final Climb climb = Climb.system();
 
     /**
      * Constructs a {@link RobotContainer} instance
@@ -51,6 +53,9 @@ public class RobotContainer {
                     .withVelocityY(-joystick.getLeftX() * MaxSpeed)
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
             )
+        );
+        climb.setDefaultCommand(
+            climb.run(0.0)
         );
 
         RobotModeTriggers.disabled().whileTrue(
@@ -74,6 +79,10 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
         joystick.b().whileTrue(drivetrain.alignToClimb());
+        joystick.y().onTrue(climb.printStates());
+        joystick.x().whileTrue(drivetrain.moveIntoClimb());
+        joystick.rightTrigger().whileTrue(climb.run(0.1));
+        joystick.leftTrigger().whileTrue(climb.run(-0.1));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
