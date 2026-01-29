@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.Optional;
 import java.util.function.Supplier;
-
 import raidzero.robot.subsystems.climb.Climb;
 import raidzero.robot.subsystems.drive.TunerConstants.TunerSwerveDrivetrain;
 
@@ -285,14 +284,29 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         Climb climb = Climb.system();
         SwerveRequest.FieldCentricFacingAngle alignRequest = new SwerveRequest.FieldCentricFacingAngle();
 
-        return applyRequest(
-            () -> alignRequest.withTargetDirection(Rotation2d.kCW_90deg)
-                .withVelocityX(0.075 * (climb.isLeftOf() ? 1 : -1))
-        ).until(() -> climb.isCentered()).andThen(
+        return defer(
             () -> applyRequest(
                 () -> alignRequest.withTargetDirection(Rotation2d.kCW_90deg)
-                    .withVelocityY(-0.1)
-            ).until(() -> climb.getRanges()[1].getDistance().isNear(0.20, 0.01))
+                    .withVelocityX(0.2 * (climb.isLeftOf() ? 1 : -1))
+            ).until(() -> climb.isCentered()).andThen(
+                () -> applyRequest(
+                    () -> alignRequest.withTargetDirection(Rotation2d.kCW_90deg)
+                        .withVelocityY(-0.2)
+                ).until(() -> climb.getRanges()[1].getDistance().isNear(0.12, 0.005))
+            )
+        );
+    }
+
+    public Command moveIntoClimb() {
+        Climb climb = Climb.system();
+        SwerveRequest.FieldCentricFacingAngle alignRequest = new SwerveRequest.FieldCentricFacingAngle();
+
+        return defer(
+            () -> applyRequest(
+                () -> alignRequest.withTargetDirection(Rotation2d.kCW_90deg)
+                    .withVelocityY(-0.2)
+            ).until(() -> climb.getRanges()[1].getDistance().isNear(0.12, 0.005))
+                .onlyIf(() -> climb.isCentered())
         );
     }
 }
