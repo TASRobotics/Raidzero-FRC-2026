@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.Optional;
@@ -294,6 +295,24 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                         .withVelocityY(-0.2)
                 ).until(() -> climb.getRanges()[1].getDistance().isNear(0.12, 0.005))
             )
+        );
+    }
+
+    public Command alignToClimb2() {
+        Climb climb = Climb.system();
+        SwerveRequest.FieldCentricFacingAngle alignRequest = new SwerveRequest.FieldCentricFacingAngle();
+
+        return new SequentialCommandGroup(
+            applyRequest(
+                () -> alignRequest.withTargetDirection(Rotation2d.kCW_90deg)
+                    .withHeadingPID(1.0, 0.0, 0.0)
+                    .withVelocityX(0.2 * (climb.isLeftOf() ? 1 : -1))
+            ).until(() -> climb.isCentered()),
+            applyRequest(
+                () -> alignRequest.withTargetDirection(Rotation2d.kCW_90deg)
+                    .withHeadingPID(1.0, 0.0, 0.0)
+                    .withVelocityY(-0.2)
+            ).until(() -> climb.getRanges()[1].getDistance().isNear(0.12, 0.005))
         );
     }
 
