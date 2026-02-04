@@ -17,6 +17,7 @@ import raidzero.robot.subsystems.turret.Turret;
 import raidzero.robot.subsystems.turret.TurretConstants;
 import raidzero.robot.subsystems.turret.TurretConstants.Limelight;
 import raidzero.robot.subsystems.turret.TurretConstants.Setpoints;
+import static raidzero.robot.subsystems.turret.TurretConstants.*;
 
 public class ShootWhileMoving extends Command {
 
@@ -46,8 +47,8 @@ public class ShootWhileMoving extends Command {
 
         // Rotation Compensation
         ChassisSpeeds turretPhysicalSpeeds = new ChassisSpeeds(
-                robotSpeeds.vxMetersPerSecond - (robotSpeeds.omegaRadiansPerSecond * Setpoints.TURRET_OFFSET.getY()),
-                robotSpeeds.vyMetersPerSecond + (robotSpeeds.omegaRadiansPerSecond * Setpoints.TURRET_OFFSET.getX()),
+                robotSpeeds.vxMetersPerSecond - (robotSpeeds.omegaRadiansPerSecond * Yaw.TURRET_MOUNT_OFFSET.getY()),
+                robotSpeeds.vyMetersPerSecond + (robotSpeeds.omegaRadiansPerSecond * Yaw.TURRET_MOUNT_OFFSET.getX()),
                 robotSpeeds.omegaRadiansPerSecond);
 
         ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(turretPhysicalSpeeds,
@@ -65,12 +66,13 @@ public class ShootWhileMoving extends Command {
         // 1. Initial guess at TOF based on current distance
         double staticDist = futurePose.getTranslation().getDistance(actualGoal);
         double shotTime = Setpoints.TOF_TABLE.get(staticDist);
-        
+
         double virtualDist = staticDist;
         Translation2d virtualGoal = actualGoal;
 
         // 2. Iterate to find the "converged" virtual distance
-        // Doing this three times is usually enough for FRC speeds to hit sub-centimeter accuracy
+        // Doing this three times is usually enough for FRC speeds to hit sub-centimeter
+        // accuracy
         for (int i = 0; i < 3; i++) {
             double virtualX = actualGoal.getX() - (fieldSpeeds.vxMetersPerSecond * shotTime);
             double virtualY = actualGoal.getY() - (fieldSpeeds.vyMetersPerSecond * shotTime);
@@ -78,7 +80,7 @@ public class ShootWhileMoving extends Command {
 
             // Re-calculate distance to the virtual goal
             virtualDist = virtualGoal.getDistance(futurePose.getTranslation());
-            
+
             // Update shotTime based on the distance the ball actually needs to travel
             shotTime = Setpoints.TOF_TABLE.get(virtualDist);
         }
@@ -89,7 +91,8 @@ public class ShootWhileMoving extends Command {
         Rotation2d targetYaw = delta.getAngle();
 
         // Commands
-        // NOTE: Based on shooter design, spin-up might be direct or indirect. Order may change/matter.
+        // NOTE: Based on shooter design, spin-up might be direct or indirect. Order may
+        // change/matter.
         turret.moveYawTo(targetYaw.getMeasure());
 
         double targetPitch = TurretConstants.Setpoints.PITCH_TABLE.get(virtualDist);

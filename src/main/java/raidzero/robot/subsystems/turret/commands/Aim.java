@@ -22,57 +22,41 @@ import raidzero.robot.subsystems.turret.Turret;
 import raidzero.robot.subsystems.turret.TurretConstants.Yaw;
 
 public class Aim extends Command {
-    private static final Turret turret = Turret.system();
-    private static final Swerve swerve = Swerve.system();
-    NetworkTableInstance nt = NetworkTableInstance.getDefault();
-    NetworkTable table = null;
-    StructPublisher<Pose2d> fieldRelativeGoalSender = null;
-    StructPublisher<Pose2d> fieldRelativeTurretSender = null;
-
-    private Pose2d fieldRelativeGoalPose = null;
-    private Pose2d fieldRelatieTurretPose = null;
-    private Translation2d turretMountFromRobotCenter = new Translation2d(Inches.of(-5.106), Inches.of(-4.85));
+    private final Turret turret = Turret.system();
+    private final Swerve swerve = Swerve.system();
 
     public Aim() {
         addRequirements(turret);
-        table = nt.getTable("Aiming Table");
     }
 
     @Override
     public void initialize() {
         var robotPose = swerve.getState().Pose;
-        var turretRelativeToRobot = robotPose.plus(turretMountFromRobotCenter);
-
-        fieldRelatieTurretPose = new Pose2d();
-        // var goalTranslation = new Translation2d(Inches.of(182.11), Inches.of(158.84));
-        // fieldRelativeGoalPose = new Pose2d(new Translation2d(Inches.of(182.11), Inches.of(158.84)), fieldRelativeGoalPose.getTranslation().minus(robotPose.getTranslation()).getAngle());
-        fieldRelativeGoalSender = table.getStructTopic("goalPoseAbs", Pose2d.struct).publish();
-        fieldRelativeTurretSender = table.getStructTopic("turretPose", Pose2d.struct).publish();
     }
 
     @Override
     public void execute() {
         Angle turretYaw = turret.getCurrentYaw();
         Pose2d robotPose = swerve.getState().Pose;
-        var turretFromRobot = robotPose.plus(turretMountFromRobotCenter);
-        fieldRelatieTurretPose = new Pose2d(turretFromRobot.getTranslation(), turretFromRobot.getRotation().plus(new Rotation2d(turretYaw)));
 
-        // subtract the more accurate pose: odometry or poseEstimator
-        fieldRelativeGoalPose = new Pose2d(fieldRelativeGoalPose.getTranslation(), fieldRelativeGoalPose.getTranslation().minus(fieldRelatieTurretPose.getTranslation()).getAngle());
-        // this line will do robot centric, but as the robot base rotatoes the goal angle rotates
-        // Pose2d goalFromRobot = new Pose2d(goalPose.getTranslation(), goalPose.relativeTo(robotPose).getTranslation().getAngle());
-        
-        double desiredRotations = fieldRelativeGoalPose.getRotation().plus(Rotation2d.kPi).minus(robotPose.getRotation()).getRotations();
+        // get the field centric poses
+        var fieldRelativeGoalPose = Turret.getFieldRelativeGoalPose();
+        var fieldRelativeTurretPose = Turret.getFieldRelativeTurretPose();
+
+        var robotRelativeTurretSetpoint = fieldRelativeGoalPose.getRotation().minus(robotPose.getRotation());
+
+        double desiredRotations = fieldRelativeGoalPose.getRotation().plus(Rotation2d.kPi)
+                .minus(robotPose.getRotation()).getRotations();
         double currentRotations = turretYaw.in(Rotations);
         double revLimit = Yaw.REVERSE_SOFT_LIMIT.in(Rotations);
         double fwdLimit = Yaw.FORWARD_SOFT_LIMIT.in(Rotations);
-        
+
         double bestSetpoint = currentRotations;
         double bestDistance = Double.MAX_VALUE;
-        
+
         for (int i = -2; i <= 2; i++) {
             double candidate = desiredRotations + i;
-            
+
             if (candidate >= revLimit && candidate <= fwdLimit) {
                 double dist = Math.abs(candidate - currentRotations);
                 if (dist < bestDistance) {
@@ -81,12 +65,9 @@ public class Aim extends Command {
                 }
             }
         }
-        
+
         SmartDashboard.putNumber("desired rotations", bestSetpoint);
         turret.moveYawTo(Rotations.of(bestSetpoint));
-        
-        fieldRelativeGoalSender.set(fieldRelativeGoalPose);
-        fieldRelativeTurretSender.set(fieldRelatieTurretPose);
     }
 
     @Override
@@ -97,6 +78,5 @@ public class Aim extends Command {
     @Override
     public void end(boolean interrupted) {
         turret.stop();
-        fieldRelativeGoalSender.close();
     }
 }

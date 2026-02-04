@@ -86,6 +86,8 @@ public class TurretConstants {
         public static final SensorDirectionValue CANCODER_SENSOR_DIRECTION = SensorDirectionValue.CounterClockwise_Positive;
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
+
+        public static final Translation2d TURRET_MOUNT_OFFSET = new Translation2d(Inches.of(-5.106), Inches.of(-4.85));
     }
 
     public static final class Pitch {
@@ -213,10 +215,6 @@ public class TurretConstants {
 
         public static final InterpolatingDoubleTreeMap CLIMB_PITCH_TABLE = new InterpolatingDoubleTreeMap();
         public static final InterpolatingDoubleTreeMap CLIMB_RPS_TABLE = new InterpolatingDoubleTreeMap();
-
-        public static final Translation2d TURRET_OFFSET = new Translation2d(0, 0);
     }
-
-    public static final class F{}
 
 }
