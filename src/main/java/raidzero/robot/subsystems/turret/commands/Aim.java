@@ -43,10 +43,8 @@ public class Aim extends Command {
         var fieldRelativeGoalPose = Turret.getFieldRelativeGoalPose();
         var fieldRelativeTurretPose = Turret.getFieldRelativeTurretPose();
 
-        var robotRelativeTurretSetpoint = fieldRelativeGoalPose.getRotation().minus(robotPose.getRotation());
-
-        double desiredRotations = fieldRelativeGoalPose.getRotation().plus(Rotation2d.kPi)
-                .minus(robotPose.getRotation()).getRotations();
+        var robotRelativeTurretSetpoint = fieldRelativeTurretPose.getRotation()
+                .minus(fieldRelativeGoalPose.getRotation()).getRotations();
         double currentRotations = turretYaw.in(Rotations);
         double revLimit = Yaw.REVERSE_SOFT_LIMIT.in(Rotations);
         double fwdLimit = Yaw.FORWARD_SOFT_LIMIT.in(Rotations);
@@ -55,7 +53,7 @@ public class Aim extends Command {
         double bestDistance = Double.MAX_VALUE;
 
         for (int i = -2; i <= 2; i++) {
-            double candidate = desiredRotations + i;
+            double candidate = 0 + i;
 
             if (candidate >= revLimit && candidate <= fwdLimit) {
                 double dist = Math.abs(candidate - currentRotations);
