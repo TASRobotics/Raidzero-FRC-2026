@@ -1,73 +1,78 @@
 package raidzero.robot.subsystems.turret.commands;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Radian;
+import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Rotations;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.robot.subsystems.drive.Swerve;
+import raidzero.robot.subsystems.drive.TunerConstants;
 import raidzero.robot.subsystems.turret.Turret;
 import raidzero.robot.subsystems.turret.TurretConstants.Yaw;
 
 public class Aim extends Command {
     private static final Turret turret = Turret.system();
     private static final Swerve swerve = Swerve.system();
+    NetworkTableInstance nt = NetworkTableInstance.getDefault();
+    NetworkTable table = null;
+    StructPublisher<Pose2d> fieldRelativeGoalSender = null;
+    StructPublisher<Pose2d> fieldRelativeTurretSender = null;
 
-    private Pose2d aimPose = null;
+    private Pose2d fieldRelativeGoalPose = null;
+    private Pose2d fieldRelatieTurretPose = null;
+    private Translation2d turretMountFromRobotCenter = new Translation2d(Inches.of(-5.106), Inches.of(-4.85));
 
     public Aim() {
         addRequirements(turret);
+        table = nt.getTable("Aiming Table");
     }
 
     @Override
     public void initialize() {
-        // Initial Goal angle (currently hardcoded for ID 26 blue hub)
-        aimPose = new Pose2d(new Translation2d(Inches.of(158.34), Inches.of(158.84)), new Rotation2d());
+        var robotPose = swerve.getState().Pose;
+        var turretRelativeToRobot = robotPose.plus(turretMountFromRobotCenter);
+
+        fieldRelatieTurretPose = new Pose2d();
+        // var goalTranslation = new Translation2d(Inches.of(182.11), Inches.of(158.84));
+        // fieldRelativeGoalPose = new Pose2d(new Translation2d(Inches.of(182.11), Inches.of(158.84)), fieldRelativeGoalPose.getTranslation().minus(robotPose.getTranslation()).getAngle());
+        fieldRelativeGoalSender = table.getStructTopic("goalPoseAbs", Pose2d.struct).publish();
+        fieldRelativeTurretSender = table.getStructTopic("turretPose", Pose2d.struct).publish();
     }
 
     @Override
     public void execute() {
         Angle turretYaw = turret.getCurrentYaw();
-        Rotation2d robotHeading = swerve.getState().Pose.getRotation();
+        Pose2d robotPose = swerve.getState().Pose;
+        var turretFromRobot = robotPose.plus(turretMountFromRobotCenter);
+        fieldRelatieTurretPose = new Pose2d(turretFromRobot.getTranslation(), turretFromRobot.getRotation().plus(new Rotation2d(turretYaw)));
 
-        Rotation2d targetFieldAngle = new Rotation2d();
-
-        // 1. Update target's abosolute field angle if Vision is Available
-        if (turret.hasHubLOS().getAsBoolean()) {
-            Angle visionOffset = turret.getYawFromTarget();
-            // target's Field Angle = Robot Heading + Turret Yaw - Vision Offset
-            targetFieldAngle = robotHeading.plus(new Rotation2d(turretYaw)).minus(new Rotation2d(visionOffset));
-
-            // Update the persistent aim pose with new rotation
-            aimPose = new Pose2d(aimPose.getTranslation(), targetFieldAngle);
-        } else if (aimPose != null) {
-            // Keep the old field angle (lock direction)
-            targetFieldAngle = aimPose.getRotation();
-        } else {
-            // not needed, as likely aimPose will never be null
-            // if it is null and we don't have a LOS just skip this iteration
-            return;
-        }
-
-        // 2. Calculate Desired Robot-Relative turret Yaw
-        // turret Yaw = Target Field Angle - Current Robot Heading
-        Rotation2d desiredRelativeYaw = targetFieldAngle.minus(robotHeading);
-
-        // 3. Select Best Wrapped Setpoint
-        double desiredRotations = desiredRelativeYaw.getRotations();
+        // subtract the more accurate pose: odometry or poseEstimator
+        fieldRelativeGoalPose = new Pose2d(fieldRelativeGoalPose.getTranslation(), fieldRelativeGoalPose.getTranslation().minus(fieldRelatieTurretPose.getTranslation()).getAngle());
+        // this line will do robot centric, but as the robot base rotatoes the goal angle rotates
+        // Pose2d goalFromRobot = new Pose2d(goalPose.getTranslation(), goalPose.relativeTo(robotPose).getTranslation().getAngle());
+        
+        double desiredRotations = fieldRelativeGoalPose.getRotation().plus(Rotation2d.kPi).minus(robotPose.getRotation()).getRotations();
         double currentRotations = turretYaw.in(Rotations);
         double revLimit = Yaw.REVERSE_SOFT_LIMIT.in(Rotations);
         double fwdLimit = Yaw.FORWARD_SOFT_LIMIT.in(Rotations);
-
+        
         double bestSetpoint = currentRotations;
         double bestDistance = Double.MAX_VALUE;
-
+        
         for (int i = -2; i <= 2; i++) {
             double candidate = desiredRotations + i;
-
+            
             if (candidate >= revLimit && candidate <= fwdLimit) {
                 double dist = Math.abs(candidate - currentRotations);
                 if (dist < bestDistance) {
@@ -76,8 +81,12 @@ public class Aim extends Command {
                 }
             }
         }
-
+        
+        SmartDashboard.putNumber("desired rotations", bestSetpoint);
         turret.moveYawTo(Rotations.of(bestSetpoint));
+        
+        fieldRelativeGoalSender.set(fieldRelativeGoalPose);
+        fieldRelativeTurretSender.set(fieldRelatieTurretPose);
     }
 
     @Override
@@ -88,5 +97,6 @@ public class Aim extends Command {
     @Override
     public void end(boolean interrupted) {
         turret.stop();
+        fieldRelativeGoalSender.close();
     }
 }

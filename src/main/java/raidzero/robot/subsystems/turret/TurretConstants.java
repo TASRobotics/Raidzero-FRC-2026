@@ -217,4 +217,6 @@ public class TurretConstants {
         public static final Translation2d TURRET_OFFSET = new Translation2d(0, 0);
     }
 
+    public static final class F{}
+
 }
