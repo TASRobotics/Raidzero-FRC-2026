@@ -26,8 +26,8 @@ public class Limelight extends SubsystemBase {
     private StructPublisher<Pose2d> turretNT = NetworkTableInstance.getDefault().getStructTopic("turretNT", Pose2d.struct).publish();
     private StructPublisher<Pose2d> frNT = NetworkTableInstance.getDefault().getStructTopic("frNT", Pose2d.struct).publish();
 
-    private LimelightHelpers.PoseEstimate limeTurret, limeFR;
-    private LimelightHelpers.PoseEstimate limeTurretPrev, limeFRPrev;
+    private LimelightHelpers.PoseEstimate limeBL, limeFR;
+    private LimelightHelpers.PoseEstimate limeBLPrev, limeFRPrev;
 
     private Notifier notifier;
 
@@ -120,34 +120,34 @@ public class Limelight extends SubsystemBase {
             0,
             0
         );
-        limeTurret = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-bl");
+        limeBL = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-bl");
 
-        if (limeTurret != null && limeTurret.pose != null) {
-            ignoreTurretLime = !poseInField(limeTurret.pose) ||
+        if (limeBL != null && limeBL.pose != null) {
+            ignoreTurretLime = !poseInField(limeBL.pose) ||
                 (Math.abs(LimelightHelpers.getBotPose3d_wpiBlue("limelight-bl").getZ()) > 0.4) ||
                 (LimelightHelpers.getTA("limelight-bl") < 0.1) ||
-                (limeTurretPrev != null && (limeTurret.pose.getTranslation().getDistance(limeTurretPrev.pose.getTranslation()) /
-                    (limeTurret.timestampSeconds - limeTurretPrev.timestampSeconds)) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude()) ||
-                (limeTurretPrev != null && (limeTurret.pose.getTranslation()
-                    .getDistance(limeTurretPrev.pose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
-                (limeTurret.rawFiducials.length > 0 && limeTurret.rawFiducials[0].ambiguity > 0.5 &&
-                    limeTurret.rawFiducials[0].distToCamera > 4.0) ||
-                limeTurret.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+                (limeBLPrev != null && (limeBL.pose.getTranslation().getDistance(limeBLPrev.pose.getTranslation()) /
+                    (limeBL.timestampSeconds - limeBLPrev.timestampSeconds)) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude()) ||
+                (limeBLPrev != null && (limeBL.pose.getTranslation()
+                    .getDistance(limeBLPrev.pose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
+                (limeBL.rawFiducials.length > 0 && limeBL.rawFiducials[0].ambiguity > 0.5 &&
+                    limeBL.rawFiducials[0].distToCamera > 4.0) ||
+                limeBL.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
 
             if (!ignoreAllLimes && !ignoreTurretLime) {
                 SmartDashboard.putBoolean("BLPose", true);
-                turretNT.set(limeTurret.pose);
+                turretNT.set(limeBL.pose);
 
                 swerve.addVisionMeasurement(
-                    limeTurret.pose,
-                    limeTurret.timestampSeconds,
+                    limeBL.pose,
+                    limeBL.timestampSeconds,
                     VecBuilder.fill(0.5, 0.5, 5).div(LimelightHelpers.getTA("limelight-bl"))
                 );
             } else {
                 SmartDashboard.putBoolean("BLPose", false);
             }
 
-            limeTurretPrev = limeTurret;
+            limeBLPrev = limeBL;
         }
     }
 

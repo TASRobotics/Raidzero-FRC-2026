@@ -150,7 +150,7 @@ public class Turret extends R0Subsystem<TurretIO> {
         // forward direction
         var robotPose = swerve.getState().Pose;
         var turretAngleFromRobotFront = robotPose.getRotation();
-        return turretAngleFromRobotFront.plus(new Rotation2d(getCurrentYaw()));
+        return turretAngleFromRobotFront.minus(new Rotation2d(getCurrentYaw()));
     }
 
     /**

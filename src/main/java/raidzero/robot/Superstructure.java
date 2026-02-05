@@ -74,7 +74,7 @@ public class Superstructure {
 
             indexer.setDefaultCommand(indexer.stop());
 
-            turret.setDefaultCommand(new Aim());
+            // turret.setDefaultCommand(new Aim());
       }
 
       public static void applyButtonBindings() {
