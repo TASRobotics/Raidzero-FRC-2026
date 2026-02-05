@@ -17,7 +17,7 @@ import raidzero.robot.subsystems.turret.Shooter;
 import raidzero.robot.subsystems.turret.Turret;
 import raidzero.robot.subsystems.turret.commands.Aim;
 
-public class Superstructure {
+public class Superstructure { 
       private static Turret turret = Turret.system();
       private static Shooter shooter = Shooter.system();
       private static Swerve swerve = Swerve.system();

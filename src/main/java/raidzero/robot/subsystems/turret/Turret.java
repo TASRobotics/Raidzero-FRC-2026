@@ -149,7 +149,7 @@ public class Turret extends R0Subsystem<TurretIO> {
         // currently on pog bot, the turret is mounted 180 degrees from the robot's
         // forward direction
         var robotPose = swerve.getState().Pose;
-        var turretAngleFromRobotFront = robotPose.getRotation().plus(Rotation2d.kPi);
+        var turretAngleFromRobotFront = robotPose.getRotation();
         return turretAngleFromRobotFront.plus(new Rotation2d(getCurrentYaw()));
     }
 

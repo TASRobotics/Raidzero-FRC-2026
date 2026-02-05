@@ -87,7 +87,7 @@ public class TurretConstants {
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
 
-        public static final Translation2d TURRET_MOUNT_OFFSET = new Translation2d(Inches.of(-5.106), Inches.of(-4.85));
+        public static final Translation2d TURRET_MOUNT_OFFSET = new Translation2d(Inches.of(5.106), Inches.of(4.85));
     }
 
     public static final class Pitch {
