@@ -1,6 +1,5 @@
 package raidzero.robot.subsystems.drive;
 
-import com.ctre.phoenix6.Utils;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -104,16 +103,16 @@ public class Limelight extends SubsystemBase {
             ignoreAllLimes = false;
         }
 
-        // updateTurret();
+        updateBackLeft();
         updateFrontRight();
     }
 
     /**
      * Updates the odometry for the front left limelight
      */
-    private void updateTurret() {
+    private void updateBackLeft() {
         LimelightHelpers.SetRobotOrientation(
-            "limelight-turret",
+            "limelight-bl",
             swerve.getState().Pose.getRotation().getDegrees(),
             swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             0,
@@ -121,12 +120,12 @@ public class Limelight extends SubsystemBase {
             0,
             0
         );
-        limeTurret = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-turret");
+        limeTurret = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-bl");
 
         if (limeTurret != null && limeTurret.pose != null) {
             ignoreTurretLime = !poseInField(limeTurret.pose) ||
-                (Math.abs(LimelightHelpers.getBotPose3d_wpiBlue("limelight-turret").getZ()) > 0.4) ||
-                (LimelightHelpers.getTA("limelight-turret") < 0.1) ||
+                (Math.abs(LimelightHelpers.getBotPose3d_wpiBlue("limelight-bl").getZ()) > 0.4) ||
+                (LimelightHelpers.getTA("limelight-bl") < 0.1) ||
                 (limeTurretPrev != null && (limeTurret.pose.getTranslation().getDistance(limeTurretPrev.pose.getTranslation()) /
                     (limeTurret.timestampSeconds - limeTurretPrev.timestampSeconds)) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude()) ||
                 (limeTurretPrev != null && (limeTurret.pose.getTranslation()
@@ -136,16 +135,16 @@ public class Limelight extends SubsystemBase {
                 limeTurret.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
 
             if (!ignoreAllLimes && !ignoreTurretLime) {
-                SmartDashboard.putBoolean("Turretpose", true);
+                SmartDashboard.putBoolean("BLPose", true);
                 turretNT.set(limeTurret.pose);
 
                 swerve.addVisionMeasurement(
                     limeTurret.pose,
-                    Utils.fpgaToCurrentTime(limeTurret.timestampSeconds),
-                    VecBuilder.fill(0.5, 0.5, 5).div(LimelightHelpers.getTA("limelight-turret"))
+                    limeTurret.timestampSeconds,
+                    VecBuilder.fill(0.5, 0.5, 5).div(LimelightHelpers.getTA("limelight-bl"))
                 );
             } else {
-                SmartDashboard.putBoolean("Turretpose", false);
+                SmartDashboard.putBoolean("BLPose", false);
             }
 
             limeTurretPrev = limeTurret;
@@ -185,7 +184,7 @@ public class Limelight extends SubsystemBase {
 
                 swerve.addVisionMeasurement(
                     limeFR.pose,
-                    Utils.fpgaToCurrentTime(limeFR.timestampSeconds),
+                    limeFR.timestampSeconds,
                     VecBuilder.fill(0.5, 0.5, 5).div(LimelightHelpers.getTA("limelight-fr"))
                 );
             } else {

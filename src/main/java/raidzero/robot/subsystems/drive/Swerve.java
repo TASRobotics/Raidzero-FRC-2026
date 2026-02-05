@@ -52,7 +52,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
     private static Swerve system;
 
-    private Field2d  field = new Field2d();
+    private Field2d field = new Field2d();
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
