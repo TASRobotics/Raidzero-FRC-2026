@@ -1,20 +1,17 @@
 package raidzero.robot.subsystems.turret;
 
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;
 
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.lib.R0Subsystem;
-import raidzero.robot.subsystems.turret.TurretConstants.Setpoints;
 
 public class Shooter extends R0Subsystem<ShooterIO> {
     private static Shooter system;
-    private static Turret turret = Turret.system();
+    private AngularVelocity velocityTarget = RotationsPerSecond.of(35);
 
     /**
      * Runs the shooter at the necessary speed from the RPS interpolating table
@@ -23,15 +20,26 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      */
     public Command shoot() {
         return run(() -> {
-            Distance hubDistance = turret.getHubDistance();
-            AngularVelocity speed = RotationsPerSecond.of(Setpoints.RPS_TABLE.get(hubDistance.in(Meters)));
-
-            io.setVelocity(speed);
+            io.setVelocity(velocityTarget);
         });
     }
 
+    public Command manualShoot() {
+        return run(()->io.setVelocity(velocityTarget));
+    }
+
+    public Command incrementVelocitySetpoint(AngularVelocity speed) {
+        return runOnce(() -> velocityTarget = velocityTarget.plus(speed));
+    }
+
     public Command shoot(AngularVelocity speed) {
+        this.velocityTarget = speed;
         return run(() -> io.setVelocity(speed));
+    }
+
+    public void setInterfaceVelocity(AngularVelocity velocity) {
+        this.velocityTarget = velocity;
+        io.setVelocity(velocity);
     }
 
     /**
@@ -83,5 +91,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     public void periodic() {
         super.periodic();
         SmartDashboard.putNumber("Shooter speed", io.getVelocity().in(RotationsPerSecond));
+        SmartDashboard.putNumber("Shooter target speed", velocityTarget.in(RotationsPerSecond));
     }
+
 }

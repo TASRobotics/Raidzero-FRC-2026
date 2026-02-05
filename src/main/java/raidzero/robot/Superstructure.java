@@ -1,5 +1,6 @@
 package raidzero.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -8,6 +9,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import raidzero.robot.subsystems.drive.Limelight;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.drive.TunerConstants;
 import raidzero.robot.subsystems.turret.Indexer;
@@ -20,12 +22,13 @@ public class Superstructure {
       private static Shooter shooter = Shooter.system();
       private static Swerve swerve = Swerve.system();
       private static Indexer indexer = Indexer.system();
+      private static Limelight limelight = Limelight.system();
 
-      private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-      private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+      private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.25;
+      private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.5;
 
       private static final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
-                  .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
+                  .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.05)
                   .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
       // private static final SwerveRequest.SwerveDriveBrake brake = new
@@ -83,11 +86,21 @@ public class Superstructure {
             // }
 
             driver.a().whileTrue(indexer.go(RotationsPerSecond.of(45)));
-            driver.b().whileTrue(shooter.shoot(RotationsPerSecond.of(50)));
             driver.y().whileTrue(turret.stop());
+            driver.b().whileTrue(shooter.manualShoot());
+            driver.x().whileTrue(indexer.go(RotationsPerSecond.of(-45)));
+            driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
+            driver.rightTrigger().whileTrue(shooter.shoot());
+
 
             driver.rightBumper().whileTrue(turret.moveSimple(-0.1));
             driver.leftBumper().whileTrue(turret.moveSimple(0.1));
-            
+
+            driver.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(1)));
+            driver.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-1)));
+      }
+
+      public static void periodic() {
+
       }
 }
