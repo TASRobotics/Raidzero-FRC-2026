@@ -10,6 +10,7 @@ import com.ctre.phoenix6.Utils;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -17,27 +18,33 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.R0Subsystem;
-import raidzero.robot.Constants.Field;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.turret.TurretConstants.Pitch;
-import raidzero.robot.subsystems.turret.TurretConstants.Setpoints;
-import raidzero.robot.subsystems.turret.TurretConstants.Yaw;
+
+import static raidzero.robot.subsystems.turret.TurretConstants.*;
 
 public class Turret extends R0Subsystem<TurretIO> {
     private static Turret system;
     private static Swerve swerve = Swerve.system();
 
     private final NetworkTableInstance nt = NetworkTableInstance.getDefault();
-    private NetworkTable table = null;
-    private StructPublisher<Pose2d> fieldRelativeGoalSender = null;
-    private StructPublisher<Pose2d> fieldRelativeTurretSender = null;
+    private NetworkTable staticTable = null;
+    private NetworkTable kineticTable = null;
+    private StructPublisher<Pose2d> staticGoalSender = null;
+    private StructPublisher<Pose2d> staticTurretSender = null;
+    private StructPublisher<Pose2d> kineticGoalSender = null;
+    private StructPublisher<Pose2d> kineticTurretSender = null;
 
-    private static Pose2d fieldRelativeTurretPose = new Pose2d();
-    private static Pose2d fieldRelativeGoalPose = new Pose2d();
+    private Translation2d allianceTargetFieldPose = null;
+
+    private AimBot staticAimBot = null;
+    private AimBot kineticAimBot = null;
 
     public Command moveSimple(double percent) {
         return run(() -> io.runYawSimple(percent));
@@ -49,108 +56,6 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     public Angle getCurrentYaw() {
         return io.getYaw();
-    }
-
-    /**
-     * Calculates the kinetic lead needed for kinetic shooting
-     * 
-     * @param turretYaw   the current turret yaw (robot-relative)
-     * @param hubDistance the distance from the hub
-     * @return the correction angle
-     */
-    private Angle calculateKineticLead(Angle turretYaw, Distance hubDistance) {
-        double distMeters = hubDistance.in(Meters);
-        if (distMeters <= 0.1) {
-            return Degrees.of(0);
-        }
-
-        ChassisSpeeds robotSpeeds = swerve.getState().Speeds;
-
-        // Account for turret offset from robot center (rotation compensation)
-        ChassisSpeeds turretPhysicalSpeeds = new ChassisSpeeds(
-                robotSpeeds.vxMetersPerSecond - (robotSpeeds.omegaRadiansPerSecond * Yaw.TURRET_MOUNT_OFFSET.getY()),
-                robotSpeeds.vyMetersPerSecond + (robotSpeeds.omegaRadiansPerSecond * Yaw.TURRET_MOUNT_OFFSET.getX()),
-                robotSpeeds.omegaRadiansPerSecond);
-
-        // Convert to field-relative speeds
-        ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
-                turretPhysicalSpeeds,
-                swerve.getState().Pose.getRotation());
-
-        // Field-relative aim direction
-        double robotHeadingRad = swerve.getState().Pose.getRotation().getRadians();
-        double turretFieldAngleRad = robotHeadingRad + turretYaw.in(Radians);
-
-        // Direction vector toward target (unit vector)
-        double toTargetX = Math.cos(turretFieldAngleRad);
-        double toTargetY = Math.sin(turretFieldAngleRad);
-
-        // Perpendicular direction (90° CCW)
-        double perpX = -toTargetY;
-        double perpY = toTargetX;
-
-        // Project velocities
-        double sidewaysSpeed = fieldSpeeds.vxMetersPerSecond * perpX + fieldSpeeds.vyMetersPerSecond * perpY;
-        double radialSpeed = fieldSpeeds.vxMetersPerSecond * toTargetX + fieldSpeeds.vyMetersPerSecond * toTargetY;
-
-        // --- ITERATIVE TIME OF FLIGHT CALCULATION ---
-        // 1. Initial guess at TOF based on current distance
-        double shotTime = Setpoints.TOF_TABLE.get(distMeters);
-        double virtualDist = distMeters;
-
-        // 2. Iterate to find the "converged" virtual distance
-        for (int i = 0; i < 3; i++) {
-            // Calculate where the robot will be relative to the hub after shotTime
-            // Moving toward/away from hub (radial) and side-to-side (sideways)
-            double virtualX = distMeters - (radialSpeed * shotTime);
-            double virtualY = -(sidewaysSpeed * shotTime);
-
-            // Re-calculate the actual distance the ball travels through the air
-            virtualDist = Math.sqrt(Math.pow(virtualX, 2) + Math.pow(virtualY, 2));
-
-            // Update shotTime based on the distance the ball actually needs to travel
-            shotTime = Setpoints.TOF_TABLE.get(virtualDist);
-        }
-        // --------------------------------------------
-
-        // How far sideways the robot will move during shot flight
-        double sidewaysDisplacement = sidewaysSpeed * shotTime;
-
-        // Calculate lead angle
-        double leadRad = Math.atan2(-sidewaysDisplacement, distMeters);
-
-        return Radians.of(leadRad);
-    }
-
-    public static Pose2d getFieldRelativeTurretPose() {
-        return fieldRelativeTurretPose;
-    }
-
-    public static Pose2d getFieldRelativeGoalPose() {
-        return fieldRelativeGoalPose;
-    }
-
-    private void updateFieldRelativeTurretPose() {
-        var robotPose = swerve.getState().Pose;
-        var turretOffsetVectorFieldCentric = Yaw.TURRET_MOUNT_OFFSET.rotateBy(robotPose.getRotation());
-        var fieldRelativeTurretOffset = robotPose.getTranslation().plus(turretOffsetVectorFieldCentric);
-        var fieldRelativeTurretAngle = getFieldRelativeTurretAngle();
-        fieldRelativeTurretPose = new Pose2d(fieldRelativeTurretOffset, fieldRelativeTurretAngle);
-    }
-
-    private void updateFieldRelativeGoalPose() {
-        // TODO: update which goal based on alliance?
-        var turretToGoalVector = Field.GOAL_LOCATION_BLUE.minus(fieldRelativeTurretPose.getTranslation());
-        fieldRelativeGoalPose = new Pose2d(Field.GOAL_LOCATION_BLUE, turretToGoalVector.getAngle());
-    }
-
-    // TODO: update to the modulo method for absolute position
-    private Rotation2d getFieldRelativeTurretAngle() {
-        // currently on pog bot, the turret is mounted 180 degrees from the robot's
-        // forward direction
-        var robotPose = swerve.getState().Pose;
-        var turretAngleFromRobotFront = new Rotation2d(getCurrentYaw());
-        return robotPose.getRotation().plus(turretAngleFromRobotFront);
     }
 
     /**
@@ -225,11 +130,20 @@ public class Turret extends R0Subsystem<TurretIO> {
         return new Trigger(() -> io.hasHubLOS());
     }
 
+    public AimBot getTurretAim(boolean kineticLead) {
+        return kineticLead ? kineticAimBot : staticAimBot;
+    }
+
+    public Translation2d getAllianceTarget() {
+        return allianceTargetFieldPose;
+    }
+
     @Override
     public void periodic() {
         super.periodic();
-        updateFieldRelativeTurretPose();
-        updateFieldRelativeGoalPose();
+        staticAimBot = staticAimBot.adjustStaticAim(swerve.getState().Pose, new Rotation2d(getCurrentYaw()),
+                allianceTargetFieldPose);
+        kineticAimBot = staticAimBot.adjustKineticLead(swerve.getState().Speeds);
 
         SmartDashboard.putNumber("LL Turret Angle", io.getYawFromTarget().in(Rotations));
         SmartDashboard.putNumber("LL Turret Distance", io.getHubDistance().in(Meters));
@@ -240,16 +154,29 @@ public class Turret extends R0Subsystem<TurretIO> {
 
         SmartDashboard.putBoolean("Hub LOS", io.hasHubLOS());
 
-        fieldRelativeTurretSender.set(fieldRelativeTurretPose);
-        fieldRelativeGoalSender.set(fieldRelativeGoalPose);
+        staticTurretSender.set(staticAimBot.turret());
+        staticGoalSender.set(staticAimBot.goal());
+        kineticTurretSender.set(kineticAimBot.turret());
+        kineticGoalSender.set(kineticAimBot.goal());
     }
 
     private Turret(TurretIO io) {
         super(io);
 
-        table = nt.getTable("Turret");
-        fieldRelativeGoalSender = table.getStructTopic("FieldRelativeGoal", Pose2d.struct).publish();
-        fieldRelativeTurretSender = table.getStructTopic("FieldRelativeTurret", Pose2d.struct).publish();
+        staticAimBot = new AimBot(new Pose2d(), new Pose2d(), new Pose2d());
+        kineticAimBot = new AimBot(new Pose2d(), new Pose2d(), new Pose2d());
+
+        boolean isRedAlliance = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
+        allianceTargetFieldPose = isRedAlliance ? Kinetics.GOAL_LOCATION_RED
+                : Kinetics.GOAL_LOCATION_BLUE;
+
+        staticTable = nt.getTable("Turret/Static");
+        kineticTable = nt.getTable("Turret/Kinetic");
+
+        staticGoalSender = staticTable.getStructTopic("staticGoal", Pose2d.struct).publish();
+        staticTurretSender = staticTable.getStructTopic("staticTurret", Pose2d.struct).publish();
+        kineticGoalSender = kineticTable.getStructTopic("kineticGoal", Pose2d.struct).publish();
+        kineticTurretSender = kineticTable.getStructTopic("kineticTurret", Pose2d.struct).publish();
     }
 
     public static Turret system() {

@@ -16,7 +16,7 @@ import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.turret.Turret;
 import raidzero.robot.subsystems.turret.TurretConstants;
 import raidzero.robot.subsystems.turret.TurretConstants.Limelight;
-import raidzero.robot.subsystems.turret.TurretConstants.Setpoints;
+import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
 import static raidzero.robot.subsystems.turret.TurretConstants.*;
 
 public class ShootWhileMoving extends Command {
@@ -55,17 +55,12 @@ public class ShootWhileMoving extends Command {
                 swerve.getState().Pose.getRotation());
 
         // Actual Target
-        Translation2d actualGoal = new Translation2d();
-        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-            actualGoal = Constants.Field.GOAL_LOCATION_RED;
-        } else {
-            actualGoal = Constants.Field.GOAL_LOCATION_BLUE;
-        }
+        Translation2d actualGoal = turret.getAllianceTarget();
 
         // --- ITERATIVE TIME OF FLIGHT CALCULATION ---
         // 1. Initial guess at TOF based on current distance
         double staticDist = futurePose.getTranslation().getDistance(actualGoal);
-        double shotTime = Setpoints.TOF_TABLE.get(staticDist);
+        double shotTime = Kinetics.TOF_TABLE.get(staticDist);
 
         double virtualDist = staticDist;
         Translation2d virtualGoal = actualGoal;
@@ -82,7 +77,7 @@ public class ShootWhileMoving extends Command {
             virtualDist = virtualGoal.getDistance(futurePose.getTranslation());
 
             // Update shotTime based on the distance the ball actually needs to travel
-            shotTime = Setpoints.TOF_TABLE.get(virtualDist);
+            shotTime = Kinetics.TOF_TABLE.get(virtualDist);
         }
 
         // Aiming
@@ -95,7 +90,7 @@ public class ShootWhileMoving extends Command {
         // change/matter.
         turret.moveYawTo(targetYaw.getMeasure());
 
-        double targetPitch = TurretConstants.Setpoints.PITCH_TABLE.get(virtualDist);
+        double targetPitch = TurretConstants.Kinetics.PITCH_TABLE.get(virtualDist);
         turret.setPitch(Degrees.of(targetPitch));
     }
 

@@ -32,29 +32,27 @@ public class ShootWhileClimbing extends Command {
     @Override
     public void initialize() {
         // Goal
-        actualGoal = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red 
-            ? Constants.Field.GOAL_LOCATION_RED 
-            : Constants.Field.GOAL_LOCATION_BLUE;
+        actualGoal = turret.getAllianceTarget();
 
         // 2. Lock the Yaw based on current field position
         Pose2d currentPose = swerve.getState().Pose;
         staticYaw = actualGoal.minus(currentPose.getTranslation()).getAngle();
-        
+
         turret.moveYawTo(staticYaw.getMeasure());
     }
 
     @Override
     public void execute() {
-        
-        double currentHeight = swerve.getRobotHeightMeters(); //method for ben to make
-        double verticalVelocity = swerve.getVerticalVelocityMetersPerSecond(); //method for ben to make
-        
+
+        double currentHeight = swerve.getRobotHeightMeters(); // method for ben to make
+        double verticalVelocity = swerve.getVerticalVelocityMetersPerSecond(); // method for ben to make
+
         double futureHeight = currentHeight + (verticalVelocity * Limelight.LATENCY.in(Seconds));
 
-        double basePitch = TurretConstants.Setpoints.CLIMB_PITCH_TABLE.get(futureHeight);
-        double baseRPS = TurretConstants.Setpoints.CLIMB_RPS_TABLE.get(futureHeight);
+        double basePitch = TurretConstants.Kinetics.CLIMB_PITCH_TABLE.get(futureHeight);
+        double baseRPS = TurretConstants.Kinetics.CLIMB_RPS_TABLE.get(futureHeight);
 
-        turret.moveYawTo(staticYaw.getMeasure()); 
+        turret.moveYawTo(staticYaw.getMeasure());
         turret.setPitch(Degrees.of(basePitch)); // May need an adjusted pitch because of lean
         shooter.setVelocity(RotationsPerSecond.of(baseRPS)); // May need an adjusted RPM cause of shooter physics
     }

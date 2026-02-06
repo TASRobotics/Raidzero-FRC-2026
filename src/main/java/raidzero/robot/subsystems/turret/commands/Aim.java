@@ -1,23 +1,9 @@
 package raidzero.robot.subsystems.turret.commands;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Radian;
-import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Rotations;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.robot.subsystems.drive.Swerve;
-import raidzero.robot.subsystems.drive.TunerConstants;
 import raidzero.robot.subsystems.turret.Turret;
 import raidzero.robot.subsystems.turret.TurretConstants.Yaw;
 
@@ -31,21 +17,19 @@ public class Aim extends Command {
 
     @Override
     public void initialize() {
-        var robotPose = swerve.getState().Pose;
     }
 
     @Override
     public void execute() {
-        // get the field centric poses
-        var fieldRelativeGoalPose = Turret.getFieldRelativeGoalPose();
-        var robotPose = swerve.getState().Pose;
 
-        var robotRelativeTurretSetpoint = fieldRelativeGoalPose.getRotation().minus(robotPose.getRotation()).getRotations();
+        var aquireAim = turret.getTurretAim(true);
+        var robotRelativeTurretSetpoint = aquireAim.goal().getRotation().minus(aquireAim.robot().getRotation())
+                .getRotations();
         double currentRotations = turret.getCurrentYaw().in(Rotations);
 
-        double bestSetpoint = findBestWrap(currentRotations, robotRelativeTurretSetpoint);
+        double bestSetpoint = findBestWrap(currentRotations,
+                robotRelativeTurretSetpoint);
 
-        SmartDashboard.putNumber("desired rotations", bestSetpoint);
         turret.moveYawTo(Rotations.of(bestSetpoint));
     }
 

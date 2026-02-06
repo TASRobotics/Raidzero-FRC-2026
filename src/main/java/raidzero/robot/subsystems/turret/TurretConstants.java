@@ -15,6 +15,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.Angle;
@@ -205,7 +206,10 @@ public class TurretConstants {
         public static final Distance CAMERA_HEIGHT = Meters.of(0.77);
     }
 
-    public static final class Setpoints {
+    public static record TurretAim(Pose2d fieldRelativeTurretPose, Pose2d fieldRelativeGoalPose) {
+    }
+
+    public static final class Kinetics {
         // yaw corections from the april tag location in the off-angles
         public static final InterpolatingDoubleTreeMap YAW_CORRECTION_TABLE = new InterpolatingDoubleTreeMap();
 
@@ -215,6 +219,36 @@ public class TurretConstants {
 
         public static final InterpolatingDoubleTreeMap CLIMB_PITCH_TABLE = new InterpolatingDoubleTreeMap();
         public static final InterpolatingDoubleTreeMap CLIMB_RPS_TABLE = new InterpolatingDoubleTreeMap();
+
+        public static final Translation2d GOAL_LOCATION_BLUE = new Translation2d(Inches.of(182.11), Inches.of(158.84));
+        public static final Translation2d GOAL_LOCATION_RED = new Translation2d(Inches.of(287), Inches.of(158.84));
+
+        static {
+
+            PITCH_TABLE.put(1.75, 15.0);
+
+            RPS_TABLE.put(1.55, 30.0);
+            RPS_TABLE.put(1.75, 31.0);
+            RPS_TABLE.put(2.00, 33.0);
+            RPS_TABLE.put(2.08, 35.5);
+            RPS_TABLE.put(2.28, 37.0);
+            RPS_TABLE.put(2.40, 38.0);
+            RPS_TABLE.put(2.59, 40.5);
+            RPS_TABLE.put(2.71, 42.0);
+            RPS_TABLE.put(2.84, 42.0);
+
+            // Distance (m), Time (s) - Calculated for 15 deg from Vertical (75 deg launch)
+            TOF_TABLE.put(1.75, 0.284);
+            TOF_TABLE.put(2.00, 0.396);
+            TOF_TABLE.put(1.25, 0.432);
+            TOF_TABLE.put(1.45, 0.475);
+            TOF_TABLE.put(1.61, 0.513);
+            TOF_TABLE.put(1.82, 0.551);
+            TOF_TABLE.put(2.08, 0.600);
+            TOF_TABLE.put(2.29, 0.646);
+            TOF_TABLE.put(2.42, 0.665);
+
+        }
     }
 
 }
