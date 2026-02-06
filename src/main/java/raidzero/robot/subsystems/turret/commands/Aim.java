@@ -38,10 +38,9 @@ public class Aim extends Command {
     public void execute() {
         // get the field centric poses
         var fieldRelativeGoalPose = Turret.getFieldRelativeGoalPose();
-        var fieldRelativeTurretPose = Turret.getFieldRelativeTurretPose();
+        var robotPose = swerve.getState().Pose;
 
-        var robotRelativeTurretSetpoint = fieldRelativeTurretPose.getRotation()
-                .plus(fieldRelativeGoalPose.getRotation()).getRotations();
+        var robotRelativeTurretSetpoint = fieldRelativeGoalPose.getRotation().minus(robotPose.getRotation()).getRotations();
         double currentRotations = turret.getCurrentYaw().in(Rotations);
 
         double bestSetpoint = findBestWrap(currentRotations, robotRelativeTurretSetpoint);
