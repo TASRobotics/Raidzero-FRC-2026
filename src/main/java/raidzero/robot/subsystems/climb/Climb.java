@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 public class Climb implements Subsystem {
     private TalonFX winch;
     private CANrange[] ranges;
+    private CANrange horizontalRange;
 
     private static Climb system;
 
@@ -31,6 +32,9 @@ public class Climb implements Subsystem {
             ranges[i] = new CANrange(i + 1, "climbivore");
             ranges[i].getConfigurator().apply(canrangeConfig(i));
         }
+
+        horizontalRange = new CANrange(0, "climbivore");
+        horizontalRange.getConfigurator().apply(canrangeConfig());
     }
 
     public Command printStates() {
@@ -41,6 +45,7 @@ public class Climb implements Subsystem {
             System.out.println("left dist " + ranges[0].getDistance());
             System.out.println("center dist " + ranges[1].getDistance());
             System.out.println("right dist " + ranges[2].getDistance());
+            System.out.println("horizontal dist " + horizontalRange.getDistance());
         }));
     }
 
@@ -54,6 +59,10 @@ public class Climb implements Subsystem {
 
     public CANrange[] getRanges() {
         return ranges;
+    }
+
+    public CANrange getHorizontalRange() {
+        return horizontalRange;
     }
 
     public boolean isLeftOf() {
@@ -102,6 +111,28 @@ public class Climb implements Subsystem {
             .withProximityParams(
                 new ProximityParamsConfigs()
                     .withProximityThreshold(0.5)
+            )
+            .withToFParams(
+                new ToFParamsConfigs()
+                    .withUpdateMode(UpdateModeValue.LongRangeUserFreq)
+                    .withUpdateFrequency(50)
+            );
+
+        return configuration;
+    }
+
+    private CANrangeConfiguration canrangeConfig() {
+        CANrangeConfiguration configuration = new CANrangeConfiguration()
+            .withFovParams(
+                new FovParamsConfigs()
+                    .withFOVCenterX(0)
+                    .withFOVCenterY(0)
+                    .withFOVRangeX(27)
+                    .withFOVRangeY(27)
+            )
+            .withProximityParams(
+                new ProximityParamsConfigs()
+                    .withProximityThreshold(0.75)
             )
             .withToFParams(
                 new ToFParamsConfigs()

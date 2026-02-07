@@ -10,6 +10,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -326,6 +327,34 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                     .withVelocityY(-0.2)
             ).until(() -> climb.getRanges()[1].getDistance().isNear(0.12, 0.005))
                 .onlyIf(() -> climb.isCentered())
+        );
+    }
+
+    public Command climbWithHorizontal() {
+        Climb climb = Climb.system();
+        SwerveRequest.FieldCentricFacingAngle alignRequest = new SwerveRequest.FieldCentricFacingAngle();
+
+        return defer(
+            () -> new SequentialCommandGroup(
+                applyRequest(
+                    () -> alignRequest.withTargetDirection(Rotation2d.k180deg)
+                        .withHeadingPID(0.0, 0.0, 0.0)
+                        .withVelocityX(0.15 * (0.71 - climb.getHorizontalRange().getDistance().getValueAsDouble() > 0 ? 1 : -1))
+                        .withVelocityY(0.0)
+                ).until(() -> climb.getHorizontalRange().getDistance().isNear(0.733, 0.01)),
+                applyRequest(
+                    () -> alignRequest.withTargetDirection(Rotation2d.k180deg)
+                        .withHeadingPID(0.0, 0.0, 0.0)
+                        .withVelocityX(0.0)
+                        .withVelocityY(-0.2)
+                ).until(() -> climb.getRanges()[1].getDistance().isNear(0.12, 0.005)),
+                applyRequest(
+                    () -> alignRequest.withTargetDirection(Rotation2d.k180deg)
+                        .withHeadingPID(0.0, 0.0, 0.0)
+                        .withVelocityX(0.0)
+                        .withVelocityY(0.0)
+                )
+            )
         );
     }
 }
