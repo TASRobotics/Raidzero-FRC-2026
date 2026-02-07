@@ -2,9 +2,11 @@ package raidzero.robot.subsystems.turret;
 
 import com.ctre.phoenix6.Utils;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
@@ -20,6 +22,7 @@ import static edu.wpi.first.units.Units.Rotations;
 
 import raidzero.lib.R0Subsystem;
 import raidzero.robot.subsystems.drive.Swerve;
+import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
 
 import static raidzero.robot.subsystems.turret.TurretConstants.*;
 
@@ -36,6 +39,10 @@ public class Turret extends R0Subsystem<TurretIO> {
     private StructPublisher<Pose2d> kineticTurretSender = null;
 
     private Translation2d allianceTargetFieldPose = null;
+
+    private final LinearFilter vxFilter = LinearFilter.movingAverage(5);
+    private final LinearFilter vyFilter = LinearFilter.movingAverage(5);
+    private final LinearFilter omegaFilter = LinearFilter.movingAverage(5);
 
     private AimBot staticAimBot = null;
     private AimBot kineticAimBot = null;
@@ -119,10 +126,18 @@ public class Turret extends R0Subsystem<TurretIO> {
     @Override
     public void periodic() {
         super.periodic();
+
+        ChassisSpeeds rawSpeeds = swerve.getState().Speeds;
+        ChassisSpeeds filteredSpeeds = new ChassisSpeeds(
+            vxFilter.calculate(rawSpeeds.vxMetersPerSecond),
+            vyFilter.calculate(rawSpeeds.vyMetersPerSecond),
+            omegaFilter.calculate(rawSpeeds.omegaRadiansPerSecond)
+        );
+
         staticAimBot = staticAimBot.adjustStaticAim(swerve.getState().Pose, new Rotation2d(getCurrentYaw()),
                 allianceTargetFieldPose);
-        kineticAimBot = staticAimBot.adjustKineticLead(swerve.getState().Speeds);
-
+                
+        kineticAimBot = staticAimBot.adjustKineticLead(filteredSpeeds);
         // SmartDashboard.putNumber("LL Turret Angle", io.getYawFromTarget().in(Rotations));
         // SmartDashboard.putNumber("LL Turret Distance", io.getHubDistance().in(Meters));
 
