@@ -98,7 +98,7 @@ public class Climb implements Subsystem {
     }
 
     private CANrangeConfiguration canrangeConfig(int idx) {
-        int fovCenterX = idx == 0 ? 11 : (idx == 1 ? 0 : -11);
+        int fovCenterX = idx == 0 ? 7 : (idx == 1 ? 0 : -7);
 
         CANrangeConfiguration configuration = new CANrangeConfiguration()
             .withFovParams(
