@@ -73,9 +73,9 @@ public class Climb implements Subsystem {
         SmartDashboard.putBoolean("leftof", this.isLeftOf());
         SmartDashboard.putBoolean("rightof", this.isRightOf());
         SmartDashboard.putBoolean("centered", this.isCentered());
-        SmartDashboard.putNumber("left dist", ranges[0].getDistance().getValueAsDouble());
-        SmartDashboard.putNumber("center dist", ranges[1].getDistance().getValueAsDouble());
-        SmartDashboard.putNumber("right dist", ranges[2].getDistance().getValueAsDouble());
+        SmartDashboard.putNumber("left dist", ((int) (ranges[0].getDistance().getValueAsDouble() * 1000)) / 1000.0);
+        SmartDashboard.putNumber("center dist", ((int) (ranges[1].getDistance().getValueAsDouble() * 1000)) / 1000.0);
+        SmartDashboard.putNumber("right dist", ((int) (ranges[2].getDistance().getValueAsDouble() * 1000)) / 1000.0);
     }
 
     private TalonFXConfiguration winchConfiguration() {
