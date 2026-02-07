@@ -26,6 +26,8 @@ public class RobotContainer {
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
         .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+    private final SwerveRequest.FieldCentric slowmanual = new SwerveRequest.FieldCentric()
+        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -84,6 +86,11 @@ public class RobotContainer {
         joystick.x().whileTrue(drivetrain.moveIntoClimb());
         joystick.rightTrigger().whileTrue(climb.run(0.1));
         joystick.leftTrigger().whileTrue(climb.run(-0.1));
+
+        joystick.povUp().whileTrue(drivetrain.applyRequest(() -> slowmanual.withVelocityX(0.15).withVelocityY(0.0)));
+        joystick.povDown().whileTrue(drivetrain.applyRequest(() -> slowmanual.withVelocityX(-0.15).withVelocityY(0.0)));
+        joystick.povLeft().whileTrue(drivetrain.applyRequest(() -> slowmanual.withVelocityY(0.15).withVelocityX(0.0)));
+        joystick.povRight().whileTrue(drivetrain.applyRequest(() -> slowmanual.withVelocityY(-0.15).withVelocityX(0.0)));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
