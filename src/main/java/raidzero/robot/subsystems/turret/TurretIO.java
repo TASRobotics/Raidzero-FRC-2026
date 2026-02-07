@@ -1,64 +1,87 @@
 package raidzero.robot.subsystems.turret;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
-import raidzero.lib.LimelightHelpers;
-import raidzero.lib.SubsystemIO;
-import raidzero.lib.wrappers.motors.LazyFXS;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+
+import raidzero.lib.LimelightHelpers;
+import raidzero.lib.SubsystemIO;
+import raidzero.lib.wrappers.motors.LazyFXS;
+import raidzero.lib.wrappers.motors.LazyFXSBuilder;
+
 import static raidzero.robot.subsystems.turret.TurretConstants.Yaw;
-
-import static raidzero.robot.subsystems.turret.TurretConstants.Pitch;
 import static raidzero.robot.subsystems.turret.TurretConstants.Limelight;
-
-import com.ctre.phoenix6.signals.GravityTypeValue;
-import com.ctre.phoenix6.signals.MotorArrangementValue;
-import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 public interface TurretIO extends SubsystemIO {
 
+    /**
+     * Moves the yaw to the specified position
+     * 
+     * @param Yaw the {@link Angle}
+     */
+    void moveTo(Angle yaw);
+
+    /**
+     * Gets the current yaw
+     * 
+     * @return the {@link Angle}
+     */
     Angle getYaw();
 
-    void setPitch(Angle pitch);
-
-    void setYaw(Angle yaw);
-
-    void setYawVelocity(AngularVelocity yawVelocity);
-
-    Angle getPitch();
-
+    /**
+     * Sets the yaw's position for startup
+     * 
+     * @param yaw the {@link Angle}
+     */
     void setStartupYaw(Angle yaw);
 
-    void moveTo(Angle pitch, Angle Yaw);
-
-    Angle getYawFromTarget();
-
-    Distance getHubDistance();
-
+    /**
+     * Returns true if the bot has line-of-sight with the hub
+     * 
+     * @return true if the bot has line-of-sight with the hub
+     */
     boolean hasHubLOS();
 
-    void stopMotors();
+    /**
+     * Gets the yaw angle from the goal target
+     * 
+     * @return the {@link Angle}
+     */
+    Angle getYawFromTarget();
 
-    AngularVelocity getYawVelocity();
+    /**
+     * Gets the distance to the hub
+     * 
+     * @return the {@link Distance}
+     */
+    Distance getHubDistance();
 
-    void setStartupPitch(Angle startingAngle);
+    /**
+     * Sets the yaw to move in a set speed in percent
+     * 
+     * @param percent the percent [0, 1]
+     */
+    void runYawPercent(double percent);
 
-    void runYawSimple(double percent);
+    /**
+     * Stops the yaw motor
+     */
+    void stop();
 
     public class Real implements TurretIO {
-        private LazyFXS yaw, pitch;
+        private LazyFXS yaw;
+        private double lastTagDistance;
 
         public Real() {
-            yaw = new LazyFXS(
+            yaw = new LazyFXSBuilder(
                     Yaw.MOTOR_ID, Yaw.CAN_BUS_NAME,
-                    MotorArrangementValue.Minion_JST,
+                    Yaw.MOTOR_ARRANGEMENT,
                     Yaw.SENSOR_TO_MECHANISM_RATIO,
                     Yaw.INVERTED,
                     Yaw.STATOR_CURRENT_LIMIT.in(Amps),
@@ -66,41 +89,24 @@ public interface TurretIO extends SubsystemIO {
                     .withPIDFConfiguration(
                             Yaw.POSITION_P, Yaw.POSITION_I, Yaw.POSITION_D,
                             Yaw.POSITION_S, Yaw.POSITION_G, Yaw.POSITION_V, Yaw.POSITION_A,
-                            GravityTypeValue.Elevator_Static,
-                            StaticFeedforwardSignValue.UseClosedLoopSign,
+                            Yaw.FF_GRAVITY_TYPE,
+                            Yaw.FF_SIGN,
                             Yaw.POSITION_SLOT)
-                    .withPIDFConfiguration(Yaw.VELOCITY_P, Yaw.VELOCITY_I, Yaw.VELOCITY_D,
-                        Yaw.VELOCITY_S, Yaw.VELOCITY_G, Yaw.VELOCITY_V, Yaw.VELOCITY_A,
-                        GravityTypeValue.Elevator_Static,
-                        StaticFeedforwardSignValue.UseVelocitySign,
-                        Yaw.VELOCITY_SLOT)
                     .withMotionMagicConfiguration(
                             Yaw.EXPO_V, Yaw.EXPO_A,
-                            Yaw.CRUISE_VELOCITY.in(RotationsPerSecond),
-                            Yaw.ACCELERATION.in(RotationsPerSecondPerSecond))
+                            Yaw.CRUISE_VELOCITY,
+                            Yaw.ACCELERATION)
                     .withSoftLimits(
                             true, Yaw.FORWARD_SOFT_LIMIT.in(Rotations),
                             true, Yaw.REVERSE_SOFT_LIMIT.in(Rotations))
                     .build();
 
-            pitch = new LazyFXS(
-                    Pitch.MOTOR_ID, Pitch.CAN_BUS_NAME,
-                    MotorArrangementValue.Minion_JST,
-                    Pitch.SENSOR_TO_MECHANISM_RATIO,
-                    Pitch.INVERTED,
-                    Pitch.STATOR_CURRENT_LIMIT.in(Amps),
-                    Pitch.SUPPLY_CURRENT_LIMIT.in(Amps))
-                    .withPIDFConfiguration(
-                            Pitch.P, Pitch.I, Pitch.D,
-                            Pitch.S, Pitch.G, Pitch.V, Pitch.A,
-                            GravityTypeValue.Elevator_Static,
-                            StaticFeedforwardSignValue.UseClosedLoopSign,
-                            0)
-                    .withMotionMagicConfiguration(
-                            Pitch.EXPO_V, Pitch.EXPO_A,
-                            Pitch.CRUISE_VELOCITY.in(RotationsPerSecond),
-                            Pitch.ACCELERATION.in(RotationsPerSecondPerSecond))
-                    .build();
+            lastTagDistance = 0;
+        }
+
+        @Override
+        public void moveTo(Angle setpoint) {
+            yaw.moveWithMMVolt(setpoint, Yaw.POSITION_SLOT);
         }
 
         @Override
@@ -109,35 +115,13 @@ public interface TurretIO extends SubsystemIO {
         }
 
         @Override
-        public Angle getPitch() {
-            return pitch.getFeedbackPosition();
-        }
-
-        @Override
         public void setStartupYaw(Angle yaw) {
             this.yaw.getMotor().setPosition(yaw);
         }
 
         @Override
-        public void setPitch(Angle pitch) {
-            // this.pitch.moveTo(pitch);
-            this.pitch.moveWithMMVolt(pitch, 0);
-        }
-
-        @Override
-        public void setYaw(Angle yaw) {
-            this.yaw.moveWithMMVolt(yaw, Yaw.POSITION_SLOT);
-        }
-
-        @Override
-        public void setYawVelocity(AngularVelocity yawVelocity) {
-            this.yaw.setVelocity(yawVelocity, Yaw.VELOCITY_SLOT);
-        }
-
-        @Override
-        public void moveTo(Angle pitch, Angle yaw) {
-            this.setPitch(pitch);
-            this.setYaw(yaw);
+        public boolean hasHubLOS() {
+            return LimelightHelpers.getTV(Limelight.LIMELIGHT_NAME);
         }
 
         @Override
@@ -152,50 +136,45 @@ public interface TurretIO extends SubsystemIO {
         @Override
         public Distance getHubDistance() {
             if (!LimelightHelpers.getTV(Limelight.LIMELIGHT_NAME)) {
-                return Meters.of(0);
+                return Meters.of(lastTagDistance);
             }
 
-            double ty = LimelightHelpers.getTY(Limelight.LIMELIGHT_NAME);
+            double[] cameraPoseArray = LimelightHelpers.getCameraPose_TargetSpace(Limelight.LIMELIGHT_NAME);
 
-            double totalAngleRadians = Math.toRadians(Limelight.MOUNT_ANGLE.in(Degrees) + ty);
+            if (cameraPoseArray.length >= 6) {
+                Pose3d cameraPose = new Pose3d(
+                        cameraPoseArray[0], // X
+                        cameraPoseArray[1], // Y
+                        cameraPoseArray[2], // Z
+                        new Rotation3d(
+                                Math.toRadians(cameraPoseArray[3]), // Roll
+                                Math.toRadians(cameraPoseArray[4]), // Pitch
+                                Math.toRadians(cameraPoseArray[5]) // Yaw
+                        ));
 
-            double heightDifference = Limelight.HUB_HEIGHT.in(Meters) - Limelight.CAMERA_HEIGHT.in(Meters);
-            double distance = heightDifference / Math.tan(totalAngleRadians);
+                // Distance from camera to target (origin is the target)
+                double distance = cameraPose.getTranslation().getNorm();
+                lastTagDistance = distance;
 
-            return Meters.of(distance);
+                return Meters.of(distance);
+            } else {
+                return Meters.of(lastTagDistance);
+            }
         }
 
         @Override
-        public boolean hasHubLOS() {
-            return LimelightHelpers.getTV(Limelight.LIMELIGHT_NAME);
+        public void runYawPercent(double percent) {
+            yaw.setPercent(percent);
+        }
+
+        @Override
+        public void stop() {
+            yaw.stop();
         }
 
         @Override
         public void updateTelemetry() {
             yaw.updateTelemetry(Yaw.TELEMETRY);
-            pitch.updateTelemetry(Pitch.TELEMETRY);
-        }
-
-        @Override
-        public void stopMotors() {
-            yaw.stop();
-            yaw.getMotor();
-            pitch.stop();
-        }
-
-        @Override
-        public void setStartupPitch(Angle startingAngle) {
-            pitch.getMotor().setPosition(startingAngle);
-        }
-
-        @Override
-        public void runYawSimple(double percent) {
-            yaw.setPercent(percent);
-        }
-
-        @Override
-        public AngularVelocity getYawVelocity() {
-            return yaw.getFeedbackVelocity();
         }
     }
 

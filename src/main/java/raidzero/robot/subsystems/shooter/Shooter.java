@@ -1,4 +1,4 @@
-package raidzero.robot.subsystems.turret;
+package raidzero.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 

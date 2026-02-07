@@ -1,14 +1,6 @@
 {
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.server.launchMode": "Standard",
-  "java.configuration.runtimes": [
-    {
-      "name": "JavaSE-17",
-      "path": "C:\\Users\\Public\\wpilib\\2025\\jdk",
-      "default": true
-    }
-  ],
-  "java.jdt.ls.java.home": "C:\\Users\\Public\\wpilib\\2025\\jdk",
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
@@ -65,6 +57,6 @@
     "edu.wpi.first.math.**.proto.*",
     "edu.wpi.first.math.**.struct.*",
   ],
-  "wpilib.autoStartRioLog": false,
-  "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx4G -Xms100m -Xlog:disable"
+  "java.dependency.enableDependencyCheckup": false,
+  "git.autofetch": true
 }

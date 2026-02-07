@@ -21,16 +21,17 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
      */
     public AimBot adjustStaticAim(Pose2d robotPose, Rotation2d currentTurretYaw, Translation2d allianceGoalLocation) {
         // where is turret center offset from robot center
-        var turretOffsetVectorFieldCentric = Yaw.TURRET_MOUNT_OFFSET.rotateBy(robotPose.getRotation());
-        var fieldRelativeTurret = robotPose.getTranslation().plus(turretOffsetVectorFieldCentric);
+        Translation2d turretOffsetVectorFieldCentric = Yaw.TURRET_MOUNT_OFFSET.rotateBy(robotPose.getRotation());
+        Translation2d fieldRelativeTurret = robotPose.getTranslation().plus(turretOffsetVectorFieldCentric);
 
         // where is turret angle from field zero (+x axis)
-        var fieldRelativeTurretAngle = robotPose.getRotation().plus(currentTurretYaw);
-        var fieldRelativeTurretPose = new Pose2d(fieldRelativeTurret, fieldRelativeTurretAngle);
+        Rotation2d fieldRelativeTurretAngle = robotPose.getRotation().plus(currentTurretYaw);
+        Pose2d fieldRelativeTurretPose = new Pose2d(fieldRelativeTurret, fieldRelativeTurretAngle);
 
         // what field angle should the turret be at to point at the goal
-        var turretToGoalVector = allianceGoalLocation.minus(fieldRelativeTurretPose.getTranslation());
-        var fieldRelativeGoalPose = new Pose2d(allianceGoalLocation, turretToGoalVector.getAngle());
+        Translation2d turretToGoalVector = allianceGoalLocation.minus(fieldRelativeTurretPose.getTranslation());
+        Pose2d fieldRelativeGoalPose = new Pose2d(allianceGoalLocation, turretToGoalVector.getAngle());
+
         return new AimBot(robotPose, fieldRelativeTurretPose, fieldRelativeGoalPose);
     }
 
@@ -41,12 +42,15 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
      * @return the adjusted turret aim with kinetic lead
      */
     public AimBot adjustKineticLead(ChassisSpeeds robotSpeeds) {
-        var kineticRobotPose = calculateKineticRobotPose(robotSpeeds, robot);
-        var turretOffsetRotated = Yaw.TURRET_MOUNT_OFFSET.rotateBy(kineticRobotPose.getRotation());
-        var kineticTurretPose = new Pose2d(kineticRobotPose.getTranslation().plus(turretOffsetRotated),
+        Pose2d kineticRobotPose = calculateKineticRobotPose(robotSpeeds, robot);
+
+        Translation2d turretOffsetRotated = Yaw.TURRET_MOUNT_OFFSET.rotateBy(kineticRobotPose.getRotation());
+        Pose2d kineticTurretPose = new Pose2d(kineticRobotPose.getTranslation().plus(turretOffsetRotated),
                 turret.getRotation());
-        var whipSpeeds = calculateWhip(robotSpeeds, robot);
-        var kineticGoalPose = calculateKineticGoal(whipSpeeds, kineticTurretPose, goal);
+
+        ChassisSpeeds whipSpeeds = calculateWhip(robotSpeeds, robot);
+        Pose2d kineticGoalPose = calculateKineticGoal(whipSpeeds, kineticTurretPose, goal);
+
         return new AimBot(kineticRobotPose, kineticTurretPose, kineticGoalPose);
     }
 
@@ -59,16 +63,17 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
      * @return kinetic turret pose
      */
     private Pose2d calculateKineticRobotPose(ChassisSpeeds currentSpeeds, Pose2d currentPose) {
-        var dx = currentSpeeds.vxMetersPerSecond * CODE_LOOP_LATENCY;
-        var dy = currentSpeeds.vyMetersPerSecond * CODE_LOOP_LATENCY;
-        var dTheta = currentSpeeds.omegaRadiansPerSecond * CODE_LOOP_LATENCY;
-        var robotFuture = currentPose.exp(new Twist2d(dx, dy, dTheta));
+        double dx = currentSpeeds.vxMetersPerSecond * CODE_LOOP_LATENCY;
+        double dy = currentSpeeds.vyMetersPerSecond * CODE_LOOP_LATENCY;
+        double dTheta = currentSpeeds.omegaRadiansPerSecond * CODE_LOOP_LATENCY;
+
+        Pose2d robotFuture = currentPose.exp(new Twist2d(dx, dy, dTheta));
         return robotFuture;
     }
 
     /**
      * because turret isnt in center of robot rotation
-     * robot omeega will cause tangential velocity at the turret
+     * robot omega will cause tangential velocity at the turret
      * chasisspeeds + (chassisSpeeds.omega * turretOffsetRadius) = whip
      * linear on ball + tangential on ball = exit velocity
      * 
@@ -76,30 +81,35 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
      * @return
      */
     private ChassisSpeeds calculateWhip(ChassisSpeeds currentSpeeds, Pose2d currentPose) {
-        var vx = currentSpeeds.vxMetersPerSecond - currentSpeeds.omegaRadiansPerSecond * Yaw.TURRET_MOUNT_OFFSET.getY();
-        var vy = currentSpeeds.vyMetersPerSecond + currentSpeeds.omegaRadiansPerSecond * Yaw.TURRET_MOUNT_OFFSET.getX();
-        var omega = currentSpeeds.omegaRadiansPerSecond;
+        double vx = currentSpeeds.vxMetersPerSecond - currentSpeeds.omegaRadiansPerSecond * Yaw.TURRET_MOUNT_OFFSET.getY();
+        double vy = currentSpeeds.vyMetersPerSecond + currentSpeeds.omegaRadiansPerSecond * Yaw.TURRET_MOUNT_OFFSET.getX();
+        double omega = currentSpeeds.omegaRadiansPerSecond;
+
         return ChassisSpeeds.fromRobotRelativeSpeeds(vx, vy, omega, currentPose.getRotation());
     }
 
     private Pose2d calculateKineticGoal(ChassisSpeeds whipSpeeds, Pose2d kineticTurret,
             Pose2d staticGoal) {
-        var virtualGoalTranslation = staticGoal.getTranslation();
-        var turretToGoalDist = kineticTurret.getTranslation().getDistance(virtualGoalTranslation);
-        var currentDistanceTOF = Kinetics.TOF_TABLE.get(turretToGoalDist);
+        Translation2d virtualGoalTranslation = staticGoal.getTranslation();
+        double turretToGoalDist = kineticTurret.getTranslation().getDistance(virtualGoalTranslation);
+        double currentDistanceTOF = Kinetics.TOF_TABLE.get(turretToGoalDist);
 
         for (int i = 0; i < 3; i++) {
-            var virtualGoalx = virtualGoalTranslation.getX()
+            double virtualGoalx = virtualGoalTranslation.getX()
                     - currentDistanceTOF * whipSpeeds.vxMetersPerSecond;
-            var virtualGoaly = virtualGoalTranslation.getY()
+            double virtualGoaly = virtualGoalTranslation.getY()
                     - currentDistanceTOF * whipSpeeds.vyMetersPerSecond;
             virtualGoalTranslation = new Translation2d(virtualGoalx, virtualGoaly);
+
             turretToGoalDist = kineticTurret.getTranslation()
                     .getDistance(virtualGoalTranslation);
             currentDistanceTOF = Kinetics.TOF_TABLE.get(turretToGoalDist);
         }
-        var turretToVirtualGoalFieldAngle = virtualGoalTranslation.minus(kineticTurret.getTranslation()).getAngle();
-        var virtualGoalPose = new Pose2d(virtualGoalTranslation, turretToVirtualGoalFieldAngle);
+
+        Rotation2d turretToVirtualGoalFieldAngle = virtualGoalTranslation.minus(kineticTurret.getTranslation()).getAngle();
+        Pose2d virtualGoalPose = new Pose2d(virtualGoalTranslation, turretToVirtualGoalFieldAngle);
+
         return virtualGoalPose;
     }
+
 }

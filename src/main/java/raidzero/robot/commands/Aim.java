@@ -1,15 +1,14 @@
-package raidzero.robot.subsystems.turret.commands;
+package raidzero.robot.commands;
 
 import static edu.wpi.first.units.Units.Rotations;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import raidzero.robot.subsystems.drive.Swerve;
+import raidzero.robot.subsystems.turret.AimBot;
 import raidzero.robot.subsystems.turret.Turret;
 import raidzero.robot.subsystems.turret.TurretConstants.Yaw;
 
 public class Aim extends Command {
     private final Turret turret = Turret.system();
-    private final Swerve swerve = Swerve.system();
 
     public Aim() {
         addRequirements(turret);
@@ -21,16 +20,16 @@ public class Aim extends Command {
 
     @Override
     public void execute() {
-
-        var aquireAim = turret.getTurretAim(true);
-        var robotRelativeTurretSetpoint = aquireAim.goal().getRotation().minus(aquireAim.robot().getRotation())
+        AimBot aquireAim = turret.getTurretAim(true);
+        double robotRelativeTurretSetpoint = aquireAim.goal().getRotation().minus(aquireAim.robot().getRotation())
                 .getRotations();
+
         double currentRotations = turret.getCurrentYaw().in(Rotations);
 
         double bestSetpoint = findBestWrap(currentRotations,
                 robotRelativeTurretSetpoint);
 
-        turret.moveYawTo(Rotations.of(bestSetpoint));
+        turret.moveTo(Rotations.of(bestSetpoint));
     }
 
     private double findBestWrap(double currentRotations, double desiredRotations) {
