@@ -48,7 +48,7 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
         Pose2d kineticTurretPose = new Pose2d(kineticRobotPose.getTranslation().plus(turretOffsetRotated),
                 turret.getRotation());
 
-        ChassisSpeeds whipSpeeds = calculateWhip(robotSpeeds, robot);
+        var whipSpeeds = calculateWhip(robotSpeeds, kineticRobotPose);
         Pose2d kineticGoalPose = calculateKineticGoal(whipSpeeds, kineticTurretPose, goal);
 
         return new AimBot(kineticRobotPose, kineticTurretPose, kineticGoalPose);
@@ -77,27 +77,27 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
      * chasisspeeds + (chassisSpeeds.omega * turretOffsetRadius) = whip
      * linear on ball + tangential on ball = exit velocity
      * 
-     * @param currentSpeeds current robot chasis speeds
+     * @param relativeSpeeds current robot chasis speeds
      * @return
      */
-    private ChassisSpeeds calculateWhip(ChassisSpeeds currentSpeeds, Pose2d currentPose) {
-        double vx = currentSpeeds.vxMetersPerSecond - currentSpeeds.omegaRadiansPerSecond * Yaw.TURRET_MOUNT_OFFSET.getY();
-        double vy = currentSpeeds.vyMetersPerSecond + currentSpeeds.omegaRadiansPerSecond * Yaw.TURRET_MOUNT_OFFSET.getX();
-        double omega = currentSpeeds.omegaRadiansPerSecond;
-
-        return ChassisSpeeds.fromRobotRelativeSpeeds(vx, vy, omega, currentPose.getRotation());
+    private ChassisSpeeds calculateWhip(ChassisSpeeds relativeSpeeds, Pose2d futurePose) {
+        var vx = relativeSpeeds.vxMetersPerSecond
+                - relativeSpeeds.omegaRadiansPerSecond * Yaw.TURRET_MOUNT_OFFSET.getY();
+        var vy = relativeSpeeds.vyMetersPerSecond
+                + relativeSpeeds.omegaRadiansPerSecond * Yaw.TURRET_MOUNT_OFFSET.getX();
+        var omega = relativeSpeeds.omegaRadiansPerSecond;
+        return ChassisSpeeds.fromRobotRelativeSpeeds(vx, vy, omega, futurePose.getRotation());
     }
 
-    private Pose2d calculateKineticGoal(ChassisSpeeds whipSpeeds, Pose2d kineticTurret,
-            Pose2d staticGoal) {
+    private Pose2d calculateKineticGoal(ChassisSpeeds whipSpeeds, Pose2d kineticTurret, Pose2d staticGoal) {
         Translation2d virtualGoalTranslation = staticGoal.getTranslation();
         double turretToGoalDist = kineticTurret.getTranslation().getDistance(virtualGoalTranslation);
         double currentDistanceTOF = Kinetics.TOF_TABLE.get(turretToGoalDist);
 
         for (int i = 0; i < 3; i++) {
-            double virtualGoalx = virtualGoalTranslation.getX()
+            double virtualGoalx = staticGoal.getX()
                     - currentDistanceTOF * whipSpeeds.vxMetersPerSecond;
-            double virtualGoaly = virtualGoalTranslation.getY()
+            double virtualGoaly = staticGoal.getY()
                     - currentDistanceTOF * whipSpeeds.vyMetersPerSecond;
             virtualGoalTranslation = new Translation2d(virtualGoalx, virtualGoaly);
 
