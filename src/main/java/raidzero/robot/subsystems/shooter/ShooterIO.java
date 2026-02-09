@@ -58,12 +58,12 @@ public interface ShooterIO extends SubsystemIO {
 
         @Override
         public void setVelocity(AngularVelocity velocity) {
-            this.flywheel.setVelocity(velocity, 0);
+            this.flywheel.setPIDVelocityTarget(velocity, 0);
         }
 
         @Override
         public void setPercent(double speedPercent) {
-            flywheel.setPercent(speedPercent);
+            flywheel.setDutyCycle(speedPercent);
         }
 
         @Override
@@ -72,7 +72,7 @@ public interface ShooterIO extends SubsystemIO {
         }
 
         public AngularVelocity getVelocity() {
-            return flywheel.getFeedbackVelocity();
+            return flywheel.getVelocity();
         }
 
         @Override

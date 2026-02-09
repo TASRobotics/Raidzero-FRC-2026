@@ -12,7 +12,7 @@ import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import raidzero.lib.wrappers.motors.LazyMotor.MotorTelemetry;
+import raidzero.lib.wrappers.motors.LazyCTRE.MotorTelemetry;
 
 public final class ShooterConstants {
     public static final class Flywheel {
@@ -78,6 +78,6 @@ public final class ShooterConstants {
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(94.0); // 94 @ 12 V
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(188.0); // increasable
 
-        public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
+        public static MotorTelemetry TELEMETRY = new MotorTelemetry();
     }
 }

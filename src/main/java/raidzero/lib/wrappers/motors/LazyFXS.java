@@ -4,7 +4,9 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFXS;
@@ -15,9 +17,10 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 
-public class LazyFXS implements LazyCTRE, LazyMotor<TalonFXS> {
+public class LazyFXS implements LazyCTRE {
     private TalonFXS motor, follower;
     private CANcoder canCoder;
+    private boolean enableFOC = true;
 
     public LazyFXS(int motorID, String canBus, TalonFXSConfiguration configuration, int followID, String followCanBus,
             TalonFXSConfiguration followConfiguration, MotorAlignmentValue followerInverted, int canCoderID,
@@ -38,66 +41,73 @@ public class LazyFXS implements LazyCTRE, LazyMotor<TalonFXS> {
     }
 
     @Override
-    public void moveTo(Angle setpoint) {
-        motor.setControl(new MotionMagicExpoVoltage(setpoint).withEnableFOC(true));
-    }
-
-    public void moveWithMMVolt(Angle setpoint, int slotNumber) {
-        motor.setControl(new MotionMagicVoltage(setpoint).withEnableFOC(true).withSlot(slotNumber));
+    public void setMMPositionTarget(Angle setpoint, int slot) {
+        this.motor.setControl(new MotionMagicVoltage(setpoint).withEnableFOC(this.enableFOC).withSlot(slot));
     }
 
     @Override
-    public void setVelocity(AngularVelocity velocity, int slotNumber) {
-        motor.setControl(new VelocityVoltage(velocity).withEnableFOC(true).withSlot(slotNumber));
+    public void setMMExpoTarget(Angle setpoint, int slot) {
+        this.motor.setControl(new MotionMagicExpoVoltage(setpoint).withEnableFOC(this.enableFOC).withSlot(slot));
     }
 
     @Override
-    public void setPercent(double speed) {
-        motor.set(speed);
+    public void setMMVelocityTarget(AngularVelocity velocity, int slot) {
+        this.motor.setControl(new MotionMagicVelocityVoltage(velocity).withEnableFOC(this.enableFOC).withSlot(slot));
     }
 
     @Override
-    public void stop() {
-        motor.stopMotor();
+    public void setPIDPositionTarget(Angle setpoint, int slot) {
+        this.motor.setControl(new PositionVoltage(setpoint).withEnableFOC(this.enableFOC).withSlot(slot));
     }
 
     @Override
-    public void setBrake() {
-        motor.setNeutralMode(NeutralModeValue.Brake);
+    public void setPIDVelocityTarget(AngularVelocity velocity, int slot) {
+        this.motor.setControl(new VelocityVoltage(velocity).withEnableFOC(this.enableFOC).withSlot(slot));
+    }
+
+    @Override
+    public void setDutyCycle(double percent) {
+        this.motor.set(percent);
     }
 
     @Override
     public void setCoast() {
-        motor.setNeutralMode(NeutralModeValue.Coast);
+        this.motor.setNeutralMode(NeutralModeValue.Coast);
     }
 
     @Override
-    public Angle getFeedbackPosition() {
-        return motor.getPosition().getValue();
+    public void setBrake() {
+        this.motor.setNeutralMode(NeutralModeValue.Brake);
     }
 
     @Override
-    public AngularVelocity getFeedbackVelocity() {
-        return motor.getVelocity().getValue();
+    public void enableFOC() {
+        this.enableFOC = true;
     }
 
     @Override
-    public AngularAcceleration getFeedbackAcceleration() {
-        return motor.getAcceleration().getValue();
+    public void disableFOC() {
+        this.enableFOC = false;
     }
 
     @Override
-    public TalonFXS getMotor() {
-        return motor;
-    }
-
-    public CANcoder getCanCoder() {
-        return canCoder;
+    public void stop() {
+        this.motor.stopMotor();
     }
 
     @Override
-    public TalonFXS getFollower() {
-        return follower;
+    public Angle getPosition() {
+        return this.motor.getPosition().getValue();
+    }
+
+    @Override
+    public AngularVelocity getVelocity() {
+        return this.motor.getVelocity().getValue();
+    }
+
+    @Override
+    public AngularAcceleration getAcceleration() {
+        return this.motor.getAcceleration().getValue();
     }
 
     @Override
@@ -107,5 +117,17 @@ public class LazyFXS implements LazyCTRE, LazyMotor<TalonFXS> {
         telemetry.acceleration = motor.getAcceleration().getValue();
         telemetry.statorCurrent = motor.getStatorCurrent().getValue();
         telemetry.supplyCurrent = motor.getSupplyCurrent().getValue();
+    }
+    
+    public TalonFXS getMotor() {
+        return motor;
+    }
+
+    public TalonFXS getFollower() {
+        return follower;
+    }
+
+    public CANcoder getCanCoder() {
+        return canCoder;
     }
 }

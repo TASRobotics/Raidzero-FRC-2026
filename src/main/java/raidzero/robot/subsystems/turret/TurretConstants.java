@@ -24,7 +24,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
-import raidzero.lib.wrappers.motors.LazyMotor.MotorTelemetry;
+import raidzero.lib.wrappers.motors.LazyCTRE.MotorTelemetry;
 
 public final class TurretConstants {
     public static final class Yaw {
@@ -65,7 +65,7 @@ public final class TurretConstants {
         public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.58);
         public static final boolean ENABLE_REVERSE_SOFT_LIMIT = true;
 
-        public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
+        public static MotorTelemetry TELEMETRY = new MotorTelemetry();
 
         public static final Translation2d TURRET_MOUNT_OFFSET = new Translation2d(Inches.of(5.106), Inches.of(4.85));
     }
@@ -73,7 +73,7 @@ public final class TurretConstants {
     public static final class Pitch {
         public static final int MOTOR_ID = 11;
         public static final String CAN_BUS_NAME = "canShoot";
-        public static final MotorArrangementValue MOTOR_ARRANGEMENT = MotorArrangementValue.Minion_JST; 
+        public static final MotorArrangementValue MOTOR_ARRANGEMENT = MotorArrangementValue.Minion_JST;
 
         public static final double SENSOR_TO_MECHANISM_RATIO = (27.0 / 15.0) * (215.0 / 8.0);
         public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
@@ -92,7 +92,7 @@ public final class TurretConstants {
 
         public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Elevator_Static;
         public static final StaticFeedforwardSignValue FF_SIGN = StaticFeedforwardSignValue.UseVelocitySign;
-        
+
         public static final int POSITION_SLOT = 0;
 
         // * NOTE: This should start at 10 and go down to increase speed
@@ -110,9 +110,8 @@ public final class TurretConstants {
 
         public static final Angle STARTING_ANGLE = Degrees.of(10.0);
 
-        public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
+        public static MotorTelemetry TELEMETRY = new MotorTelemetry();
     }
-
 
     public static final class Limelight {
         public static final Angle MOUNT_ANGLE = Degrees.of(5.0);
@@ -161,17 +160,13 @@ public final class TurretConstants {
             RPS_TABLE.put(2.71, 42.0);
             RPS_TABLE.put(2.84, 42.0);
 
-            // Distance (m), Time (s) - Calculated for 15 deg from Vertical (75 deg launch)
-            TOF_TABLE.put(1.75, 0.284);
-            TOF_TABLE.put(2.00, 0.396);
-            TOF_TABLE.put(1.25, 0.432);
-            TOF_TABLE.put(1.45, 0.475);
-            TOF_TABLE.put(1.61, 0.513);
-            TOF_TABLE.put(1.82, 0.551);
-            TOF_TABLE.put(2.08, 0.600);
-            TOF_TABLE.put(2.29, 0.646);
-            TOF_TABLE.put(2.42, 0.665);
-
+            TOF_TABLE.put(1.35, 1.0771);
+            TOF_TABLE.put(1.87, 1.3412);
+            TOF_TABLE.put(2.01, 1.3525);
+            TOF_TABLE.put(2.08, 1.3775);
+            TOF_TABLE.put(2.27, 1.4086);
+            TOF_TABLE.put(2.35, 1.4417);
+            TOF_TABLE.put(2.4, 1.475);
         }
     }
 

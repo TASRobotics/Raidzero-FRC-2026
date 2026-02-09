@@ -1,5 +1,6 @@
 package raidzero.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;
@@ -8,6 +9,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.lib.R0Subsystem;
+import raidzero.robot.subsystems.turret.Turret;
+import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
 
 public class Shooter extends R0Subsystem<ShooterIO> {
     private static Shooter system;
@@ -20,12 +23,15 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      */
     public Command shoot() {
         return run(() -> {
-            io.setVelocity(velocityTarget);
+            AngularVelocity target = RotationsPerSecond
+                    .of(Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
+
+            io.setVelocity(target);
         });
     }
 
     public Command manualShoot() {
-        return run(()->io.setVelocity(velocityTarget));
+        return run(() -> io.setVelocity(velocityTarget));
     }
 
     public Command incrementVelocitySetpoint(AngularVelocity speed) {
@@ -92,6 +98,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
         super.periodic();
         SmartDashboard.putNumber("Shooter speed", io.getVelocity().in(RotationsPerSecond));
         SmartDashboard.putNumber("Shooter target speed", velocityTarget.in(RotationsPerSecond));
+
     }
 
 }

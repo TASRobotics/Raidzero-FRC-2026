@@ -56,12 +56,12 @@ public interface HoodIO extends SubsystemIO {
 
         @Override
         public void moveTo(Angle angleTarget) {
-            pitch.moveWithMMVolt(angleTarget, 0);
+            pitch.setMMPositionTarget(angleTarget, 0);
         }
 
         @Override
         public Angle getPitch() {
-            return pitch.getFeedbackPosition();
+            return pitch.getPosition();
         }
 
         @Override
@@ -71,7 +71,7 @@ public interface HoodIO extends SubsystemIO {
 
         @Override
         public void updateTelemetry() {
-            pitch.updateTelemetry(Pitch.TELEMETRY);
+            this.pitch.updateTelemetry(Pitch.TELEMETRY);
         }
     }
 

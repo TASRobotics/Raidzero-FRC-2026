@@ -7,7 +7,10 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.robot.commands.Aim;
 import raidzero.robot.subsystems.drive.Limelight;
 import raidzero.robot.subsystems.drive.Swerve;
@@ -46,8 +49,33 @@ public class Superstructure {
       // public static Trigger hoardingToggle = operator.button(0);
       // public static Trigger shootingToggle = operator.button(1);
 
-      // public static Trigger hubActive = new Trigger(() -> false); // placeholder
-      // value until repo is upgraded to 2026
+      public static final Trigger hubActive = new Trigger(() -> {
+            double t = Timer.getMatchTime();
+            if (t < 0)
+                  return false;
+
+            // Match timing (seconds remaining)
+            if (t > 140 || t > 130 || t <= 30)
+                  return true;
+            // >140 = auto, >130 = transition, <=30 = endgame
+
+            int shift = (t > 105) ? 1 : (t > 80) ? 2 : (t > 55) ? 3 : 4;
+
+            String data = DriverStation.getGameSpecificMessage();
+            if (data == null || data.isEmpty())
+                  return true;
+
+            boolean redStartsInactive = data.charAt(0) == 'R';
+            var allianceOpt = DriverStation.getAlliance();
+            if (allianceOpt.isEmpty())
+                  return true;
+
+            boolean isRed = allianceOpt.get() == DriverStation.Alliance.Red;
+            boolean startedInactive = (isRed && redStartsInactive) || (!isRed && !redStartsInactive);
+
+            boolean inactiveNow = ((shift - 1) % 2 == 0) ? startedInactive : !startedInactive;
+            return !inactiveNow;
+      });
 
       // public static Trigger CAN_SHOOT =
       // turret.hasHubLOS().and(hubActive).and(swerve.inShootingArea()).and(shootingToggle);

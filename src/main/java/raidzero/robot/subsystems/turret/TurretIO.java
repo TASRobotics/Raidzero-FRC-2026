@@ -106,12 +106,12 @@ public interface TurretIO extends SubsystemIO {
 
         @Override
         public void moveTo(Angle setpoint) {
-            yaw.moveWithMMVolt(setpoint, Yaw.POSITION_SLOT);
+            yaw.setMMPositionTarget(setpoint, Yaw.POSITION_SLOT);
         }
 
         @Override
         public Angle getYaw() {
-            return yaw.getFeedbackPosition();
+            return yaw.getPosition();
         }
 
         @Override
@@ -164,7 +164,7 @@ public interface TurretIO extends SubsystemIO {
 
         @Override
         public void runYawPercent(double percent) {
-            yaw.setPercent(percent);
+            yaw.setDutyCycle(percent);
         }
 
         @Override

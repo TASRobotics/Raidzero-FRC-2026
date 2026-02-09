@@ -8,9 +8,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
 import raidzero.robot.subsystems.turret.TurretConstants.Yaw;
 
+/**
+ * All field centic poses
+ */
 public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
 
-    public static final double CODE_LOOP_LATENCY = 0.02;
+    public static final double CODE_LOOP_LATENCY = 0.002;
 
     /**
      * Adjusts the turret aim to the static goal location without kinetic lead
@@ -92,6 +95,7 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
     private Pose2d calculateKineticGoal(ChassisSpeeds whipSpeeds, Pose2d kineticTurret, Pose2d staticGoal) {
         Translation2d virtualGoalTranslation = staticGoal.getTranslation();
         double turretToGoalDist = kineticTurret.getTranslation().getDistance(virtualGoalTranslation);
+
         double currentDistanceTOF = Kinetics.TOF_TABLE.get(turretToGoalDist);
 
         for (int i = 0; i < 3; i++) {

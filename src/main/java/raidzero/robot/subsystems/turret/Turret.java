@@ -18,13 +18,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 
 import raidzero.lib.R0Subsystem;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
-
-import static raidzero.robot.subsystems.turret.TurretConstants.*;
 
 public class Turret extends R0Subsystem<TurretIO> {
     private static Turret system;
@@ -86,15 +85,17 @@ public class Turret extends R0Subsystem<TurretIO> {
     /**
      * Sets the startup angle of the turret
      */
-    public void setStartupAngle() {}
+    public void setStartupAngle() {
+    }
 
     /**
      * Gets the distance from the hub april tag to the turret
      * 
      * @return
      */
-    public Distance getHubDistance() {
-        return io.getHubDistance();
+    public Distance getHubDistance(boolean kineticLead) {
+        return Meters.of(kineticLead ? kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
+                : staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose));
     }
 
     /**
@@ -108,6 +109,7 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     /**
      * Gets the AimBot instance for static/kinetic aiming
+     * 
      * @param kineticLead wether or not to use kinetic leading for shoot-on-the-move
      * @return the AimBot instance
      */
@@ -117,7 +119,8 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     /**
      * Gets the goal pose on the current alliance
-     * @return 
+     * 
+     * @return
      */
     public Translation2d getAllianceTarget() {
         return allianceTargetFieldPose;
@@ -129,17 +132,19 @@ public class Turret extends R0Subsystem<TurretIO> {
 
         ChassisSpeeds rawSpeeds = swerve.getState().Speeds;
         ChassisSpeeds filteredSpeeds = new ChassisSpeeds(
-            vxFilter.calculate(rawSpeeds.vxMetersPerSecond),
-            vyFilter.calculate(rawSpeeds.vyMetersPerSecond),
-            omegaFilter.calculate(rawSpeeds.omegaRadiansPerSecond)
-        );
+                vxFilter.calculate(rawSpeeds.vxMetersPerSecond),
+                vyFilter.calculate(rawSpeeds.vyMetersPerSecond),
+                omegaFilter.calculate(rawSpeeds.omegaRadiansPerSecond));
 
         staticAimBot = staticAimBot.adjustStaticAim(swerve.getState().Pose, new Rotation2d(getCurrentYaw()),
                 allianceTargetFieldPose);
-                
+
         kineticAimBot = staticAimBot.adjustKineticLead(filteredSpeeds);
-        // SmartDashboard.putNumber("LL Turret Angle", io.getYawFromTarget().in(Rotations));
-        // SmartDashboard.putNumber("LL Turret Distance", io.getHubDistance().in(Meters));
+
+        // SmartDashboard.putNumber("LL Turret Angle",
+        // io.getYawFromTarget().in(Rotations));
+        // SmartDashboard.putNumber("LL Turret Distance",
+        // io.getHubDistance().in(Meters));
 
         SmartDashboard.putNumber("Turret Angle", io.getYaw().in(Rotations));
 
@@ -150,8 +155,10 @@ public class Turret extends R0Subsystem<TurretIO> {
         kineticTurretSender.set(kineticAimBot.turret());
         kineticGoalSender.set(kineticAimBot.goal());
 
-        SmartDashboard.putNumber("Static Hub Distance", staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose));
-        SmartDashboard.putNumber("Kinetic Hub Distance", kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose));
+        SmartDashboard.putNumber("Static Hub Distance",
+                staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose));
+        SmartDashboard.putNumber("Kinetic Hub Distance",
+                kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose));
     }
 
     private Turret(TurretIO io) {

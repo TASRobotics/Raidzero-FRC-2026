@@ -41,7 +41,7 @@ public interface IndexerIO extends SubsystemIO {
         }
 
         public void go(AngularVelocity velocity) {
-            motor.setVelocity(velocity, 0);
+            motor.setMMVelocityTarget(velocity, 0);
         }
 
         public void stop() {
@@ -49,7 +49,7 @@ public interface IndexerIO extends SubsystemIO {
         }
 
         public AngularVelocity getVelocity() {
-            return motor.getFeedbackVelocity();
+            return motor.getVelocity();
         }
 
         @Override
