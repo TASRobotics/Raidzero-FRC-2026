@@ -58,6 +58,10 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
         motorConfiguration.CurrentLimits.StatorCurrentLimit = statorCurrentLimit;
         motorConfiguration.CurrentLimits.SupplyCurrentLimit = supplyCurrentLimit;
         motorConfiguration.CurrentLimits.SupplyCurrentLowerTime = 0.0;
+
+        motorConfiguration.ClosedLoopGeneral.ContinuousWrap = false;
+
+        motorConfiguration.Audio.AllowMusicDurDisable = true;
     }
 
     @Override

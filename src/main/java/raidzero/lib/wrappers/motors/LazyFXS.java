@@ -1,5 +1,6 @@
 package raidzero.lib.wrappers.motors;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -26,6 +27,7 @@ public class LazyFXS implements LazyCTRE {
             TalonFXSConfiguration followConfiguration, MotorAlignmentValue followerInverted, int canCoderID,
             String canCoderCanBus, CANcoderConfiguration canCoderConfiguration) {
         motor = new TalonFXS(motorID, canBus);
+        motor = new TalonFXS(motorID, new CANBus("canDoAttitude"));
         motor.getConfigurator().apply(configuration);
 
         if (followConfiguration != null) {

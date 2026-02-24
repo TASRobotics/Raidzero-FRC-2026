@@ -46,6 +46,9 @@ public class Turret extends R0Subsystem<TurretIO> {
     private AimBot staticAimBot = null;
     private AimBot kineticAimBot = null;
 
+    //todo: auto set the turret to unwrap when idle (not shooting)
+    //todo: hood backlash compensation (go down and back up when moving in the negative direction to compensate)
+
     /**
      * Moves the robot to the given setpoint
      * 

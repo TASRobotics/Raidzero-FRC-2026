@@ -65,9 +65,9 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
         motorConfiguration.CurrentLimits.SupplyCurrentLowerTime = 0.0;
 
         motorConfiguration.ClosedLoopGeneral.ContinuousWrap = false;
-
         motorConfiguration.Commutation.AdvancedHallSupport = AdvancedHallSupportValue.Enabled;
 
+        motorConfiguration.Audio.AllowMusicDurDisable = true;
     }
 
     @Override

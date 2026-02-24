@@ -33,6 +33,10 @@ public class Hood extends R0Subsystem<HoodIO> {
         return run(() -> io.moveTo(angle));
     }
 
+    public Command stop() {
+        return run(() -> io.stop());
+    }
+
     /**
      * Sets the startup angle
      */

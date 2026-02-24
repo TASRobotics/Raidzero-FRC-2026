@@ -62,25 +62,61 @@ public interface LazyCTRE {
      */
     void setDutyCycle(double percent);
 
+    /**
+     * Sets the motor's {@link NeutralModeValue} to Coast, allowing the motor to
+     * spin freely when no power is applied
+     */
     void setCoast();
 
+    /**
+     * Sets the motor's {@link NeutralModeValue} to Brake, causing the motor to
+     * resist motion when no power is applied
+     */
     void setBrake();
 
+    /**
+     * Enalbes FOC, increasing the motor's peak power by 15%
+     */
     void enableFOC();
 
+    /**
+     * Disables FOC, returning the motor's peak power to normal
+     */
     void disableFOC();
 
+    /**
+     * Stops the motor
+     */
     void stop();
 
+    /**
+     * Gets the current motor feedback position in mechanism-relative units
+     * 
+     * @return the current mechanism position
+     */
     Angle getPosition();
-    
+
+    /**
+     * Gets the current motor feedback velocity in mechanism-relative units
+     * 
+     * @return the current mechanism velocity
+     */
     AngularVelocity getVelocity();
 
+    /**
+     * Gets the current motor feedback acceleration in mechanism-relative units
+     * 
+     * @return the current mechanism acceleration
+     */
     AngularAcceleration getAcceleration();
 
+    /**
+     * Updates the telemetry data for the motor
+     * @param telemetry the telemetry object to update
+     */
     public void updateTelemetry(MotorTelemetry telemetry);
 
-     @AutoLog
+    @AutoLog
     public static class MotorTelemetry {
         public Angle position;
         public AngularVelocity velocity;

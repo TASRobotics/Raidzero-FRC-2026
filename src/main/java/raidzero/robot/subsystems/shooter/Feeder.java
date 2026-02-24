@@ -4,36 +4,36 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;
 
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.lib.R0Subsystem;
 
-public class Indexer extends R0Subsystem<IndexerIO> {
-    private static Indexer system;
+public class Feeder extends R0Subsystem<FeederIO> {
+    private static Feeder system;
 
 
-    public Command go(AngularVelocity speed) {
-        return run(() -> io.go(speed));
+    public Command go() {
+        return run(() -> io.go(ShooterConstants.Feeder.FEEDER_SPEED));
     }
 
     public Command stop() {
         return run(() -> io.stop());
     }
 
-    private Indexer(IndexerIO io) {
+    private Feeder(FeederIO io) {
         super(io);
     }
 
-    public static Indexer system() {
+    public static Feeder system() {
         if (system == null) {
             if (Utils.isSimulation())
-                system = new Indexer(new IndexerIO.Sim());
+                system = new Feeder(new FeederIO.Sim());
             else
-                system = new Indexer(new IndexerIO.Real());
+                system = new Feeder(new FeederIO.Real());
         }
         return system;
     }
+
     @Override
     public void periodic() {
         super.periodic();

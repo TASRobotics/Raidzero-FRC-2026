@@ -14,6 +14,7 @@ import raidzero.lib.LimelightHelpers;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyFXS;
 import raidzero.lib.wrappers.motors.LazyFXSBuilder;
+import raidzero.robot.Superstructure;
 
 import static raidzero.robot.subsystems.turret.TurretConstants.Yaw;
 import static raidzero.robot.subsystems.turret.TurretConstants.Limelight;
@@ -102,6 +103,8 @@ public interface TurretIO extends SubsystemIO {
                     .build();
 
             lastTagDistance = 0;
+
+            // Superstructure.orchestra.addInstrument(this.yaw.getMotor());
         }
 
         @Override

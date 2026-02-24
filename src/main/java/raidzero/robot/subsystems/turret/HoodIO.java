@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Amps;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyFXS;
 import raidzero.lib.wrappers.motors.LazyFXSBuilder;
+import raidzero.robot.Superstructure;
 
 import static raidzero.robot.subsystems.turret.TurretConstants.Pitch;
 
@@ -30,6 +31,11 @@ public interface HoodIO extends SubsystemIO {
      */
     public void setStartupAngle();
 
+    /**
+     * Stops the hood motor
+     */
+    public void stop();
+
     public class Real implements HoodIO {
         LazyFXS pitch;
 
@@ -52,6 +58,8 @@ public interface HoodIO extends SubsystemIO {
                             Pitch.CRUISE_VELOCITY,
                             Pitch.ACCELERATION)
                     .build();
+
+            // Superstructure.orchestra.addInstrument(pitch.getMotor());
         }
 
         @Override
@@ -72,6 +80,11 @@ public interface HoodIO extends SubsystemIO {
         @Override
         public void updateTelemetry() {
             this.pitch.updateTelemetry(Pitch.TELEMETRY);
+        }
+        
+        @Override
+        public void stop() {
+            this.pitch.stop();
         }
     }
 

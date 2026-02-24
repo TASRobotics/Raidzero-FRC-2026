@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Amps;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
+import raidzero.robot.Superstructure;
 import raidzero.robot.subsystems.shooter.ShooterConstants.Flywheel;
 
 public interface ShooterIO extends SubsystemIO {
@@ -38,21 +39,25 @@ public interface ShooterIO extends SubsystemIO {
     void stop();
 
     public class Real implements ShooterIO {
-        LazyTalon flywheel = new LazyTalonBuilder(
-                Flywheel.MOTOR_ID, Flywheel.CAN_BUS_NAME,
-                Flywheel.SENSOR_TO_MECHANISM_RATIO, Flywheel.INVERTED,
-                Flywheel.STATOR_CURRENT_LIMIT.in(Amps),
-                Flywheel.SUPPLY_CURRENT_LIMIT.in(Amps))
-                .withPIDFConfiguration(
-                        Flywheel.P, Flywheel.I, Flywheel.D,
-                        Flywheel.S, Flywheel.G, Flywheel.V, Flywheel.A,
-                        Flywheel.FF_GRAVITY_TYPE, Flywheel.FF_SIGN, Flywheel.VELOCITY_SLOT)
-                .withMotionMagicConfiguration(0, 0, Flywheel.CRUISE_VELOCITY,
-                        Flywheel.ACCELERATION)
-                .withFollower(Flywheel.FOLLOW_ID, Flywheel.CAN_BUS_NAME, Flywheel.FOLLOWER_INVERTED)
-                .build();
+        LazyTalon flywheel;
 
         Real() {
+            flywheel = new LazyTalonBuilder(
+                    Flywheel.MOTOR_ID, Flywheel.CAN_BUS_NAME,
+                    Flywheel.SENSOR_TO_MECHANISM_RATIO, Flywheel.INVERTED,
+                    Flywheel.STATOR_CURRENT_LIMIT.in(Amps),
+                    Flywheel.SUPPLY_CURRENT_LIMIT.in(Amps))
+                    .withPIDFConfiguration(
+                            Flywheel.P, Flywheel.I, Flywheel.D,
+                            Flywheel.S, Flywheel.G, Flywheel.V, Flywheel.A,
+                            Flywheel.FF_GRAVITY_TYPE, Flywheel.FF_SIGN, Flywheel.VELOCITY_SLOT)
+                    .withMotionMagicConfiguration(0, 0, Flywheel.CRUISE_VELOCITY,
+                            Flywheel.ACCELERATION)
+                    .withFollower(Flywheel.FOLLOW_ID, Flywheel.CAN_BUS_NAME, Flywheel.FOLLOWER_INVERTED)
+                    .build();
+
+            // Superstructure.orchestra.addInstrument(flywheel.getMotor());
+
             flywheel.setCoast();
         }
 

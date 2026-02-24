@@ -2,29 +2,44 @@ package raidzero.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import raidzero.robot.commands.Aim;
 import raidzero.robot.subsystems.drive.Limelight;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.drive.TunerConstants;
+import raidzero.robot.subsystems.intake.Extender;
+import raidzero.robot.subsystems.intake.Intake;
+import raidzero.robot.subsystems.intake.Spindexer;
+import raidzero.robot.subsystems.turret.Hood;
 import raidzero.robot.subsystems.turret.Turret;
-import raidzero.robot.subsystems.shooter.Indexer;
+import raidzero.robot.subsystems.shooter.Feeder;
 import raidzero.robot.subsystems.shooter.Shooter;
 
 public class Superstructure {
-      private static Turret turret = Turret.system();
+      // public static Orchestra orchestra = new Orchestra();
+
       private static Shooter shooter = Shooter.system();
-      private static Swerve swerve = Swerve.system();
-      private static Indexer indexer = Indexer.system();
+      private static Turret turret = Turret.system();
+      private static Hood hood = Hood.system();
+      private static Feeder feeder = Feeder.system();
+      private static Spindexer spindexer = Spindexer.system();
+      private static Extender extender = Extender.system();
+      private static Intake intake = Intake.system();
+
       private static Limelight limelight = Limelight.system();
+      private static Swerve swerve = Swerve.system();
 
       private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.5;
       private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.5;
@@ -85,12 +100,10 @@ public class Superstructure {
 
       public static void runSubsystemInitRoutines() {
             turret.setStartupAngle();
+            // orchestra.loadMusic("mario.chrp");
       }
 
       public static void applyDefaultCommands() {
-            shooter.setDefaultCommand(shooter.stop());
-            // swerve.setDefaultCommand(swerve.applyRequest(() -> brake));
-
             // CAN_SHOOT.whileTrue(shooter.shoot());
 
             swerve.setDefaultCommand(swerve.applyRequest(
@@ -99,33 +112,35 @@ public class Superstructure {
                                     .withVelocityY(-driver.getLeftX() * MaxSpeed)
                                     .withRotationalRate(-driver.getRightX() * MaxAngularRate)));
 
-            indexer.setDefaultCommand(indexer.stop());
-
-            turret.setDefaultCommand(new Aim());
+            shooter.setDefaultCommand(shooter.stop());
+            hood.setDefaultCommand(hood.stop());
+            // turret.setDefaultCommand(new Aim());
+            feeder.setDefaultCommand(feeder.stop());
+            spindexer.setDefaultCommand(spindexer.stop());
+            extender.setDefaultCommand(extender.stop());
+            intake.setDefaultCommand(intake.stop());
       }
 
       public static void applyButtonBindings() {
-            // driverWantsControl.whileTrue(swerve.applyRequest(
-            // () -> fieldCentricDrive
-            // .withVelocityX(-driver.getLeftY() * MaxSpeed)
-            // .withVelocityY(-driver.getLeftX() * MaxSpeed)
-            // .withRotationalRate(-driver.getRightX() * MaxAngularRate)));
-            // }
-
-            driver.a().whileTrue(indexer.go(RotationsPerSecond.of(45)));
-            driver.y().whileTrue(turret.stop());
-            driver.b().whileTrue(shooter.manualShoot());
-            driver.x().whileTrue(indexer.go(RotationsPerSecond.of(-45)));
+            driver.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go()));
+            driver.rightTrigger().whileTrue(shooter.shoot());
 
             driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
-
-            driver.rightTrigger().whileTrue(shooter.shoot());
 
             driver.rightBumper().whileTrue(turret.movePercent(-0.1));
             driver.leftBumper().whileTrue(turret.movePercent(0.1));
 
-            driver.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(1)));
-            driver.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-1)));
+            driver.b().onTrue(extender.extend());
+            driver.x().onTrue(extender.retract());
+
+            driver.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(1.0)));
+            driver.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-1.0)));
+
+            driver.povRight().onTrue(hood.incrementPitch(Rotations.of(0.01)));
+            driver.povLeft().onTrue(hood.incrementPitch(Rotations.of(-0.01)));
+
+            // driver.y().onTrue(Commands.runOnce(() -> orchestra.play(), intake, extender, spindexer, feeder, shooter,
+            //             hood, turret).until(driver.a()));
       }
 
       public static void periodic() {
