@@ -105,7 +105,7 @@ public class Limelight extends SubsystemBase {
 
                 swerve.addVisionMeasurement(
                     limeFront.pose,
-                    Utils.fpgaToCurrentTime(limeFront.timestampSeconds),
+                    limeFront.timestampSeconds,
                     VecBuilder.fill(0.5, 0.5, 5).div(LimelightHelpers.getTA("limelight-front"))
                 );
             } else {
@@ -149,7 +149,7 @@ public class Limelight extends SubsystemBase {
 
                 swerve.addVisionMeasurement(
                     limeRear.pose,
-                    Utils.fpgaToCurrentTime(limeRear.timestampSeconds),
+                    limeRear.timestampSeconds,
                     VecBuilder.fill(0.5, 0.5, 5).div(LimelightHelpers.getTA("limelight-rear"))
                 );
             } else {
@@ -193,7 +193,7 @@ public class Limelight extends SubsystemBase {
 
                 swerve.addVisionMeasurement(
                     limeBL.pose,
-                    Utils.fpgaToCurrentTime(limeBL.timestampSeconds),
+                    limeBL.timestampSeconds,
                     VecBuilder.fill(0.75, 0.75, 5).div(LimelightHelpers.getTA("limelight-bl"))
                 );
             } else {
@@ -237,7 +237,7 @@ public class Limelight extends SubsystemBase {
 
                 swerve.addVisionMeasurement(
                     limeBR.pose,
-                    Utils.fpgaToCurrentTime(limeBR.timestampSeconds),
+                    limeBR.timestampSeconds,
                     VecBuilder.fill(0.75, 0.75, 5).div(LimelightHelpers.getTA("limelight-br"))
                 );
             } else {
