@@ -14,17 +14,17 @@ import raidzero.lib.LimelightHelpers;
 public class Limelight extends SubsystemBase {
     private boolean ignoreFrontLime = false;
     private boolean ignoreRearLime = false;
-    private boolean ignoreBlLime = false;
-    private boolean ignoreBrLime = false;
+    private boolean ignoreLeftLime = false;
+    private boolean ignoreRightLime = false;
     private boolean ignoreAllLimes = false;
 
-    private StructPublisher<Pose2d> flNT = NetworkTableInstance.getDefault().getStructTopic("flNT", Pose2d.struct).publish();
+    private StructPublisher<Pose2d> frontNT = NetworkTableInstance.getDefault().getStructTopic("frontNT", Pose2d.struct).publish();
     private StructPublisher<Pose2d> rearNT = NetworkTableInstance.getDefault().getStructTopic("rearNT", Pose2d.struct).publish();
-    private StructPublisher<Pose2d> blNT = NetworkTableInstance.getDefault().getStructTopic("blNT", Pose2d.struct).publish();
-    private StructPublisher<Pose2d> brNT = NetworkTableInstance.getDefault().getStructTopic("brNT", Pose2d.struct).publish();
+    private StructPublisher<Pose2d> leftNT = NetworkTableInstance.getDefault().getStructTopic("leftNT", Pose2d.struct).publish();
+    private StructPublisher<Pose2d> rightNT = NetworkTableInstance.getDefault().getStructTopic("rightNT", Pose2d.struct).publish();
 
-    private LimelightHelpers.PoseEstimate limeFront, limeRear, limeBL, limeBR;
-    private LimelightHelpers.PoseEstimate limeFrontPrev, limeRearPrev, limeBLPrev, limeBRPrev;
+    private LimelightHelpers.PoseEstimate limeFront, limeRear, limeLeft, limeRight;
+    private LimelightHelpers.PoseEstimate limeFrontPrev, limeRearPrev, limeLeftPrev, limeRightPrev;
 
     private Notifier notifier;
 
@@ -68,12 +68,12 @@ public class Limelight extends SubsystemBase {
 
         // updateFront();
         updateRear();
-        updateBackLeft();
-        // updateBackRight();
+        updateLeft();
+        // updateRight();
     }
 
     /**
-     * Updates the odometry for the front left limelight
+     * Updates the odometry for the front limelight
      */
     private void updateFront() {
         LimelightHelpers.SetRobotOrientation(
@@ -101,7 +101,7 @@ public class Limelight extends SubsystemBase {
 
             if (!ignoreAllLimes && !ignoreFrontLime) {
                 SmartDashboard.putBoolean("Frontpose", true);
-                flNT.set(limeFront.pose);
+                frontNT.set(limeFront.pose);
 
                 swerve.addVisionMeasurement(
                     limeFront.pose,
@@ -117,7 +117,7 @@ public class Limelight extends SubsystemBase {
     }
 
     /**
-     * Updates the odometry for the front right limelight
+     * Updates the odometry for the rear limelight
      */
     private void updateRear() {
         LimelightHelpers.SetRobotOrientation(
@@ -161,11 +161,11 @@ public class Limelight extends SubsystemBase {
     }
 
     /**
-     * Updates the odometry for the back left limelight
+     * Updates the odometry for the left limelight
      */
-    private void updateBackLeft() {
+    private void updateLeft() {
         LimelightHelpers.SetRobotOrientation(
-            "limelight-bl",
+            "limelight-left",
             swerve.getState().Pose.getRotation().getDegrees(),
             swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             0,
@@ -173,43 +173,43 @@ public class Limelight extends SubsystemBase {
             0,
             0
         );
-        limeBL = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-bl");
+        limeLeft = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-left");
 
-        if (limeBL != null && limeBL.pose != null) {
-            ignoreBlLime = !poseInField(limeBL.pose) ||
-                (Math.abs(LimelightHelpers.getBotPose3d_wpiBlue("limelight-bl").getZ()) > 0.4) ||
-                (LimelightHelpers.getTA("limelight-bl") < 0.1) ||
-                (limeBLPrev != null && (limeBL.pose.getTranslation().getDistance(limeBLPrev.pose.getTranslation()) /
-                    (limeBL.timestampSeconds - limeBLPrev.timestampSeconds)) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude()) ||
-                (limeBLPrev != null && (limeBL.pose.getTranslation()
-                    .getDistance(limeBLPrev.pose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
-                (limeBL.rawFiducials.length > 0 && limeBL.rawFiducials[0].ambiguity > 0.5 &&
-                    limeBL.rawFiducials[0].distToCamera > 4.0) ||
-                limeBL.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+        if (limeLeft != null && limeLeft.pose != null) {
+            ignoreLeftLime = !poseInField(limeLeft.pose) ||
+                (Math.abs(LimelightHelpers.getBotPose3d_wpiBlue("limelight-left").getZ()) > 0.4) ||
+                (LimelightHelpers.getTA("limelight-left") < 0.1) ||
+                (limeLeftPrev != null && (limeLeft.pose.getTranslation().getDistance(limeLeftPrev.pose.getTranslation()) /
+                    (limeLeft.timestampSeconds - limeLeftPrev.timestampSeconds)) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude()) ||
+                (limeLeftPrev != null && (limeLeft.pose.getTranslation()
+                    .getDistance(limeLeftPrev.pose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
+                (limeLeft.rawFiducials.length > 0 && limeLeft.rawFiducials[0].ambiguity > 0.5 &&
+                    limeLeft.rawFiducials[0].distToCamera > 4.0) ||
+                limeLeft.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
 
-            if (!ignoreAllLimes && !ignoreBlLime) {
-                SmartDashboard.putBoolean("BLpose", true);
-                blNT.set(limeBL.pose);
+            if (!ignoreAllLimes && !ignoreLeftLime) {
+                SmartDashboard.putBoolean("Leftpose", true);
+                leftNT.set(limeLeft.pose);
 
                 swerve.addVisionMeasurement(
-                    limeBL.pose,
-                    limeBL.timestampSeconds,
-                    VecBuilder.fill(0.75, 0.75, 5).div(LimelightHelpers.getTA("limelight-bl"))
+                    limeLeft.pose,
+                    limeLeft.timestampSeconds,
+                    VecBuilder.fill(0.75, 0.75, 5).div(LimelightHelpers.getTA("limelight-left"))
                 );
             } else {
-                SmartDashboard.putBoolean("BLpose", false);
+                SmartDashboard.putBoolean("Leftpose", false);
             }
 
-            limeBLPrev = limeBL;
+            limeLeftPrev = limeLeft;
         }
     }
 
     /**
-     * Updates the odometry for the back right limelight
+     * Updates the odometry for the right limelight
      */
-    private void updateBackRight() {
+    private void updateRight() {
         LimelightHelpers.SetRobotOrientation(
-            "limelight-br",
+            "limelight-right",
             swerve.getState().Pose.getRotation().getDegrees(),
             swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             0,
@@ -217,34 +217,34 @@ public class Limelight extends SubsystemBase {
             0,
             0
         );
-        limeBR = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-br");
+        limeRight = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-right");
 
-        if (limeBR != null && limeBR.pose != null) {
-            ignoreBrLime = !poseInField(limeBR.pose) ||
-                (Math.abs(LimelightHelpers.getBotPose3d_wpiBlue("limelight-br").getZ()) > 0.4) ||
-                (LimelightHelpers.getTA("limelight-br") < 0.1) ||
-                (limeBRPrev != null && (limeBR.pose.getTranslation().getDistance(limeBRPrev.pose.getTranslation()) /
-                    (limeBR.timestampSeconds - limeBRPrev.timestampSeconds)) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude()) ||
-                (limeBRPrev != null && (limeBR.pose.getTranslation()
-                    .getDistance(limeBRPrev.pose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
-                (limeBR.rawFiducials.length > 0 && limeBR.rawFiducials[0].ambiguity > 0.5 &&
-                    limeBR.rawFiducials[0].distToCamera > 4.0) ||
-                limeBR.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+        if (limeRight != null && limeRight.pose != null) {
+            ignoreRightLime = !poseInField(limeRight.pose) ||
+                (Math.abs(LimelightHelpers.getBotPose3d_wpiBlue("limelight-right").getZ()) > 0.4) ||
+                (LimelightHelpers.getTA("limelight-right") < 0.1) ||
+                (limeRightPrev != null && (limeRight.pose.getTranslation().getDistance(limeRightPrev.pose.getTranslation()) /
+                    (limeRight.timestampSeconds - limeRightPrev.timestampSeconds)) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude()) ||
+                (limeRightPrev != null && (limeRight.pose.getTranslation()
+                    .getDistance(limeRightPrev.pose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
+                (limeRight.rawFiducials.length > 0 && limeRight.rawFiducials[0].ambiguity > 0.5 &&
+                    limeRight.rawFiducials[0].distToCamera > 4.0) ||
+                limeRight.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
 
-            if (!ignoreAllLimes && !ignoreBrLime) {
-                SmartDashboard.putBoolean("BRpose", true);
-                brNT.set(limeBR.pose);
+            if (!ignoreAllLimes && !ignoreRightLime) {
+                SmartDashboard.putBoolean("Rightpose", true);
+                rightNT.set(limeRight.pose);
 
                 swerve.addVisionMeasurement(
-                    limeBR.pose,
-                    limeBR.timestampSeconds,
-                    VecBuilder.fill(0.75, 0.75, 5).div(LimelightHelpers.getTA("limelight-br"))
+                    limeRight.pose,
+                    limeRight.timestampSeconds,
+                    VecBuilder.fill(0.75, 0.75, 5).div(LimelightHelpers.getTA("limelight-right"))
                 );
             } else {
-                SmartDashboard.putBoolean("BRpose", false);
+                SmartDashboard.putBoolean("Rightpose", false);
             }
 
-            limeBRPrev = limeBR;
+            limeRightPrev = limeRight;
         }
     }
 
