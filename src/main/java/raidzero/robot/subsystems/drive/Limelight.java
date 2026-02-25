@@ -40,24 +40,28 @@ public class Limelight extends SubsystemBase {
 
         frontState = new LimelightState(
             "limelight-front",
+            LimelightState.PIPELINE.OBJECT,
             () -> swerve.getPigeon2().getRotation2d().getDegrees(),
             () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             swerve::addVisionMeasurement
         );
         rightState = new LimelightState(
             "limelight-right",
+            LimelightState.PIPELINE.TAG,
             () -> swerve.getPigeon2().getRotation2d().getDegrees(),
             () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             swerve::addVisionMeasurement
         );
         rearState = new LimelightState(
             "limelight-rear",
+            LimelightState.PIPELINE.TAG,
             () -> swerve.getPigeon2().getRotation2d().getDegrees(),
             () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             swerve::addVisionMeasurement
         );
         leftState = new LimelightState(
             "limelight-left",
+            LimelightState.PIPELINE.TAG,
             () -> swerve.getPigeon2().getRotation2d().getDegrees(),
             () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             swerve::addVisionMeasurement

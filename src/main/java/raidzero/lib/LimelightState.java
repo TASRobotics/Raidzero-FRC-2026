@@ -34,8 +34,9 @@ public class LimelightState {
      * @param robotYawRateSupplier A {@link Supplier} that provides the robot's yaw rate
      * @param addVisionMeasurementConsumer A {@link VisionMeasurementConsumer} callback that adds vision measurements into the swerve pose estimator
      */
-    public LimelightState(String limelightName, Supplier<Double> robotYawSupplier, Supplier<Double> robotYawRateSupplier, VisionMeasurementConsumer addVisionMeasurementConsumer) {
+    public LimelightState(String limelightName, PIPELINE pipeline, Supplier<Double> robotYawSupplier, Supplier<Double> robotYawRateSupplier, VisionMeasurementConsumer addVisionMeasurementConsumer) {
         this.limelightName = limelightName;
+        this.pipeline = pipeline;
         this.ntPublisher = NetworkTableInstance.getDefault()
             .getStructTopic(limelightName + "NT", Pose2d.struct)
             .publish();
@@ -126,6 +127,10 @@ public class LimelightState {
      * @param useMt2    Whether to use the MetaTag2 pose estimation method
      */
     public void update(boolean ignoreAll, double stdevX, double stdevY, double stdevRot, boolean useMt2) {
+        if (pipeline != PIPELINE.TAG) {
+            return;
+        }
+
         LimelightHelpers.SetRobotOrientation(
             limelightName,
             robotYawSupplier.get(),
