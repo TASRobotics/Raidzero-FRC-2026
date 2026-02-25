@@ -64,8 +64,8 @@ public class Limelight extends SubsystemBase {
         );
 
         limelights = Map.of(
-             "limelight-front", frontState,
-            // "limelight-right", rightState,
+            "limelight-front", frontState,
+            "limelight-right", rightState,
             "limelight-rear", rearState,
             "limelight-left", leftState
         );
