@@ -47,7 +47,7 @@ public final class TurretConstants {
 
         public static final double POSITION_S = 0.21;
         public static final double POSITION_G = 0.0; // * NOTE: this should be 0
-        public static final double POSITION_V = 2.5;
+        public static final double POSITION_V = 2.8;
         public static final double POSITION_A = 0.0;
 
         public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Elevator_Static; // * Note: no gravity
@@ -71,6 +71,7 @@ public final class TurretConstants {
         public static MotorTelemetry TELEMETRY = new MotorTelemetry();
 
         public static final Translation2d TURRET_MOUNT_OFFSET = new Translation2d(Inches.of(5.106), Inches.of(4.85));
+        public static final double TOLERANCE_SRT = 0.0001;
     }
 
     public static final class Pitch {
@@ -80,36 +81,37 @@ public final class TurretConstants {
 
         public static final double SENSOR_TO_MECHANISM_RATIO = 1 / ((10.0 / 42.0) * (14.0 / 42.0) * (16.0 / 25.0)
                 * (12.0 / 205.0)); // old ratio: (27.0 / 15.0) * (215.0 / 8.0);
+        public static final double SENSOR_TO_MECHANISM_RATIO_ = (42.0 / 10.0) * (42.0 / 14.0) * (25.0 / 16.0) * (205.0 / 12.0);
         public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
-        public static final Current STATOR_CURRENT_LIMIT = Amps.of(30.0);
+        public static final Current STATOR_CURRENT_LIMIT = Amps.of(40.0);
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
 
-        public static final double P = 1.5;
+        public static final double P = 400.0;
         public static final double I = 0.0;
         public static final double D = 0.0;
 
         public static final double S = 0.3;
-        public static final double G = 0.3;
+        public static final double G = 0.2;
         public static final double V = 3.2;
         public static final double A = 0.0;
 
-        public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Elevator_Static;
+        public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Arm_Cosine;
         public static final StaticFeedforwardSignValue FF_SIGN = StaticFeedforwardSignValue.UseVelocitySign;
 
         public static final int POSITION_SLOT = 0;
 
         // * NOTE: This should start at 10 and go down to increase speed
-        public static final double EXPO_V = 10.0;
-        public static final double EXPO_A = 10.0;
+        public static final double EXPO_V = 3.2;
+        public static final double EXPO_A = 1.0;
 
-        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(0.6); // 48.375
+        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(0.29); // 48.375
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(5.0);
 
-        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(0.1);
+        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(0.1135);
         public static final boolean ENALBE_FORWARD_SOFT_LIMIT = true;
 
-        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(0.0);
+        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(0.0275);
         public static final boolean ENABLE_REVERSE_SOFT_LIMIT = true;
 
         public static final Angle STARTING_ANGLE = Degrees.of(10.0);

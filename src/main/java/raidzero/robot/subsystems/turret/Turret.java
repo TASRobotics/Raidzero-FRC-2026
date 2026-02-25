@@ -24,6 +24,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import raidzero.lib.R0Subsystem;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
+import raidzero.robot.subsystems.turret.TurretConstants.Yaw;
 
 public class Turret extends R0Subsystem<TurretIO> {
     private static Turret system;
@@ -127,6 +128,23 @@ public class Turret extends R0Subsystem<TurretIO> {
      */
     public Translation2d getAllianceTarget() {
         return allianceTargetFieldPose;
+    }
+
+    private double ScreamRemainderTheorem(int teethOnFirst, int teethOnSecond, double readingOnFirst, double readingOnSecond) {
+       double[] possibleReadings=new double[(int)teethOnSecond];
+         for (int i=0;i<(int)teethOnSecond;i++) {
+              possibleReadings[i]=(readingOnFirst + i*teethOnFirst) % teethOnSecond;
+              if (possibleReadings[i]<0) {
+                possibleReadings[i]+=teethOnSecond;
+              }
+         }
+         for (int i=0;i<(int)teethOnSecond;i++) {
+              if (Math.abs(possibleReadings[i]-readingOnSecond)<Yaw.TOLERANCE_SRT) {
+                return i*teethOnFirst + readingOnFirst;
+              }
+         }
+         DriverStation.reportWarning("Looks like the SRT failed in Turret.java", false);
+         return 0.0;
     }
 
     @Override

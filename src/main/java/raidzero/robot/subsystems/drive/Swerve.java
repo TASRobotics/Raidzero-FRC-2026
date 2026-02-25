@@ -12,15 +12,16 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -50,9 +51,10 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
 
-    private static Swerve system;
+    private final Field2d field = new Field2d();
+    private StructPublisher<Pose2d> botpose = NetworkTableInstance.getDefault().getStructTopic("botPoseNT", Pose2d.struct).publish();
 
-    private Field2d field = new Field2d();
+    private static Swerve system;
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -131,6 +133,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         if (Utils.isSimulation()) {
             startSimThread();
         }
+
+        SmartDashboard.putData("Field", field);
     }
 
     /**
@@ -151,6 +155,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         if (Utils.isSimulation()) {
             startSimThread();
         }
+
+        SmartDashboard.putData("Field", field);
     }
 
     /**
@@ -177,6 +183,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         if (Utils.isSimulation()) {
             startSimThread();
         }
+
+        SmartDashboard.putData("Field", field);
     }
 
     /**
@@ -229,9 +237,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             });
         }
 
+        botpose.set(this.getState().Pose);
         field.setRobotPose(this.getState().Pose);
-        
-        SmartDashboard.putData(field);
     }
 
     private void startSimThread() {
@@ -297,30 +304,9 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
      */
     public static Swerve system() {
         if (system == null) {
-            system = new Swerve(
-                TunerConstants.DrivetrainConstants,
-                TunerConstants.FrontLeft,
-                TunerConstants.FrontRight,
-                TunerConstants.BackLeft,
-                TunerConstants.BackRight
-            );
+            system = TunerConstants.createDrivetrain();
         }
 
         return system;
-    }
-
-    public double getRobotHeightMeters() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRobotHeightMeters'");
-    }
-
-    public double getVerticalVelocityMetersPerSecond() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getVerticalVelocityMetersPerSecond'");
-    }
-
-    public Trigger inShootingArea() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'inShootingArea'");
     }
 }
