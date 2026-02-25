@@ -1,31 +1,215 @@
 package raidzero.robot.subsystems.drive;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import raidzero.lib.LimelightHelpers;
 
 public class Limelight extends SubsystemBase {
-    private boolean ignoreFrontLime = false;
-    private boolean ignoreRearLime = false;
-    private boolean ignoreLeftLime = false;
-    private boolean ignoreRightLime = false;
+    public class LimelightState {
+        public enum PIPELINE {
+            TAG, OBJECT,
+        }
+
+        private String limelightName;
+        private LimelightHelpers.PoseEstimate currEstimate;
+        private LimelightHelpers.PoseEstimate prevEstimate;
+        private StructPublisher<Pose2d> ntPublisher;
+        private boolean ignore;
+        private PIPELINE pipeline = PIPELINE.TAG;
+
+        /**
+         * Constructs a LimelightState instance
+         *
+         * @param limelightName The name of the limelight
+         */
+        public LimelightState(String limelightName) {
+            this.limelightName = limelightName;
+            this.ntPublisher = NetworkTableInstance.getDefault()
+                .getStructTopic(limelightName + "NT", Pose2d.struct)
+                .publish();
+
+            this.ignore = false;
+        }
+
+        /**
+         * Gets the current pose estimate
+         *
+         * @return The current {@link LimelightHelpers.PoseEstimate}
+         */
+        public LimelightHelpers.PoseEstimate getEstimate() {
+            return currEstimate;
+        }
+
+        /**
+         * Gets the name of the limelight
+         *
+         * @return The name of the limelight
+         */
+        public String getName() {
+            return limelightName;
+        }
+
+        /**
+         * Gets the current pipeline
+         *
+         * @return The current {@link PIPELINE}
+         */
+        public PIPELINE getPipeline() {
+            return pipeline;
+        }
+
+        /**
+         * Sets the current pipeline
+         *
+         * @param pipeline The {@link PIPELINE} to set
+         */
+        public void setPipeline(PIPELINE pipeline) {
+            this.pipeline = pipeline;
+            LimelightHelpers.setPipelineIndex(limelightName, pipeline.ordinal());
+        }
+
+        /**
+         * Updates the limelight state
+         *
+         * @param ignoreAll Whether to ignore all measurements
+         */
+        public void update(boolean ignoreAll) {
+            update(ignoreAll, 0.5, 0.5, Units.degreesToRadians(5));
+        }
+
+        /**
+         * Updates the limelight state
+         *
+         * @param ignoreAll Whether to ignore all measurements
+         * @param stdevX    The standard deviation in the X direction in meters
+         * @param stdevY    The standard deviation in the Y direction in meters
+         */
+        public void update(boolean ignoreAll, double stdevX, double stdevY) {
+            update(ignoreAll, stdevX, stdevY, Units.degreesToRadians(5));
+        }
+
+        /**
+         * Updates the limelight state
+         *
+         * @param ignoreAll Whether to ignore all measurements
+         * @param stdevRot  The standard deviation for rotations in radians
+         */
+        public void update(boolean ignoreAll, double stdevRot) {
+            update(ignoreAll, 0.5, 0.5, stdevRot);
+        }
+
+        /**
+         * Updates the limelight state
+         *
+         * @param ignoreAll Whether to ignore all measurements
+         * @param stdevX    The standard deviation in the X direction in meters
+         * @param stdevY    The standard deviation in the Y direction in meters
+         * @param stdevRot  The standard deviation for rotations in radians
+         */
+        public void update(boolean ignoreAll, double stdevX, double stdevY, double stdevRot) {
+            LimelightHelpers.SetRobotOrientation(
+                limelightName,
+                swerve.getPigeon2().getYaw().getValueAsDouble(),
+                swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
+                0,
+                0,
+                0,
+                0
+            );
+
+            if (Timer.getFPGATimestamp() < 30) {
+                currEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+            } else {
+                currEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+            }
+
+            if (currEstimate != null && currEstimate.pose != null) {
+                ignore = checkIgnore();
+
+                if (!ignore && !ignoreAll) {
+                    ntPublisher.set(currEstimate.pose);
+
+                    swerve.addVisionMeasurement(
+                        currEstimate.pose,
+                        currEstimate.timestampSeconds,
+                        VecBuilder.fill(stdevX, stdevY, stdevRot)
+                            .div(Math.max(LimelightHelpers.getTA(limelightName), 0.05))
+                    );
+
+                    if (Timer.getFPGATimestamp() < 30 && timer.hasElapsed(1)) {
+                        headingReadings.add(currEstimate.pose.getRotation().getDegrees());
+                    }
+                }
+
+                prevEstimate = currEstimate;
+            } else {
+                ignore = false;
+            }
+
+            SmartDashboard.putBoolean(limelightName + "Pose", !ignore && !ignoreAll);
+        }
+
+        private boolean checkIgnore() {
+            return !poseInField(currEstimate.pose) ||
+                (Math.abs(LimelightHelpers.getBotPose3d_wpiBlue(limelightName).getZ()) > 0.4) ||
+                (LimelightHelpers.getTA(limelightName) < 0.1) ||
+                (prevEstimate != null && (currEstimate.pose.getTranslation().getDistance(prevEstimate.pose.getTranslation()) /
+                    (currEstimate.timestampSeconds - prevEstimate.timestampSeconds)) > TunerConstants.kSpeedAt12Volts
+                        .baseUnitMagnitude()) ||
+                (prevEstimate != null && (currEstimate.pose.getTranslation()
+                    .getDistance(
+                        prevEstimate.pose
+                            .getTranslation()
+                    ) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
+                (currEstimate.rawFiducials.length > 0 && currEstimate.rawFiducials[0].ambiguity > 0.5 &&
+                    currEstimate.rawFiducials[0].distToCamera > 4.0) ||
+                currEstimate.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+        }
+
+        /**
+         * Checks if a pose is inside the field dimensions
+         *
+         * @param pose The {@link Pose2d} to check
+         * @return True if the pose is inside the field dimensions, false otherwise
+         */
+        private boolean poseInField(Pose2d pose) {
+            return pose.getTranslation().getX() > 0 &&
+                pose.getTranslation().getX() < 16.54 &&
+                pose.getTranslation().getY() > 0 &&
+                pose.getTranslation().getY() < 8.07;
+        }
+    }
+
     private boolean ignoreAllLimes = false;
 
-    private StructPublisher<Pose2d> frontNT = NetworkTableInstance.getDefault().getStructTopic("frontNT", Pose2d.struct).publish();
-    private StructPublisher<Pose2d> rearNT = NetworkTableInstance.getDefault().getStructTopic("rearNT", Pose2d.struct).publish();
-    private StructPublisher<Pose2d> leftNT = NetworkTableInstance.getDefault().getStructTopic("leftNT", Pose2d.struct).publish();
-    private StructPublisher<Pose2d> rightNT = NetworkTableInstance.getDefault().getStructTopic("rightNT", Pose2d.struct).publish();
+    private LimelightState frontState = new LimelightState("limelight-front");
+    private LimelightState rightState = new LimelightState("limelight-right");
+    private LimelightState rearState = new LimelightState("limelight-rear");
+    private LimelightState leftState = new LimelightState("limelight-left");
 
-    private LimelightHelpers.PoseEstimate limeFront, limeRear, limeLeft, limeRight;
-    private LimelightHelpers.PoseEstimate limeFrontPrev, limeRearPrev, limeLeftPrev, limeRightPrev;
+    private Map<String, LimelightState> limelights = Map.of(
+        "limelight-front", frontState,
+        "limelight-right", rightState,
+        "limelight-rear", rearState,
+        "limelight-left", leftState
+    );
+
+    private ArrayList<Double> headingReadings;
+    private boolean seededPigeon;
 
     private Notifier notifier;
+    private Timer timer;
 
     private Swerve swerve = Swerve.system();
     private static Limelight instance = null;
@@ -35,16 +219,26 @@ public class Limelight extends SubsystemBase {
      */
     private Limelight() {
         this.startThread();
+
+        headingReadings = new ArrayList<Double>();
+        seededPigeon = false;
+
+        timer = new Timer();
+        timer.start();
     }
 
     /**
      * Sets the pipeline of the limelight
      *
      * @param limelightName The name of the limelight
-     * @param pipeline The pipeline index
+     * @param pipeline The Limelight {@link LimelightState.PIPELINE}
      */
-    public void setPipeline(String limelightName, int pipeline) {
-        LimelightHelpers.setPipelineIndex(limelightName, pipeline);
+    public void setPipeline(String limelightName, LimelightState.PIPELINE pipeline) {
+        if (!limelights.containsKey(limelightName)) {
+            return;
+        }
+
+        limelights.get(limelightName).setPipeline(pipeline);
     }
 
     /**
@@ -65,199 +259,21 @@ public class Limelight extends SubsystemBase {
             ignoreAllLimes = false;
         }
 
-        // updateFront();
-        updateRear();
-        updateLeft();
-        // updateRight();
-    }
+        // frontState.update(ignoreAllLimes);
+        // rightState.update(ignoreAllLimes);
+        rearState.update(ignoreAllLimes);
+        leftState.update(ignoreAllLimes);
 
-    /**
-     * Updates the odometry for the front limelight
-     */
-    private void updateFront() {
-        LimelightHelpers.SetRobotOrientation(
-            "limelight-f",
-            swerve.getState().Pose.getRotation().getDegrees(),
-            swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
-            0,
-            0,
-            0,
-            0
-        );
-        limeFront = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-front");
-
-        if (limeFront != null && limeFront.pose != null) {
-            ignoreFrontLime = !poseInField(limeFront.pose) ||
-                (Math.abs(LimelightHelpers.getBotPose3d_wpiBlue("limelight-front").getZ()) > 0.4) ||
-                (LimelightHelpers.getTA("limelight-front") < 0.1) ||
-                (limeFrontPrev != null && (limeFront.pose.getTranslation().getDistance(limeFrontPrev.pose.getTranslation()) /
-                    (limeFront.timestampSeconds - limeFrontPrev.timestampSeconds)) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude()) ||
-                (limeFrontPrev != null && (limeFront.pose.getTranslation()
-                    .getDistance(limeFrontPrev.pose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
-                (limeFront.rawFiducials.length > 0 && limeFront.rawFiducials[0].ambiguity > 0.5 &&
-                    limeFront.rawFiducials[0].distToCamera > 4.0) ||
-                limeFront.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
-
-            if (!ignoreAllLimes && !ignoreFrontLime) {
-                SmartDashboard.putBoolean("Frontpose", true);
-                frontNT.set(limeFront.pose);
-
-                swerve.addVisionMeasurement(
-                    limeFront.pose,
-                    limeFront.timestampSeconds,
-                    VecBuilder.fill(0.5, 0.5, 5).div(LimelightHelpers.getTA("limelight-front"))
-                );
-            } else {
-                SmartDashboard.putBoolean("Frontpose", false);
-            }
-
-            limeFrontPrev = limeFront;
+        if (!seededPigeon && timer.hasElapsed(1)) {
+            timer.restart();
         }
-    }
 
-    /**
-     * Updates the odometry for the rear limelight
-     */
-    private void updateRear() {
-        LimelightHelpers.SetRobotOrientation(
-            "limelight-rear",
-            swerve.getState().Pose.getRotation().getDegrees(),
-            swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
-            0,
-            0,
-            0,
-            0
-        );
-        limeRear = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-rear");
-
-        if (limeRear != null && limeRear.pose != null) {
-            ignoreRearLime = !poseInField(limeRear.pose) ||
-                (Math.abs(LimelightHelpers.getBotPose3d_wpiBlue("limelight-rear").getZ()) > 0.4) ||
-                (LimelightHelpers.getTA("limelight-rear") < 0.1) ||
-                (limeRearPrev != null && (limeRear.pose.getTranslation().getDistance(limeRearPrev.pose.getTranslation()) /
-                    (limeRear.timestampSeconds - limeRearPrev.timestampSeconds)) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude()) ||
-                (limeRearPrev != null && (limeRear.pose.getTranslation()
-                    .getDistance(limeRearPrev.pose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
-                (limeRear.rawFiducials.length > 0 && limeRear.rawFiducials[0].ambiguity > 0.5 &&
-                    limeRear.rawFiducials[0].distToCamera > 4.0) ||
-                limeRear.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
-
-            if (!ignoreAllLimes && !ignoreRearLime) {
-                SmartDashboard.putBoolean("Rearpose", true);
-                rearNT.set(limeRear.pose);
-
-                swerve.addVisionMeasurement(
-                    limeRear.pose,
-                    limeRear.timestampSeconds,
-                    VecBuilder.fill(0.5, 0.5, 5).div(LimelightHelpers.getTA("limelight-rear"))
-                );
-            } else {
-                SmartDashboard.putBoolean("Rearpose", false);
-            }
-
-            limeRearPrev = limeRear;
+        if (!seededPigeon && Timer.getFPGATimestamp() > 20) {
+            swerve.getPigeon2().setYaw(headingReadings.stream().mapToDouble(Double::doubleValue).average().orElse(0.0));
+            seededPigeon = true;
+            timer.stop();
+            timer.reset();
         }
-    }
-
-    /**
-     * Updates the odometry for the left limelight
-     */
-    private void updateLeft() {
-        LimelightHelpers.SetRobotOrientation(
-            "limelight-left",
-            swerve.getState().Pose.getRotation().getDegrees(),
-            swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
-            0,
-            0,
-            0,
-            0
-        );
-        limeLeft = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-left");
-
-        if (limeLeft != null && limeLeft.pose != null) {
-            ignoreLeftLime = !poseInField(limeLeft.pose) ||
-                (Math.abs(LimelightHelpers.getBotPose3d_wpiBlue("limelight-left").getZ()) > 0.4) ||
-                (LimelightHelpers.getTA("limelight-left") < 0.1) ||
-                (limeLeftPrev != null && (limeLeft.pose.getTranslation().getDistance(limeLeftPrev.pose.getTranslation()) /
-                    (limeLeft.timestampSeconds - limeLeftPrev.timestampSeconds)) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude()) ||
-                (limeLeftPrev != null && (limeLeft.pose.getTranslation()
-                    .getDistance(limeLeftPrev.pose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
-                (limeLeft.rawFiducials.length > 0 && limeLeft.rawFiducials[0].ambiguity > 0.5 &&
-                    limeLeft.rawFiducials[0].distToCamera > 4.0) ||
-                limeLeft.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
-
-            if (!ignoreAllLimes && !ignoreLeftLime) {
-                SmartDashboard.putBoolean("Leftpose", true);
-                leftNT.set(limeLeft.pose);
-
-                swerve.addVisionMeasurement(
-                    limeLeft.pose,
-                    limeLeft.timestampSeconds,
-                    VecBuilder.fill(0.75, 0.75, 5).div(LimelightHelpers.getTA("limelight-left"))
-                );
-            } else {
-                SmartDashboard.putBoolean("Leftpose", false);
-            }
-
-            limeLeftPrev = limeLeft;
-        }
-    }
-
-    /**
-     * Updates the odometry for the right limelight
-     */
-    private void updateRight() {
-        LimelightHelpers.SetRobotOrientation(
-            "limelight-right",
-            swerve.getState().Pose.getRotation().getDegrees(),
-            swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
-            0,
-            0,
-            0,
-            0
-        );
-        limeRight = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-right");
-
-        if (limeRight != null && limeRight.pose != null) {
-            ignoreRightLime = !poseInField(limeRight.pose) ||
-                (Math.abs(LimelightHelpers.getBotPose3d_wpiBlue("limelight-right").getZ()) > 0.4) ||
-                (LimelightHelpers.getTA("limelight-right") < 0.1) ||
-                (limeRightPrev != null && (limeRight.pose.getTranslation().getDistance(limeRightPrev.pose.getTranslation()) /
-                    (limeRight.timestampSeconds - limeRightPrev.timestampSeconds)) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude()) ||
-                (limeRightPrev != null && (limeRight.pose.getTranslation()
-                    .getDistance(limeRightPrev.pose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
-                (limeRight.rawFiducials.length > 0 && limeRight.rawFiducials[0].ambiguity > 0.5 &&
-                    limeRight.rawFiducials[0].distToCamera > 4.0) ||
-                limeRight.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
-
-            if (!ignoreAllLimes && !ignoreRightLime) {
-                SmartDashboard.putBoolean("Rightpose", true);
-                rightNT.set(limeRight.pose);
-
-                swerve.addVisionMeasurement(
-                    limeRight.pose,
-                    limeRight.timestampSeconds,
-                    VecBuilder.fill(0.75, 0.75, 5).div(LimelightHelpers.getTA("limelight-right"))
-                );
-            } else {
-                SmartDashboard.putBoolean("Rightpose", false);
-            }
-
-            limeRightPrev = limeRight;
-        }
-    }
-
-    /**
-     * Checks if a pose is inside the field dimensions
-     *
-     * @param pose The {@link Pose2d} to check
-     * @return True if the pose is inside the field dimensions, false otherwise
-     */
-    private boolean poseInField(Pose2d pose) {
-        return pose.getTranslation().getX() > 0 &&
-            pose.getTranslation().getX() < 16.54 &&
-            pose.getTranslation().getY() > 0 &&
-            pose.getTranslation().getY() < 8.07;
     }
 
     /**
