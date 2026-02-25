@@ -47,6 +47,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
 
+    private static Swerve system;
+
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
         new SysIdRoutine.Config(
@@ -277,5 +279,18 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     @Override
     public Optional<Pose2d> samplePoseAt(double timestampSeconds) {
         return super.samplePoseAt(Utils.fpgaToCurrentTime(timestampSeconds));
+    }
+
+    /**
+     * Gets the {@link Swerve} subsystem instance
+     *
+     * @return The {@link Swerve} subsystem instance
+     */
+    public static Swerve system() {
+        if (system == null) {
+            system = TunerConstants.createDrivetrain();
+        }
+
+        return system;
     }
 }

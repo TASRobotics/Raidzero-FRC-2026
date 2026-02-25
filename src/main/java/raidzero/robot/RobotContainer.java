@@ -30,7 +30,7 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
-    public final Swerve drivetrain = TunerConstants.createDrivetrain();
+    public final Swerve drivetrain = Swerve.system();
 
     /**
      * Constructs a {@link RobotContainer} instance
