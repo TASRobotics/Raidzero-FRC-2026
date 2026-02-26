@@ -41,7 +41,7 @@ public interface FeederIO extends SubsystemIO {
         }
 
         public void go(AngularVelocity velocity) {
-            motor.setMMVelocityTarget(velocity, 0);
+            motor.setPIDVelocityTarget(velocity, 0);
         }
 
         public void stop() {

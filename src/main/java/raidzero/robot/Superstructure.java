@@ -128,6 +128,7 @@ public class Superstructure {
             driver.rightTrigger().whileTrue(shooter.shoot());
 
             driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
+            driver.rightStick().onTrue(Commands.runOnce(Superstructure::runSubsystemInitRoutines, turret, hood));
 
             driver.rightBumper().whileTrue(turret.movePercent(-0.1));
             driver.leftBumper().whileTrue(turret.movePercent(0.1));

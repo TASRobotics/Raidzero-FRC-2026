@@ -64,7 +64,7 @@ public interface HoodIO extends SubsystemIO {
 
         @Override
         public void moveTo(Angle angleTarget) {
-            pitch.setMMPositionTarget(angleTarget, 0);
+            pitch.setMMExpoTarget(angleTarget, 0);
         }
 
         @Override

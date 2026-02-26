@@ -25,13 +25,13 @@ public final class ShooterConstants {
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
 
-        public static final double P = 0.22;
+        public static final double P = 0.1;
         public static final double I = 0.0;
         public static final double D = 0.0;
 
-        public static final double S = 0.25;
+        public static final double S = 0.32;
         public static final double G = 0.0;
-        public static final double V = 0.107;
+        public static final double V = 0.1;
         public static final double A = 0.0;
 
         public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Elevator_Static; // * Note: no gravity
@@ -53,20 +53,20 @@ public final class ShooterConstants {
         public static final int MOTOR_ID = 12;
         public static final String CAN_BUS_NAME = "canDoAttitude";
 
-        public static final double SENSOR_TO_MECHANISM_RATIO = 26.0 / 60.0;
+        public static final double SENSOR_TO_MECHANISM_RATIO = 60.0 / 26.0;
 
-        public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
 
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(50);
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(30);
 
-        public static final double P = 0.295;
+        public static final double P = 1.0;
         public static final double I = 0.0;
         public static final double D = 0.0;
 
-        public static final double S = 0.25;
+        public static final double S = 0.28;
         public static final double G = 0.0;
-        public static final double V = 0.127;
+        public static final double V = 0.27;
         public static final double A = 0.0;
 
         public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Elevator_Static; // * Note: no gravity

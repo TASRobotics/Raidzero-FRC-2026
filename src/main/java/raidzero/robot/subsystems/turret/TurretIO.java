@@ -109,7 +109,7 @@ public interface TurretIO extends SubsystemIO {
 
         @Override
         public void moveTo(Angle setpoint) {
-            yaw.setMMPositionTarget(setpoint, Yaw.POSITION_SLOT);
+            yaw.setMMExpoTarget(setpoint, Yaw.POSITION_SLOT);
         }
 
         @Override
