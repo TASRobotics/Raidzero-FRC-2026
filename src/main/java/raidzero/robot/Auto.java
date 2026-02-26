@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import raidzero.lib.Util;
 import raidzero.robot.subsystems.drive.Swerve;
 
@@ -40,7 +39,7 @@ public class Auto {
 
     /**
      * Constructs a {@link Auto} instance
-     * 
+     *
      * @param swerve A {@link Swerve} instance
      */
     public Auto(Swerve swerve) {
@@ -126,7 +125,7 @@ public class Auto {
 
     /**
      * Flips the given pose across the field if the current alliance is Red
-     * 
+     *
      * @param bluePose The pose with respect to the blue alliance
      * @return The pose transformed for the current alliance (flipped if Red, unchanged if Blue)
      */
@@ -138,7 +137,7 @@ public class Auto {
 
     /**
      * A test auto
-     * 
+     *
      * @return A {@link Command} for the test autonomous routine
      */
     public Command testAuto() {
@@ -194,16 +193,12 @@ public class Auto {
     // ));
     // }
 
-    // public Command getRightOutpostAuto() {
-    // return build("RightMidStart", () -> Commands.sequence(
-    // otf("RightMidStart"),
-    // swerve.randomIntake(2),
-    // otf("RightMidShoot"),
-    // Commands.waitSeconds(3),
-    // follow("RightMidCollect"),
-    // swerve.randomIntake(2),
-    // otf("MidToOutpost"),
-    // follow("OutpostClimb")
-    // ));
-    // }
+    public Command getRightOutpostAuto() {
+        return build(
+            "RightMidStart", () -> Commands.sequence(
+                follow("RightMidStart"),
+                follow("RightMidShoot")
+            )
+        );
+    }
 }

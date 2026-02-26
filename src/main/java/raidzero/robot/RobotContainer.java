@@ -53,6 +53,7 @@ public class RobotContainer {
 
         autoChooser = AutoBuilder.buildAutoChooser();
         autoChooser.addOption("Test", autos.testAuto());
+        autoChooser.addOption("Right Oupost", autos.getRightOutpostAuto());
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
