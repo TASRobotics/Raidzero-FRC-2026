@@ -101,6 +101,7 @@ public class Superstructure {
       public static void runSubsystemInitRoutines() {
             turret.setStartupAngle();
             hood.setStartupAngle();
+            extender.setStartupAngle();
             // orchestra.loadMusic("mario.chrp");
       }
 

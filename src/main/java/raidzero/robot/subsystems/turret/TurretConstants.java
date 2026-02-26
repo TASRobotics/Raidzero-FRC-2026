@@ -33,8 +33,8 @@ public final class TurretConstants {
         public static final MotorArrangementValue MOTOR_ARRANGEMENT = MotorArrangementValue.Minion_JST;
 
         public static final double SENSOR_TO_MECHANISM_RATIO = 280.0 / 10.0; // old ratio: 250.0 / 10.0;
-        public static final double JMM_1_RATIO = 29.0 / 280.0; // * jared modulo method 1
-        public static final double JMM_2_RATIO = 22.0 / 280.0;
+        public static final double JARED_TEETH_1 = 29.0; // * jared modulo method 1
+        public static final double JARED_TEETH_2 = 22.0;
 
         public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
 
@@ -79,9 +79,7 @@ public final class TurretConstants {
         public static final String CAN_BUS_NAME = "canDoAttitude";
         public static final MotorArrangementValue MOTOR_ARRANGEMENT = MotorArrangementValue.Minion_JST;
 
-        public static final double SENSOR_TO_MECHANISM_RATIO = 1 / ((10.0 / 42.0) * (14.0 / 42.0) * (16.0 / 25.0)
-                * (12.0 / 205.0)); // old ratio: (27.0 / 15.0) * (215.0 / 8.0);
-        public static final double SENSOR_TO_MECHANISM_RATIO_ = (42.0 / 10.0) * (42.0 / 14.0) * (25.0 / 16.0) * (205.0 / 12.0);
+        public static final double SENSOR_TO_MECHANISM_RATIO = (42.0 / 10.0) * (42.0 / 14.0) * (25.0 / 16.0) * (205.0 / 12.0);
         public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(40.0);

@@ -32,13 +32,13 @@ public final class IntakeConstants {
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
 
-        public static final double P = 1.0;
+        public static final double P = 0.1;
         public static final double I = 0.0;
         public static final double D = 0.0;
 
-        public static final double S = 0.0;
+        public static final double S = 0.4;
         public static final double G = 0.0;
-        public static final double V = 0.0;
+        public static final double V = 0.2;
         public static final double A = 0.0;
 
         public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Elevator_Static; // * Note: no gravity
@@ -47,7 +47,7 @@ public final class IntakeConstants {
 
         public static final int VELOCITY_SLOT = 0;
 
-        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(0);
+        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(62.5);
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(0);
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
@@ -61,35 +61,42 @@ public final class IntakeConstants {
         public static final MotorAlignmentValue FOLLOW_ALIGNMENT = MotorAlignmentValue.Opposed;
 
         public static final double SENSOR_TO_MECHANISM_RATIO = 23.0 / 1.0;
-        public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
 
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
 
-        public static final double P = 1.0;
+        public static final double P = 8.0;
         public static final double I = 0.0;
         public static final double D = 0.0;
 
-        public static final double S = 0.0;
-        public static final double G = 0.0;
-        public static final double V = 0.0;
+        public static final double S = 0.45;
+        public static final double G = 0.3;
+        public static final double V = 2.56;
         public static final double A = 0.0;
 
         public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Arm_Cosine;
         public static final StaticFeedforwardSignValue FF_SIGN = StaticFeedforwardSignValue.UseVelocitySign;
 
-        public static final double EXPO_V = 10.0;
-        public static final double EXPO_A = 10.0;
+        public static final double EXPO_V = 4.0;
+        public static final double EXPO_A = 4.0;
 
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(0);
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(0);
 
+        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(0.36);
+        public static final boolean ENALBE_FORWARD_SOFT_LIMIT = true;
+        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(0);
+        public static final boolean ENABLE_REVERSE_SOFT_LIMIT = true;
+
         public static final Angle EXTENDED_SETPOINT = Degrees.of(0);
-        public static final Angle RETRACTED_SETPOINT = Rotations.of(0.25);
+        public static final Angle RETRACTED_SETPOINT = Rotations.of(0.36);
 
         public static final Angle ANGLE_TOLERANCE = Rotations.of(0.1);
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
+
+        public static final Angle STARTUP_ANGLE = Rotations.of(0.3625);
     }
 
     public static final class Spindexer {
@@ -102,13 +109,13 @@ public final class IntakeConstants {
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
 
-        public static final double P = 1.0;
+        public static final double P = 0.001;
         public static final double I = 0.0;
         public static final double D = 0.0;
 
-        public static final double S = 0.0;
+        public static final double S = 0.5;
         public static final double G = 0.0;
-        public static final double V = 0.0;
+        public static final double V = 0.6;
         public static final double A = 0.0;
 
         public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Arm_Cosine;

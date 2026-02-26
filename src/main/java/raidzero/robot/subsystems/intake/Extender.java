@@ -24,6 +24,10 @@ public class Extender extends R0Subsystem<ExtenderIO> {
         return new Trigger(() ->io.isExtended());
     }
 
+    public void setStartupAngle() {
+        io.setStartupAngle();
+    }
+
     private Extender(ExtenderIO io) {
         super(io);
     }

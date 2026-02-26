@@ -16,6 +16,8 @@ public interface ExtenderIO extends SubsystemIO {
 
     void stop();
 
+    void setStartupAngle();
+
     boolean isExtended();
 
     public class Real implements ExtenderIO {
@@ -36,6 +38,8 @@ public interface ExtenderIO extends SubsystemIO {
                             Extender.CRUISE_VELOCITY,
                             Extender.ACCELERATION)
                     .withFollower(Extender.FOLLOW_ID, Extender.CAN_BUS_NAME, Extender.FOLLOW_ALIGNMENT)
+                    .withSoftLimits(Extender.ENALBE_FORWARD_SOFT_LIMIT, Extender.FORWARD_SOFT_LIMIT.in(Rotations),
+                             Extender.ENABLE_REVERSE_SOFT_LIMIT, Extender.REVERSE_SOFT_LIMIT.in(Rotations))
                     .build();
 
             // Superstructure.orchestra.addInstrument(this.motor.getMotor());
@@ -54,6 +58,11 @@ public interface ExtenderIO extends SubsystemIO {
         @Override
         public void stop() {
             motor.stop();
+        }
+
+        @Override
+        public void setStartupAngle() {
+            motor.getMotor().setPosition(Extender.STARTUP_ANGLE);
         }
 
         @Override
