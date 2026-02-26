@@ -36,7 +36,7 @@ public class LimelightState {
      */
     public LimelightState(String limelightName, PIPELINE pipeline, Supplier<Double> robotYawSupplier, Supplier<Double> robotYawRateSupplier, VisionMeasurementConsumer addVisionMeasurementConsumer) {
         this.limelightName = limelightName;
-        this.pipeline = pipeline;
+        setPipeline(pipeline);
         this.ntPublisher = NetworkTableInstance.getDefault()
             .getStructTopic(limelightName + "NT", Pose2d.struct)
             .publish();
