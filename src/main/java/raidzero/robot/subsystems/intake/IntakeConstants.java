@@ -27,7 +27,7 @@ public final class IntakeConstants {
         public static final MotorAlignmentValue FOLLOW_ALIGNMENT = MotorAlignmentValue.Opposed;
 
         public static final double SENSOR_TO_MECHANISM_RATIO = 2.0 / 1.0;
-        public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
 
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
@@ -49,6 +49,8 @@ public final class IntakeConstants {
 
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(62.5);
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(0);
+
+        public static final AngularVelocity INTAKE_SPEED = RotationsPerSecond.of(20);
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
     }

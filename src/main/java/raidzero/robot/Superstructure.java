@@ -115,9 +115,8 @@ public class Superstructure {
                                     .withRotationalRate(-driver.getRightX() * MaxAngularRate)));
 
             shooter.setDefaultCommand(shooter.stop());
-            hood.setDefaultCommand(hood.stop());
-            // turret.setDefaultCommand(new Aim());
-            turret.setDefaultCommand(turret.stop());
+            hood.setDefaultCommand(hood.manualAim());
+            turret.setDefaultCommand(new Aim());
             feeder.setDefaultCommand(feeder.stop());
             spindexer.setDefaultCommand(spindexer.stop());
             extender.setDefaultCommand(extender.stop());
@@ -131,8 +130,9 @@ public class Superstructure {
             driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
             driver.rightStick().onTrue(Commands.runOnce(Superstructure::runSubsystemInitRoutines, turret, hood));
 
-            driver.rightBumper().whileTrue(turret.movePercent(-0.1));
-            driver.leftBumper().whileTrue(turret.movePercent(0.1));
+            // driver.rightBumper().whileTrue(turret.movePercent(-0.1));
+            // driver.leftBumper().whileTrue(turret.movePercent(0.1));
+            driver.leftBumper().whileTrue(intake.go());
 
             driver.b().onTrue(extender.extend());
             driver.x().onTrue(extender.retract());

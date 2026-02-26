@@ -10,8 +10,8 @@ import raidzero.lib.R0Subsystem;
 public class Intake extends R0Subsystem<IntakeIO> {
     private static Intake system;
 
-    public Command go(AngularVelocity speed) {
-        return run(() -> io.go(speed));
+    public Command go() {
+        return run(() -> io.go(IntakeConstants.Intake.INTAKE_SPEED));
     }
 
     public Command stop() {
