@@ -326,7 +326,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
     /**
      * Returns a command that will pathfind to the specified pose using PathPlanner
-     * 
+     *
      * @param pose The target pose
      * @param goalEndVelocity The target end velocity as a {@link LinearVelocity}
      * @return A {@link Command} to pathfind to the specified pose
@@ -348,7 +348,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
             return AutoBuilder.pathfindToPose(
                 targetPose,
-                //TODO: Change PathPlanner constraints from 1.0 / 1.0 to 3.0 / 3.0
+                // TODO: Change PathPlanner constraints from 1.0 / 1.0 to 3.0 / 3.0
                 new PathConstraints(
                     1, // 3.5
                     1, // 4.0
