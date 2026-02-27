@@ -1,71 +1,69 @@
 package raidzero.robot.subsystems.turret;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
-
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
+import static raidzero.robot.subsystems.turret.TurretConstants.Limelight;
+import static raidzero.robot.subsystems.turret.TurretConstants.Yaw;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import raidzero.lib.LimelightHelpers;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyFXS;
 import raidzero.lib.wrappers.motors.LazyFXSBuilder;
 import raidzero.robot.Superstructure;
 
-import static raidzero.robot.subsystems.turret.TurretConstants.Yaw;
-import static raidzero.robot.subsystems.turret.TurretConstants.Limelight;
-
 public interface TurretIO extends SubsystemIO {
 
     /**
      * Moves the yaw to the specified position
-     * 
+     *
      * @param Yaw the {@link Angle}
      */
     void moveTo(Angle yaw);
 
     /**
      * Gets the current yaw
-     * 
+     *
      * @return the {@link Angle}
      */
     Angle getYaw();
 
     /**
      * Sets the yaw's position for startup
-     * 
+     *
      * @param yaw the {@link Angle}
      */
     void setStartupYaw(Angle yaw);
 
     /**
      * Returns true if the bot has line-of-sight with the hub
-     * 
+     *
      * @return true if the bot has line-of-sight with the hub
      */
     boolean hasHubLOS();
 
     /**
      * Gets the yaw angle from the goal target
-     * 
+     *
      * @return the {@link Angle}
      */
     Angle getYawFromTarget();
 
     /**
      * Gets the distance to the hub
-     * 
+     *
      * @return the {@link Distance}
      */
     Distance getHubDistance();
 
     /**
      * Sets the yaw to move in a set speed in percent
-     * 
+     *
      * @param percent the percent [0, 1]
      */
     void runYawPercent(double percent);
@@ -81,26 +79,30 @@ public interface TurretIO extends SubsystemIO {
 
         public Real() {
             yaw = new LazyFXSBuilder(
-                    Yaw.MOTOR_ID, Yaw.CAN_BUS_NAME,
-                    Yaw.MOTOR_ARRANGEMENT,
-                    Yaw.SENSOR_TO_MECHANISM_RATIO,
-                    Yaw.INVERTED,
-                    Yaw.STATOR_CURRENT_LIMIT.in(Amps),
-                    Yaw.SUPPLY_CURRENT_LIMIT.in(Amps))
-                    .withPIDFConfiguration(
-                            Yaw.POSITION_P, Yaw.POSITION_I, Yaw.POSITION_D,
-                            Yaw.POSITION_S, Yaw.POSITION_G, Yaw.POSITION_V, Yaw.POSITION_A,
-                            Yaw.FF_GRAVITY_TYPE,
-                            Yaw.FF_SIGN,
-                            Yaw.POSITION_SLOT)
-                    .withMotionMagicConfiguration(
-                            Yaw.EXPO_V, Yaw.EXPO_A,
-                            Yaw.CRUISE_VELOCITY,
-                            Yaw.ACCELERATION)
-                    .withSoftLimits(
-                            true, Yaw.FORWARD_SOFT_LIMIT.in(Rotations),
-                            true, Yaw.REVERSE_SOFT_LIMIT.in(Rotations))
-                    .build();
+                Yaw.MOTOR_ID, Yaw.CAN_BUS_NAME,
+                Yaw.MOTOR_ARRANGEMENT,
+                Yaw.SENSOR_TO_MECHANISM_RATIO,
+                Yaw.INVERTED,
+                Yaw.STATOR_CURRENT_LIMIT.in(Amps),
+                Yaw.SUPPLY_CURRENT_LIMIT.in(Amps)
+            )
+                .withPIDFConfiguration(
+                    Yaw.POSITION_P, Yaw.POSITION_I, Yaw.POSITION_D,
+                    Yaw.POSITION_S, Yaw.POSITION_G, Yaw.POSITION_V, Yaw.POSITION_A,
+                    Yaw.FF_GRAVITY_TYPE,
+                    Yaw.FF_SIGN,
+                    Yaw.POSITION_SLOT
+                )
+                .withMotionMagicConfiguration(
+                    Yaw.EXPO_V, Yaw.EXPO_A,
+                    Yaw.CRUISE_VELOCITY,
+                    Yaw.ACCELERATION
+                )
+                .withSoftLimits(
+                    true, Yaw.FORWARD_SOFT_LIMIT.in(Rotations),
+                    true, Yaw.REVERSE_SOFT_LIMIT.in(Rotations)
+                )
+                .build();
 
             lastTagDistance = 0;
 
@@ -146,14 +148,15 @@ public interface TurretIO extends SubsystemIO {
 
             if (cameraPoseArray.length >= 6) {
                 Pose3d cameraPose = new Pose3d(
-                        cameraPoseArray[0], // X
-                        cameraPoseArray[1], // Y
-                        cameraPoseArray[2], // Z
-                        new Rotation3d(
-                                Math.toRadians(cameraPoseArray[3]), // Roll
-                                Math.toRadians(cameraPoseArray[4]), // Pitch
-                                Math.toRadians(cameraPoseArray[5]) // Yaw
-                        ));
+                    cameraPoseArray[0], // X
+                    cameraPoseArray[1], // Y
+                    cameraPoseArray[2], // Z
+                    new Rotation3d(
+                        Math.toRadians(cameraPoseArray[3]), // Roll
+                        Math.toRadians(cameraPoseArray[4]), // Pitch
+                        Math.toRadians(cameraPoseArray[5]) // Yaw
+                    )
+                );
 
                 // Distance from camera to target (origin is the target)
                 double distance = cameraPose.getTranslation().getNorm();
@@ -181,6 +184,5 @@ public interface TurretIO extends SubsystemIO {
         }
     }
 
-    public class Sim extends Real {
-    }
+    public class Sim extends Real {}
 }

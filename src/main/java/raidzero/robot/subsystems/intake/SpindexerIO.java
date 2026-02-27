@@ -1,15 +1,13 @@
 package raidzero.robot.subsystems.intake;
 
-import edu.wpi.first.units.measure.AngularVelocity;
-
 import static edu.wpi.first.units.Units.Amps;
+import static raidzero.robot.subsystems.intake.IntakeConstants.Spindexer;
 
+import edu.wpi.first.units.measure.AngularVelocity;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
 import raidzero.robot.Superstructure;
-
-import static raidzero.robot.subsystems.intake.IntakeConstants.Spindexer;
 
 public interface SpindexerIO extends SubsystemIO {
 
@@ -24,19 +22,22 @@ public interface SpindexerIO extends SubsystemIO {
 
         public Real() {
             motor = new LazyTalonBuilder(
-                    Spindexer.MOTOR_ID, Spindexer.CAN_BUS_NAME,
-                    Spindexer.SENSOR_TO_MECHANISM_RATIO, Spindexer.INVERTED,
-                    Spindexer.STATOR_CURRENT_LIMIT.in(Amps), Spindexer.SUPPLY_CURRENT_LIMIT.in(Amps))
-                    .withPIDFConfiguration(
-                            Spindexer.P, Spindexer.I, Spindexer.D,
-                            Spindexer.S, Spindexer.G, Spindexer.V, Spindexer.A,
-                            Spindexer.FF_GRAVITY_TYPE, Spindexer.FF_SIGN,
-                            0)
-                    .withMotionMagicConfiguration(
-                            0, 0,
-                            Spindexer.CRUISE_VELOCITY,
-                            Spindexer.ACCELERATION)
-                    .build();
+                Spindexer.MOTOR_ID, Spindexer.CAN_BUS_NAME,
+                Spindexer.SENSOR_TO_MECHANISM_RATIO, Spindexer.INVERTED,
+                Spindexer.STATOR_CURRENT_LIMIT.in(Amps), Spindexer.SUPPLY_CURRENT_LIMIT.in(Amps)
+            )
+                .withPIDFConfiguration(
+                    Spindexer.P, Spindexer.I, Spindexer.D,
+                    Spindexer.S, Spindexer.G, Spindexer.V, Spindexer.A,
+                    Spindexer.FF_GRAVITY_TYPE, Spindexer.FF_SIGN,
+                    0
+                )
+                .withMotionMagicConfiguration(
+                    0, 0,
+                    Spindexer.CRUISE_VELOCITY,
+                    Spindexer.ACCELERATION
+                )
+                .build();
 
             // Superstructure.orchestra.addInstrument(this.motor.getMotor());
         }
@@ -60,6 +61,5 @@ public interface SpindexerIO extends SubsystemIO {
 
     }
 
-    public class Sim extends Real {
-    }
+    public class Sim extends Real {}
 }

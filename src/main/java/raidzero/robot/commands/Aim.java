@@ -15,19 +15,20 @@ public class Aim extends Command {
     }
 
     @Override
-    public void initialize() {
-    }
+    public void initialize() {}
 
     @Override
     public void execute() {
         AimBot aquireAim = turret.getTurretAim(true);
         double robotRelativeTurretSetpoint = aquireAim.goal().getRotation().minus(aquireAim.robot().getRotation())
-                .getRotations();
+            .getRotations();
 
         double currentRotations = turret.getCurrentYaw().in(Rotations);
 
-        double bestSetpoint = findBestWrap(currentRotations,
-                robotRelativeTurretSetpoint);
+        double bestSetpoint = findBestWrap(
+            currentRotations,
+            robotRelativeTurretSetpoint
+        );
 
         turret.moveTo(Rotations.of(bestSetpoint));
     }

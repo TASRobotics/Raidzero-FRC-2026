@@ -17,7 +17,7 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
 
     /**
      * Adjusts the turret aim to the static goal location without kinetic lead
-     * 
+     *
      * @param currentTurretYaw     the current turret angle
      * @param allianceGoalLocation the current alliance goal location
      * @return the adjusted turret aim
@@ -40,7 +40,7 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
 
     /**
      * Adjusts the turret aim for the current robot movement
-     * 
+     *
      * @param robotSpeeds the current robot speeds
      * @return the adjusted turret aim with kinetic lead
      */
@@ -60,7 +60,7 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
     /**
      * add in code latency to next motor update to account for vel added to ball
      * turret omega cancels out as it is counter to robot omega
-     * 
+     *
      * @param currentSpeeds current robot chasis speeds
      * @param currentPose   current robot pose
      * @return kinetic turret pose
@@ -79,7 +79,7 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
      * robot omega will cause tangential velocity at the turret
      * chasisspeeds + (chassisSpeeds.omega * turretOffsetRadius) = whip
      * linear on ball + tangential on ball = exit velocity
-     * 
+     *
      * @param relativeSpeeds current robot chasis speeds
      * @return
      */

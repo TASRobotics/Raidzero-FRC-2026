@@ -3,14 +3,12 @@ package raidzero.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.lib.R0Subsystem;
 
 public class Feeder extends R0Subsystem<FeederIO> {
     private static Feeder system;
-
 
     public Command go() {
         return run(() -> io.go(ShooterConstants.Feeder.FEEDER_SPEED));

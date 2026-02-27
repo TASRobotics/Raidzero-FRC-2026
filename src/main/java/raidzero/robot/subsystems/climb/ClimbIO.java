@@ -11,7 +11,7 @@ import raidzero.robot.subsystems.climb.ClimbConstants.Winch;
 public interface ClimbIO extends SubsystemIO {
     /**
      * Moves the winch to the specified position
-     * 
+     *
      * @param position the {@link double} position in meters
      */
     void moveTo(Angle position);
@@ -22,8 +22,10 @@ public interface ClimbIO extends SubsystemIO {
         LazyTalon motor;
 
         public Real() {
-            motor = new LazyTalonBuilder(Winch.MOTOR_ID, Winch.SENSOR_TO_MECHANISM_RATIO, Winch.INVERTED,
-                    Winch.STATOR_CURRENT_LIMIT.in(Amps), Winch.SUPPLY_CURRENT_LIMIT.in(Amps)).build();
+            motor = new LazyTalonBuilder(
+                Winch.MOTOR_ID, Winch.SENSOR_TO_MECHANISM_RATIO, Winch.INVERTED,
+                Winch.STATOR_CURRENT_LIMIT.in(Amps), Winch.SUPPLY_CURRENT_LIMIT.in(Amps)
+            ).build();
         }
 
         @Override
@@ -43,6 +45,5 @@ public interface ClimbIO extends SubsystemIO {
 
     }
 
-    public class Sim extends Real {
-    }
+    public class Sim extends Real {}
 }

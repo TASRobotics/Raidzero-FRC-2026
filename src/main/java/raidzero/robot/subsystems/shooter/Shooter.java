@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;
-
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,13 +17,13 @@ public class Shooter extends R0Subsystem<ShooterIO> {
 
     /**
      * Runs the shooter at the necessary speed from the RPS interpolating table
-     * 
+     *
      * @return a {@link Command}
      */
     public Command shoot() {
         return run(() -> {
             AngularVelocity target = RotationsPerSecond
-                    .of(Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
+                .of(Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
 
             io.setVelocity(target);
         });
@@ -50,7 +49,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
 
     /**
      * Sets the shooter velocity to the specified angular velocity
-     * 
+     *
      * @param rps the shooter velocity
      * @return a {@link Command}
      */
@@ -60,7 +59,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
 
     /**
      * Sets the shooter speed to the specified percentage
-     * 
+     *
      * @param percent the shooter speed in percent
      * @return a {@link Command}
      */
@@ -70,7 +69,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
 
     /**
      * Stops the shooter motor
-     * 
+     *
      * @return a {@link Command}
      */
     public Command stop() {

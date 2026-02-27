@@ -1,4 +1,3 @@
 package raidzero.robot;
 
-public final class FieldConstants {
-}
+public final class FieldConstants {}

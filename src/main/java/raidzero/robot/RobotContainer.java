@@ -9,14 +9,14 @@ import edu.wpi.first.wpilibj2.command.Commands;
 
 public class RobotContainer {
 
-  public RobotContainer() {
-    Superstructure.runSubsystemInitRoutines();
-    Superstructure.applyDefaultCommands();
-    Superstructure.applyButtonBindings();
+    public RobotContainer() {
+        Superstructure.runSubsystemInitRoutines();
+        Superstructure.applyDefaultCommands();
+        Superstructure.applyButtonBindings();
 
-  }
+    }
 
-  public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
-  }
+    public Command getAutonomousCommand() {
+        return Commands.print("No autonomous command configured");
+    }
 }
