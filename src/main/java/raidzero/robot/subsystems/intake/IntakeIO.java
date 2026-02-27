@@ -7,19 +7,33 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
-import raidzero.robot.Superstructure;
 
 public interface IntakeIO extends SubsystemIO {
-
+    /**
+     * Runs the intake motors at the given speed
+     *
+     * @param speed The speed to run the intake motors at as an {@link AngularVelocity}
+     */
     void go(AngularVelocity speed);
 
+    /**
+     * Stops the intake motors
+     */
     void stop();
 
+    /**
+     * Gets the angular velocity of the intake motors
+     *
+     * @return The angular velocity of the intake motors as an {@link AngularVelocity}
+     */
     AngularVelocity getVelocity();
 
     public class Real implements IntakeIO {
         LazyTalon motor;
 
+        /**
+         * Constructs the real instance of the Intake IO
+         */
         public Real() {
             motor = new LazyTalonBuilder(
                 Intake.MOTOR_ID, Intake.CAN_BUS_NAME,
@@ -43,14 +57,27 @@ public interface IntakeIO extends SubsystemIO {
             // Superstructure.orchestra.addInstrument(this.motor.getMotor());
         }
 
+        /**
+         * Runs the intake motors at the given speed
+         *
+         * @param velocity The speed to run the intake motors at as an {@link AngularVelocity}
+         */
         public void go(AngularVelocity velocity) {
             motor.setPIDVelocityTarget(velocity, 0);
         }
 
+        /**
+         * Stops the intake motors
+         */
         public void stop() {
             motor.stop();
         }
 
+        /**
+         * Gets the angular velocity of the intake motors
+         *
+         * @return The angular velocity of the intake motors as an {@link AngularVelocity}
+         */
         public AngularVelocity getVelocity() {
             return motor.getVelocity();
         }

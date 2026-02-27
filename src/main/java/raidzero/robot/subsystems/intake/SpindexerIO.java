@@ -1,25 +1,40 @@
 package raidzero.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Amps;
-import static raidzero.robot.subsystems.intake.IntakeConstants.Spindexer;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
-import raidzero.robot.Superstructure;
+import raidzero.robot.subsystems.intake.IntakeConstants.Spindexer;
 
 public interface SpindexerIO extends SubsystemIO {
 
+    /**
+     * Spins the spindexer at the specified speed
+     *
+     * @param speed The speed to spin the spindexer at in radians per second
+     */
     void go(AngularVelocity speed);
 
+    /**
+     * Stops the spindexer motor
+     */
     void stop();
 
+    /**
+     * Gets the angular velocity of the spindexer
+     *
+     * @return The angular velocity of the spindexer as {@link AngularVelocity}
+     */
     AngularVelocity getVelocity();
 
     public class Real implements SpindexerIO {
         LazyTalon motor;
 
+        /**
+         * Constructs a real instance of the Spindexer IO
+         */
         public Real() {
             motor = new LazyTalonBuilder(
                 Spindexer.MOTOR_ID, Spindexer.CAN_BUS_NAME,
@@ -42,14 +57,27 @@ public interface SpindexerIO extends SubsystemIO {
             // Superstructure.orchestra.addInstrument(this.motor.getMotor());
         }
 
+        /**
+         * Spins the spindexer at the specified speed
+         *
+         * @param velocity The speed to spin the spindexer as an {@link AngularVelocity}
+         */
         public void go(AngularVelocity velocity) {
             motor.setPIDVelocityTarget(velocity, 0);
         }
 
+        /**
+         * Stops the spindexer motor
+         */
         public void stop() {
             motor.stop();
         }
 
+        /**
+         * Gets the angular velocity of the spindexer
+         *
+         * @return The angular velocity of the spindexer as {@link AngularVelocity}
+         */
         public AngularVelocity getVelocity() {
             return motor.getVelocity();
         }

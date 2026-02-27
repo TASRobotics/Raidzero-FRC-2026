@@ -29,19 +29,41 @@ public class Shooter extends R0Subsystem<ShooterIO> {
         });
     }
 
+    /**
+     * Runs the shooter at the current velocity target
+     *
+     * @return A {@link Command} that runs the shooter at the current velocity target
+     */
     public Command manualShoot() {
         return run(() -> io.setVelocity(velocityTarget));
     }
 
+    /**
+     * Increments the shooter velocity target by the specified speed
+     *
+     * @param speed The speed to increment the shooter velocity target by as an {@link AngularVelocity}
+     * @return A {@link Command} that increments the shooter velocity target by the specified speed
+     */
     public Command incrementVelocitySetpoint(AngularVelocity speed) {
         return runOnce(() -> velocityTarget = velocityTarget.plus(speed));
     }
 
+    /**
+     * Sets the shooter velocity to the specified speed and updates the velocity target
+     *
+     * @param speed The speed to set the shooter velocity to as an {@link AngularVelocity}
+     * @return A {@link Command} that sets the shooter velocity to the specified speed
+     */
     public Command shoot(AngularVelocity speed) {
         this.velocityTarget = speed;
         return run(() -> io.setVelocity(speed));
     }
 
+    /**
+     * Sets the shooter velocity to the specified speed and updates the velocity target
+     *
+     * @param velocity The speed to set the shooter velocity to as an {@link AngularVelocity}
+     */
     public void setInterfaceVelocity(AngularVelocity velocity) {
         this.velocityTarget = velocity;
         io.setVelocity(velocity);
@@ -76,10 +98,20 @@ public class Shooter extends R0Subsystem<ShooterIO> {
         return run(() -> io.stop());
     }
 
+    /**
+     * Constructs the {@link Shooter} subsystem
+     *
+     * @param io The {@link ShooterIO} implementation to use for this subsystem
+     */
     private Shooter(ShooterIO io) {
         super(io);
     }
 
+    /**
+     * Gets the {@link Shooter} subsystem instance
+     *
+     * @return The {@link Shooter} subsystem instance
+     */
     public static Shooter system() {
         if (system == null) {
             if (Utils.isSimulation()) {
@@ -97,7 +129,6 @@ public class Shooter extends R0Subsystem<ShooterIO> {
         super.periodic();
         SmartDashboard.putNumber("Shooter speed", io.getVelocity().in(RotationsPerSecond));
         SmartDashboard.putNumber("Shooter target speed", velocityTarget.in(RotationsPerSecond));
-
     }
 
 }

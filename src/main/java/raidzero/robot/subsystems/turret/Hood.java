@@ -31,6 +31,11 @@ public class Hood extends R0Subsystem<HoodIO> {
         return run(() -> io.moveTo(angle));
     }
 
+    /**
+     * Stops the hood motor
+     *
+     * @return a {@link Command} that stops the hood motor
+     */
     public Command stop() {
         return run(() -> io.stop());
     }
@@ -46,7 +51,7 @@ public class Hood extends R0Subsystem<HoodIO> {
      * Increments the target setpoint for manual aiming
      *
      * @param angle the {@link Angle} increment
-     * @return
+     * @return A {@link Command} that increments the target setpoint for manual aiming
      */
     public Command incrementPitch(Angle angle) {
         return runOnce(() -> angleTarget = angleTarget.plus(angle));
@@ -60,10 +65,20 @@ public class Hood extends R0Subsystem<HoodIO> {
         SmartDashboard.putNumber("Pitch", io.getPitch().in(Degrees));
     }
 
+    /**
+     * Constructs a new {@link Hood} subsystem
+     *
+     * @param io The {@link HoodIO} implementation to use for this subsystem
+     */
     private Hood(HoodIO io) {
         super(io);
     }
 
+    /**
+     * Gets the {@link Hood} subsystem instance
+     *
+     * @return The {@link Hood} subsystem instance
+     */
     public static Hood system() {
         if (system == null) {
             if (Utils.isSimulation())

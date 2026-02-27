@@ -45,6 +45,17 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
         this(motorID, "", motorArrangement, sensorToMechanismRatio, invertedValue, statorCurrentLimit, supplyCurrentLimit);
     }
 
+    /**
+     * Constructs a LazyFXS instance with the specified motor configurations
+     *
+     * @param motorID The device id of the motor controller
+     * @param canBus The CAN bus the motor controller is on
+     * @param motorArrangement What type of motor the FXS is connected to
+     * @param sensorToMechanismRatio The gear ratio of the sensor to the mechanism (tell the mech team (driven /
+     * @param invertedValue What direction that is positive for the motor
+     * @param statorCurrentLimit The maximum stator current
+     * @param supplyCurrentLimit The maximum supply current
+     */
     public LazyFXSBuilder(int motorID, String canBus, MotorArrangementValue motorArrangement, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
         this.motorID = motorID;
         this.canBus = canBus;

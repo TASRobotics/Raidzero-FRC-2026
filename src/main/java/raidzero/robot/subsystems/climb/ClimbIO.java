@@ -16,11 +16,17 @@ public interface ClimbIO extends SubsystemIO {
      */
     void moveTo(Angle position);
 
+    /**
+     * Stops the climb motor
+     */
     void stop();
 
     public class Real implements ClimbIO {
         LazyTalon motor;
 
+        /**
+         * Constructs a real instance of the Climb IO
+         */
         public Real() {
             motor = new LazyTalonBuilder(
                 Winch.MOTOR_ID, Winch.SENSOR_TO_MECHANISM_RATIO, Winch.INVERTED,

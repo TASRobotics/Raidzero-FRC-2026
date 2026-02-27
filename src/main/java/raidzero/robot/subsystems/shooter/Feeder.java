@@ -10,18 +10,38 @@ import raidzero.lib.R0Subsystem;
 public class Feeder extends R0Subsystem<FeederIO> {
     private static Feeder system;
 
+    /**
+     * Runs the feeder at the configured speed
+     *
+     * @return A {@link Command} that runs the feeder
+     */
     public Command go() {
         return run(() -> io.go(ShooterConstants.Feeder.FEEDER_SPEED));
     }
 
+    /**
+     * Stops the feeder motors
+     *
+     * @return A {@link Command} that stops the feeder
+     */
     public Command stop() {
         return run(() -> io.stop());
     }
 
+    /**
+     * Constructs the {@link Feeder} subsystem
+     *
+     * @param io The {@link FeederIO} implementation to use for this subsystem
+     */
     private Feeder(FeederIO io) {
         super(io);
     }
 
+    /**
+     * Gets the {@link Feeder} subsystem instance
+     *
+     * @return The {@link Feeder} subsystem instance
+     */
     public static Feeder system() {
         if (system == null) {
             if (Utils.isSimulation())

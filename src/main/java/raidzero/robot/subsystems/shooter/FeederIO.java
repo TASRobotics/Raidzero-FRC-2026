@@ -6,20 +6,34 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
-import raidzero.robot.Superstructure;
 import raidzero.robot.subsystems.shooter.ShooterConstants.Feeder;
 
 public interface FeederIO extends SubsystemIO {
-
+    /**
+     * Runs the feeder motors at the given speed
+     *
+     * @param speed The speed to run the feeder motors at as an {@link AngularVelocity}
+     */
     void go(AngularVelocity speed);
 
+    /**
+     * Stops the feeder motors
+     */
     void stop();
 
+    /**
+     * Gets the angular velocity of the feeder motors
+     *
+     * @return The angular velocity of the feeder motors as an {@link AngularVelocity}
+     */
     AngularVelocity getVelocity();
 
     public class Real implements FeederIO {
         LazyTalon motor;
 
+        /**
+         * Constructs the real instance of the Feeder IO
+         */
         public Real() {
             motor = new LazyTalonBuilder(
                 Feeder.MOTOR_ID, Feeder.CAN_BUS_NAME,
@@ -42,14 +56,27 @@ public interface FeederIO extends SubsystemIO {
             // Superstructure.orchestra.addInstrument(this.motor.getMotor());
         }
 
+        /**
+         * Runs the feeder motors at the given speed
+         *
+         * @param velocity The speed to run the feeder motors at as an {@link AngularVelocity}
+         */
         public void go(AngularVelocity velocity) {
             motor.setPIDVelocityTarget(velocity, 0);
         }
 
+        /**
+         * Stops the feeder motors
+         */
         public void stop() {
             motor.stop();
         }
 
+        /**
+         * Gets the angular velocity of the feeder motors
+         *
+         * @return The angular velocity of the feeder motors as an {@link AngularVelocity}
+         */
         public AngularVelocity getVelocity() {
             return motor.getVelocity();
         }

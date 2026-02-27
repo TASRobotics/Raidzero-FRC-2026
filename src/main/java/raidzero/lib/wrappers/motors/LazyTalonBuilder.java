@@ -41,6 +41,16 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
         this(motorID, "", sensorToMechanismRatio, invertedValue, statorCurrentLimit, supplyCurrentLimit);
     }
 
+    /**
+     * Constructs a LazyTalon instance with the specified motor identifier, CAN bus, and
+     *
+     * @param motorID              The device id of the motor controller
+     * @param canBus               The name of the CAN bus the motor controller is on
+     * @param sensorToMechanismRatio The gear ratio of the sensor to the mechanism (tell the mech team (driven / driving) *
+     * @param invertedValue       What direction that is positive for the motor
+     * @param statorCurrentLimit The maximum stator current
+     * @param supplyCurrentLimit
+     */
     public LazyTalonBuilder(int motorID, String canBus, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
         this.motorID = motorID;
         this.canBus = canBus;

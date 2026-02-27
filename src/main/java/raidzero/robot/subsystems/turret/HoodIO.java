@@ -7,13 +7,12 @@ import edu.wpi.first.units.measure.Angle;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyFXS;
 import raidzero.lib.wrappers.motors.LazyFXSBuilder;
-import raidzero.robot.Superstructure;
 
 public interface HoodIO extends SubsystemIO {
     /**
      * Moves the yaw to the specified pitch
      *
-     * @param angleTarget the {@Link Angle}
+     * @param angleTarget the {@link Angle}
      */
     public void moveTo(Angle angleTarget);
 
@@ -37,6 +36,9 @@ public interface HoodIO extends SubsystemIO {
     public class Real implements HoodIO {
         LazyFXS pitch;
 
+        /**
+         * Constructs a real instance of the Hood IO
+         */
         public Real() {
             pitch = new LazyFXSBuilder(
                 Pitch.MOTOR_ID, Pitch.CAN_BUS_NAME,

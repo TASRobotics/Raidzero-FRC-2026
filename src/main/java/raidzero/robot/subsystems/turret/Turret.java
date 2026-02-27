@@ -51,7 +51,7 @@ public class Turret extends R0Subsystem<TurretIO> {
     /**
      * Moves the robot to the given setpoint
      *
-     * @param setpoint
+     * @param setpoint The setpoint to move to
      */
     public void moveTo(Angle setpoint) {
         io.moveTo(setpoint);
@@ -61,7 +61,7 @@ public class Turret extends R0Subsystem<TurretIO> {
      * Moves the yaw at the given duty cycle percent
      *
      * @param percent the percent [0,1]
-     * @return a {@link Command} to be scheduled and run
+     * @return A {@link Command} to be scheduled and run
      */
     public Command movePercent(double percent) {
         return run(() -> io.runYawPercent(percent));
@@ -70,7 +70,7 @@ public class Turret extends R0Subsystem<TurretIO> {
     /**
      * Stops both the pitch and the yaw motors
      *
-     * @return a {@link Command} to be scheduled and run
+     * @return A {@link Command} to be scheduled and run
      */
     public Command stop() {
         return run(() -> io.stop());
@@ -92,7 +92,8 @@ public class Turret extends R0Subsystem<TurretIO> {
     /**
      * Gets the distance from the hub april tag to the turret
      *
-     * @return
+     * @param kineticLead Whether or not to use the kinetic leading pose or the static aiming pose for distance calculation (kinetic leading pose is more accurate when the robot is moving)
+     * @return The distance from the hub april tag to the turret in meters
      */
     public Distance getHubDistance(boolean kineticLead) {
         return Meters.of(
@@ -104,7 +105,7 @@ public class Turret extends R0Subsystem<TurretIO> {
     /**
      * Checks if the turret limelight can see the hub april tags on the scoring side
      *
-     * @return a {@link Trigger} object
+     * @return A {@link Trigger} object
      */
     public Trigger hasHubLOS() {
         return new Trigger(() -> io.hasHubLOS());
@@ -123,12 +124,21 @@ public class Turret extends R0Subsystem<TurretIO> {
     /**
      * Gets the goal pose on the current alliance
      *
-     * @return
+     * @return The goal pose on the current alliance in field-relative coordinates
      */
     public Translation2d getAllianceTarget() {
         return allianceTargetFieldPose;
     }
 
+    /**
+     * Uses the Scream Remainder Theorem to calculate the turret angle
+     * 
+     * @param teethOnFirst The number of teeth on the first gear
+     * @param teethOnSecond The number of teeth on the second gear
+     * @param readingOnFirst The reading from the first gear
+     * @param readingOnSecond The reading from the second gear
+     * @return The calculated turret angle in rotations
+     */
     private double ScreamRemainderTheorem(int teethOnFirst, int teethOnSecond, double readingOnFirst, double readingOnSecond) {
         double[] possibleReadings = new double[(int) teethOnSecond];
         for (int i = 0; i < (int) teethOnSecond; i++) {
@@ -206,6 +216,11 @@ public class Turret extends R0Subsystem<TurretIO> {
         kineticTurretSender = kineticTable.getStructTopic("kineticTurret", Pose2d.struct).publish();
     }
 
+    /**
+     *  Gets the {@link Turret} subsystem instance
+      *
+     * @return The {@link Turret} subsystem instance
+     */
     public static Turret system() {
         if (system == null) {
             if (Utils.isSimulation()) {

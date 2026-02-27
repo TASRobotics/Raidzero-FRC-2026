@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -96,6 +95,9 @@ public class Superstructure {
     // turret.hasHubLOS().negate().and(swerve.inShootingArea().negate())
     // .and(hoardingToggle);
 
+    /**
+     * RUns the initialization routines for subsystems
+     */
     public static void runSubsystemInitRoutines() {
         turret.setStartupAngle();
         hood.setStartupAngle();
@@ -103,6 +105,9 @@ public class Superstructure {
         // orchestra.loadMusic("mario.chrp");
     }
 
+    /**
+     * Applies the default commands
+     */
     public static void applyDefaultCommands() {
         // CAN_SHOOT.whileTrue(shooter.shoot());
 
@@ -124,6 +129,9 @@ public class Superstructure {
         intake.setDefaultCommand(intake.stop());
     }
 
+    /**
+     * Applies the button bindings
+     */
     public static void applyButtonBindings() {
         driver.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go()));
         driver.rightTrigger().whileTrue(shooter.shoot());
@@ -146,9 +154,5 @@ public class Superstructure {
 
         // driver.y().onTrue(Commands.runOnce(() -> orchestra.play(), intake, extender, spindexer, feeder, shooter,
         // hood, turret).until(driver.a()));
-    }
-
-    public static void periodic() {
-
     }
 }

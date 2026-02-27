@@ -7,22 +7,41 @@ import static raidzero.robot.subsystems.intake.IntakeConstants.Extender;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
-import raidzero.robot.Superstructure;
 
 public interface ExtenderIO extends SubsystemIO {
+    /**
+     * Extends the intake
+     */
     void extend();
 
+    /**
+     * Retracts the intake
+     */
     void retract();
 
+    /**
+     * Stops the extender motors
+     */
     void stop();
 
+    /**
+     * Sets the startup angle for the extender
+     */
     void setStartupAngle();
 
+    /**
+     * Returns true if the extender is extended, false otherwise
+     *
+     * @return True if the extender is extended, false otherwise
+     */
     boolean isExtended();
 
     public class Real implements ExtenderIO {
         LazyTalon motor;
 
+        /**
+         * Constructs a real instance of the Extender IO
+         */
         public Real() {
             motor = new LazyTalonBuilder(
                 Extender.MOTOR_ID, Extender.CAN_BUS_NAME,

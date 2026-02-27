@@ -1,25 +1,44 @@
 package raidzero.robot.subsystems.intake;
 
 import com.ctre.phoenix6.Utils;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.lib.R0Subsystem;
 
 public class Intake extends R0Subsystem<IntakeIO> {
     private static Intake system;
 
+    /**
+     * Runs the intake motors at the configured speed
+     *
+     * @return A {@link Command} that runs the intake
+     */
     public Command go() {
         return run(() -> io.go(IntakeConstants.Intake.INTAKE_SPEED));
     }
 
+    /**
+     * Stops the intake motors
+     *
+     * @return A {@link Command} that stops the intake
+     */
     public Command stop() {
         return run(() -> io.stop());
     }
 
+    /**
+     * Constructs the {@link Intake} subsystem
+     *
+     * @param io The {@link IntakeIO} implementation to use for this subsystem
+     */
     private Intake(IntakeIO io) {
         super(io);
     }
 
+    /**
+     * Gets the {@link Intake} subsystem instance
+     *
+     * @return The {@link Intake} subsystem instance
+     */
     public static Intake system() {
         if (system == null) {
             if (Utils.isSimulation())
