@@ -52,7 +52,7 @@ public class RobotContainer {
         CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
 
         autoChooser = AutoBuilder.buildAutoChooser();
-        autoChooser.addOption("Test", autos.testAuto());
+        autoChooser.addOption("Depot single", autos.getDepot1Cycle());
         autoChooser.addOption("Right Oupost", autos.getRightOutpostAuto());
 
         SmartDashboard.putData("Auto Chooser", autoChooser);

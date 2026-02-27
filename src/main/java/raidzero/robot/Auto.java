@@ -138,13 +138,14 @@ public class Auto {
     /**
      * A test auto
      *
-     * @return A {@link Command} for the test autonomous routine
+     * @return A {@link Command} for the depot 1 cycle auto
      */
-    public Command testAuto() {
+    public Command getDepot1Cycle() {
         return build(
-            "Test1", () -> Commands.sequence(
-                otf("Test1"),
-                Commands.waitSeconds(0.5)
+            "DepotCross", () -> Commands.sequence(
+                follow("DepotCross"),
+                Commands.waitSeconds(0.1),
+                otf("DepotClimb")
             )
         );
     }
