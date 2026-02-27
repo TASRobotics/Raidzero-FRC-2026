@@ -151,7 +151,17 @@ public class Auto {
             "DepotCross", () -> Commands.sequence(
                 follow("DepotCross"),
                 Commands.waitSeconds(0.1),
-                otf("DepotClimb")
+                follow("DepotClimb")
+            )
+        );
+    }
+
+    public Command getLeft2Cycle() {
+        return build(
+            "LeftMidStart", () -> Commands.sequence(
+                follow("LeftMidStart"),
+                Commands.waitSeconds(0.5),
+                otf("LeftMidClimb")
             )
         );
     }

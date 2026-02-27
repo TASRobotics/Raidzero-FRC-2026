@@ -53,6 +53,7 @@ public class RobotContainer {
 
         autoChooser = AutoBuilder.buildAutoChooser();
         autoChooser.addOption("Depot single", autos.getDepot1Cycle());
+        autoChooser.addOption("Left double", autos.getLeft2Cycle());
         autoChooser.addOption("Right Oupost", autos.getRightOutpostAuto());
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
