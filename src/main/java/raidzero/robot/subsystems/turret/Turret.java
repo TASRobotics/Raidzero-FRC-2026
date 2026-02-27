@@ -132,7 +132,7 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     /**
      * Uses the Scream Remainder Theorem to calculate the turret angle
-     * 
+     *
      * @param teethOnFirst The number of teeth on the first gear
      * @param teethOnSecond The number of teeth on the second gear
      * @param readingOnFirst The reading from the first gear
