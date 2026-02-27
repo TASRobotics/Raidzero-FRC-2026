@@ -1,7 +1,9 @@
 package raidzero.robot.subsystems.turret;
 
-import com.ctre.phoenix6.Utils;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Rotations;
 
+import com.ctre.phoenix6.Utils;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,10 +19,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Rotations;
-
 import raidzero.lib.R0Subsystem;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
@@ -47,12 +45,13 @@ public class Turret extends R0Subsystem<TurretIO> {
     private AimBot staticAimBot = null;
     private AimBot kineticAimBot = null;
 
-    //todo: auto set the turret to unwrap when idle (not shooting)
-    //todo: hood backlash compensation (go down and back up when moving in the negative direction to compensate)
+    // todo: auto set the turret to unwrap when idle (not shooting)
+    // todo: hood backlash compensation (go down and back up when moving in the
+    // negative direction to compensate)
 
     /**
      * Moves the robot to the given setpoint
-     * 
+     *
      * @param setpoint
      */
     public void moveTo(Angle setpoint) {
@@ -61,7 +60,7 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     /**
      * Moves the yaw at the given duty cycle percent
-     * 
+     *
      * @param percent the percent [0,1]
      * @return a {@link Command} to be scheduled and run
      */
@@ -71,7 +70,7 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     /**
      * Stops both the pitch and the yaw motors
-     * 
+     *
      * @return a {@link Command} to be scheduled and run
      */
     public Command stop() {
@@ -89,22 +88,23 @@ public class Turret extends R0Subsystem<TurretIO> {
     /**
      * Sets the startup angle of the turret
      */
-    public void setStartupAngle() {
-    }
+    public void setStartupAngle() {}
 
     /**
      * Gets the distance from the hub april tag to the turret
-     * 
+     *
      * @return
      */
     public Distance getHubDistance(boolean kineticLead) {
-        return Meters.of(kineticLead ? kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
-                : staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose));
+        return Meters.of(
+            kineticLead ? kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose) :
+                staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
+        );
     }
 
     /**
      * Checks if the turret limelight can see the hub april tags on the scoring side
-     * 
+     *
      * @return a {@link Trigger} object
      */
     public Trigger hasHubLOS() {
@@ -113,7 +113,7 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     /**
      * Gets the AimBot instance for static/kinetic aiming
-     * 
+     *
      * @param kineticLead wether or not to use kinetic leading for shoot-on-the-move
      * @return the AimBot instance
      */
@@ -123,28 +123,28 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     /**
      * Gets the goal pose on the current alliance
-     * 
+     *
      * @return
      */
     public Translation2d getAllianceTarget() {
         return allianceTargetFieldPose;
     }
 
-    private double ScreamRemainderTheorem(int teethOnFirst, int teethOnSecond, double readingOnFirst, double readingOnSecond) {
-       double[] possibleReadings=new double[(int)teethOnSecond];
-         for (int i=0;i<(int)teethOnSecond;i++) {
-              possibleReadings[i]=(readingOnFirst + i*teethOnFirst) % teethOnSecond;
-              if (possibleReadings[i]<0) {
-                possibleReadings[i]+=teethOnSecond;
-              }
-         }
-         for (int i=0;i<(int)teethOnSecond;i++) {
-              if (Math.abs(possibleReadings[i]-readingOnSecond)<Yaw.TOLERANCE_SRT) {
-                return i*teethOnFirst + readingOnFirst;
-              }
-         }
-         DriverStation.reportWarning("Looks like the SRT failed in Turret.java", false);
-         return 0.0;
+    private Angle ScreamRemainderTheorem(double readingOnFirst, double readingOnSecond) {
+        double[] possibleReadings = new double[(int) Yaw.JARED_TEETH_1];
+        for (int i = 0; i < (int) Yaw.JARED_TEETH_2; i++) {
+            possibleReadings[i] = (readingOnFirst + i * Yaw.JARED_TEETH_1) % Yaw.JARED_TEETH_2;
+            if (possibleReadings[i] < 0) {
+                possibleReadings[i] += Yaw.JARED_TEETH_2;
+            }
+        }
+        for (int i = 0; i < (int) Yaw.JARED_TEETH_2; i++) {
+            if (Math.abs(possibleReadings[i] - readingOnSecond) < Yaw.TOLERANCE_SRT) {
+                return Rotations.of(i * Yaw.JARED_TEETH_1 + readingOnFirst);
+            }
+        }
+        DriverStation.reportWarning("Looks like the SRT failed in Turret.java", false);
+        return Rotations.of(0.0);
     }
 
     @Override
@@ -153,12 +153,15 @@ public class Turret extends R0Subsystem<TurretIO> {
 
         ChassisSpeeds rawSpeeds = swerve.getState().Speeds;
         ChassisSpeeds filteredSpeeds = new ChassisSpeeds(
-                vxFilter.calculate(rawSpeeds.vxMetersPerSecond),
-                vyFilter.calculate(rawSpeeds.vyMetersPerSecond),
-                omegaFilter.calculate(rawSpeeds.omegaRadiansPerSecond));
+            vxFilter.calculate(rawSpeeds.vxMetersPerSecond),
+            vyFilter.calculate(rawSpeeds.vyMetersPerSecond),
+            omegaFilter.calculate(rawSpeeds.omegaRadiansPerSecond)
+        );
 
-        staticAimBot = staticAimBot.adjustStaticAim(swerve.getState().Pose, new Rotation2d(getCurrentYaw()),
-                allianceTargetFieldPose);
+        staticAimBot = staticAimBot.adjustStaticAim(
+            swerve.getState().Pose, new Rotation2d(getCurrentYaw()),
+            allianceTargetFieldPose
+        );
 
         kineticAimBot = staticAimBot.adjustKineticLead(filteredSpeeds);
 
@@ -176,10 +179,21 @@ public class Turret extends R0Subsystem<TurretIO> {
         kineticTurretSender.set(kineticAimBot.turret());
         kineticGoalSender.set(kineticAimBot.goal());
 
-        SmartDashboard.putNumber("Static Hub Distance",
-                staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose));
-        SmartDashboard.putNumber("Kinetic Hub Distance",
-                kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose));
+        SmartDashboard.putNumber(
+            "Static Hub Distance",
+            staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
+        );
+        SmartDashboard.putNumber(
+            "Kinetic Hub Distance",
+            kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
+        );
+
+        SmartDashboard.putNumber("JMM1 Reading", io.getJMM1Reading());
+        SmartDashboard.putNumber("JMM2 Reading", io.getJMM2Reading());
+        SmartDashboard.putNumber(
+            "JMM output angle",
+            ScreamRemainderTheorem(io.getJMM1Reading(), io.getJMM2Reading()).in(Rotations)
+        );
     }
 
     private Turret(TurretIO io) {
@@ -189,8 +203,7 @@ public class Turret extends R0Subsystem<TurretIO> {
         kineticAimBot = new AimBot(new Pose2d(), new Pose2d(), new Pose2d());
 
         boolean isRedAlliance = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
-        allianceTargetFieldPose = isRedAlliance ? Kinetics.GOAL_LOCATION_RED
-                : Kinetics.GOAL_LOCATION_BLUE;
+        allianceTargetFieldPose = isRedAlliance ? Kinetics.GOAL_LOCATION_RED : Kinetics.GOAL_LOCATION_BLUE;
 
         staticTable = nt.getTable("Turret/Static");
         kineticTable = nt.getTable("Turret/Kinetic");

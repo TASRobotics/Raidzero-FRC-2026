@@ -15,7 +15,6 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
-
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -42,15 +41,11 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
      * @param statorCurrentLimit     the maximum stator current
      * @param supplyCurrentLimit     the maximum supply current
      */
-    public LazyFXSBuilder(int motorID, MotorArrangementValue motorArrangement, double sensorToMechanismRatio,
-            InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
-        this(motorID, "", motorArrangement, sensorToMechanismRatio, invertedValue, statorCurrentLimit,
-                supplyCurrentLimit);
+    public LazyFXSBuilder(int motorID, MotorArrangementValue motorArrangement, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
+        this(motorID, "", motorArrangement, sensorToMechanismRatio, invertedValue, statorCurrentLimit, supplyCurrentLimit);
     }
 
-    public LazyFXSBuilder(int motorID, String canBus, MotorArrangementValue motorArrangement,
-            double sensorToMechanismRatio,
-            InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
+    public LazyFXSBuilder(int motorID, String canBus, MotorArrangementValue motorArrangement, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
         this.motorID = motorID;
         this.canBus = canBus;
 
@@ -83,10 +78,7 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
     }
 
     @Override
-    public LazyFXSBuilder withCANCoder(int CANCoderID, String canCoderCanBus,
-            ExternalFeedbackSensorSourceValue sensorType,
-            double magnetOffset,
-            SensorDirectionValue sensorDirection) {
+    public LazyFXSBuilder withCANCoder(int CANCoderID, String canCoderCanBus, ExternalFeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection) {
 
         this.canCoderID = CANCoderID;
         this.canCoderCanBus = canCoderCanBus;
@@ -102,10 +94,7 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
     }
 
     @Override
-    public LazyFXSBuilder withCANCoder(int CANCoderID, String canCoderCanBus,
-            ExternalFeedbackSensorSourceValue sensorType,
-            double magnetOffset,
-            SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio) {
+    public LazyFXSBuilder withCANCoder(int CANCoderID, String canCoderCanBus, ExternalFeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio) {
         withCANCoder(CANCoderID, canCoderCanBus, sensorType, magnetOffset, sensorDirection);
 
         canCoderConfiguration.MagnetSensor.AbsoluteSensorDiscontinuityPoint = discontinuityPoint;
@@ -116,8 +105,7 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
     }
 
     @Override
-    public LazyFXSBuilder withPIDFConfiguration(double p, double i, double d, double s, double g, double v, double a,
-            GravityTypeValue gravityType, StaticFeedforwardSignValue staticSignValue, int slotNumber) {
+    public LazyFXSBuilder withPIDFConfiguration(double p, double i, double d, double s, double g, double v, double a, GravityTypeValue gravityType, StaticFeedforwardSignValue staticSignValue, int slotNumber) {
         switch (slotNumber) {
             case 0:
                 motorConfiguration.Slot0.kP = p;
@@ -160,8 +148,7 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
     }
 
     @Override
-    public LazyFXSBuilder withMotionMagicConfiguration(double expoV, double expoA, AngularVelocity cruiseVelocity,
-            AngularAcceleration maxAcceleration) {
+    public LazyFXSBuilder withMotionMagicConfiguration(double expoV, double expoA, AngularVelocity cruiseVelocity, AngularAcceleration maxAcceleration) {
         motorConfiguration.MotionMagic.MotionMagicCruiseVelocity = cruiseVelocity.in(RotationsPerSecond);
         motorConfiguration.MotionMagic.MotionMagicAcceleration = maxAcceleration.in(RotationsPerSecondPerSecond);
 
@@ -172,8 +159,7 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
     }
 
     @Override
-    public LazyFXSBuilder withMotionMagicConfiguration(double expoV, double expoA, AngularVelocity cruiseVelocity,
-            AngularAcceleration maxAcceleration, double jerk) {
+    public LazyFXSBuilder withMotionMagicConfiguration(double expoV, double expoA, AngularVelocity cruiseVelocity, AngularAcceleration maxAcceleration, double jerk) {
         withMotionMagicConfiguration(expoV, expoA, cruiseVelocity, maxAcceleration);
         motorConfiguration.MotionMagic.MotionMagicJerk = jerk;
 
@@ -188,9 +174,7 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
     }
 
     @Override
-    public LazyFXSBuilder withLimitSwitch(boolean forwardLimitEnable, boolean forwardLimitAutosetPositionEnable,
-            double forwardLimitAutosetPositionValue, boolean reverseLimitEnable,
-            boolean reverseLimitAutosetPositionEnable, double reverseLimitAutosetPositionValue) {
+    public LazyFXSBuilder withLimitSwitch(boolean forwardLimitEnable, boolean forwardLimitAutosetPositionEnable, double forwardLimitAutosetPositionValue, boolean reverseLimitEnable, boolean reverseLimitAutosetPositionEnable, double reverseLimitAutosetPositionValue) {
         motorConfiguration.HardwareLimitSwitch.ForwardLimitEnable = forwardLimitEnable;
         motorConfiguration.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = forwardLimitAutosetPositionEnable;
         motorConfiguration.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = forwardLimitAutosetPositionValue;
@@ -203,8 +187,7 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
     }
 
     @Override
-    public LazyFXSBuilder withSoftLimits(boolean forwardSoftLimitEnable, double forwardSoftLimit,
-            boolean reverseSoftLimitEnable, double reverseSoftLimit) {
+    public LazyFXSBuilder withSoftLimits(boolean forwardSoftLimitEnable, double forwardSoftLimit, boolean reverseSoftLimitEnable, double reverseSoftLimit) {
         motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = forwardSoftLimitEnable;
         motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = forwardSoftLimit;
 
@@ -221,8 +204,10 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
 
     @Override
     public LazyFXS build() {
-        LazyFXS motor = new LazyFXS(motorID, canBus, motorConfiguration, followID, followCanBus, followConfiguration,
-                followerInverted, canCoderID, canCoderCanBus, canCoderConfiguration);
+        LazyFXS motor = new LazyFXS(
+            motorID, canBus, motorConfiguration, followID, followCanBus, followConfiguration,
+            followerInverted, canCoderID, canCoderCanBus, canCoderConfiguration
+        );
         motor.setBrake();
 
         return motor;

@@ -1,13 +1,13 @@
 package raidzero.robot.subsystems.intake;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Rotations;
+import static raidzero.robot.subsystems.intake.IntakeConstants.Extender;
+
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
 import raidzero.robot.Superstructure;
-
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Rotations;
-import static raidzero.robot.subsystems.intake.IntakeConstants.Extender;
 
 public interface ExtenderIO extends SubsystemIO {
     void extend();
@@ -25,22 +25,27 @@ public interface ExtenderIO extends SubsystemIO {
 
         public Real() {
             motor = new LazyTalonBuilder(
-                    Extender.MOTOR_ID, Extender.CAN_BUS_NAME,
-                    Extender.SENSOR_TO_MECHANISM_RATIO, Extender.INVERTED,
-                    Extender.STATOR_CURRENT_LIMIT.in(Amps), Extender.SUPPLY_CURRENT_LIMIT.in(Amps))
-                    .withPIDFConfiguration(
-                            Extender.P, Extender.I, Extender.D,
-                            Extender.S, Extender.G, Extender.V, Extender.A,
-                            Extender.FF_GRAVITY_TYPE, Extender.FF_SIGN,
-                            0)
-                    .withMotionMagicConfiguration(
-                            Extender.EXPO_V, Extender.EXPO_A,
-                            Extender.CRUISE_VELOCITY,
-                            Extender.ACCELERATION)
-                    .withFollower(Extender.FOLLOW_ID, Extender.CAN_BUS_NAME, Extender.FOLLOW_ALIGNMENT)
-                    .withSoftLimits(Extender.ENALBE_FORWARD_SOFT_LIMIT, Extender.FORWARD_SOFT_LIMIT.in(Rotations),
-                             Extender.ENABLE_REVERSE_SOFT_LIMIT, Extender.REVERSE_SOFT_LIMIT.in(Rotations))
-                    .build();
+                Extender.MOTOR_ID, Extender.CAN_BUS_NAME,
+                Extender.SENSOR_TO_MECHANISM_RATIO, Extender.INVERTED,
+                Extender.STATOR_CURRENT_LIMIT.in(Amps), Extender.SUPPLY_CURRENT_LIMIT.in(Amps)
+            )
+                .withPIDFConfiguration(
+                    Extender.P, Extender.I, Extender.D,
+                    Extender.S, Extender.G, Extender.V, Extender.A,
+                    Extender.FF_GRAVITY_TYPE, Extender.FF_SIGN,
+                    0
+                )
+                .withMotionMagicConfiguration(
+                    Extender.EXPO_V, Extender.EXPO_A,
+                    Extender.CRUISE_VELOCITY,
+                    Extender.ACCELERATION
+                )
+                .withFollower(Extender.FOLLOW_ID, Extender.CAN_BUS_NAME, Extender.FOLLOW_ALIGNMENT)
+                .withSoftLimits(
+                    Extender.ENALBE_FORWARD_SOFT_LIMIT, Extender.FORWARD_SOFT_LIMIT.in(Rotations),
+                    Extender.ENABLE_REVERSE_SOFT_LIMIT, Extender.REVERSE_SOFT_LIMIT.in(Rotations)
+                )
+                .build();
 
             // Superstructure.orchestra.addInstrument(this.motor.getMotor());
         }
@@ -77,6 +82,5 @@ public interface ExtenderIO extends SubsystemIO {
         }
     }
 
-    public class Sim extends Real {
-    }
+    public class Sim extends Real {}
 }

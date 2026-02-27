@@ -2,7 +2,6 @@ package raidzero.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
 import raidzero.lib.R0Subsystem;
 
 public class Extender extends R0Subsystem<ExtenderIO> {
@@ -21,7 +20,7 @@ public class Extender extends R0Subsystem<ExtenderIO> {
     }
 
     public Trigger isExtended() {
-        return new Trigger(() ->io.isExtended());
+        return new Trigger(() -> io.isExtended());
     }
 
     public void setStartupAngle() {

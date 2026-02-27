@@ -13,7 +13,6 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -23,9 +22,7 @@ public class LazyFXS implements LazyCTRE {
     private CANcoder canCoder;
     private boolean enableFOC = true;
 
-    public LazyFXS(int motorID, String canBus, TalonFXSConfiguration configuration, int followID, String followCanBus,
-            TalonFXSConfiguration followConfiguration, MotorAlignmentValue followerInverted, int canCoderID,
-            String canCoderCanBus, CANcoderConfiguration canCoderConfiguration) {
+    public LazyFXS(int motorID, String canBus, TalonFXSConfiguration configuration, int followID, String followCanBus, TalonFXSConfiguration followConfiguration, MotorAlignmentValue followerInverted, int canCoderID, String canCoderCanBus, CANcoderConfiguration canCoderConfiguration) {
         motor = new TalonFXS(motorID, canBus);
         motor = new TalonFXS(motorID, new CANBus("canDoAttitude"));
         motor.getConfigurator().apply(configuration);
@@ -120,7 +117,7 @@ public class LazyFXS implements LazyCTRE {
         telemetry.statorCurrent = motor.getStatorCurrent().getValue();
         telemetry.supplyCurrent = motor.getSupplyCurrent().getValue();
     }
-    
+
     public TalonFXS getMotor() {
         return motor;
     }

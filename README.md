@@ -16,7 +16,7 @@
 - 15: spindexer
 - 16-17: intake extender
 - 18-19: intake
-- 20: climb 
+- 20: climb
 
 #### CANCoders
 

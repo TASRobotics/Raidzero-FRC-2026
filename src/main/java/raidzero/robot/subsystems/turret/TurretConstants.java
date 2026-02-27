@@ -1,20 +1,5 @@
 package raidzero.robot.subsystems.turret;
 
-import com.ctre.phoenix6.signals.GravityTypeValue;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.MotorArrangementValue;
-import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.Time;
-
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
@@ -24,6 +9,20 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorArrangementValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Time;
 import raidzero.lib.wrappers.motors.LazyCTRE.MotorTelemetry;
 
 public final class TurretConstants {
@@ -33,8 +32,17 @@ public final class TurretConstants {
         public static final MotorArrangementValue MOTOR_ARRANGEMENT = MotorArrangementValue.Minion_JST;
 
         public static final double SENSOR_TO_MECHANISM_RATIO = 280.0 / 10.0; // old ratio: 250.0 / 10.0;
-        public static final double JARED_TEETH_1 = 29.0; // * jared modulo method 1
-        public static final double JARED_TEETH_2 = 22.0;
+        public static final double JARED_TEETH_1 = 22.0; // * jared modulo method 1
+        public static final double JARED_TEETH_2 = 29.0;
+
+        public static final int JMM_1_ID = 5; // 22 tooth
+        public static final int JMM_2_ID = 6; // 29 tooth
+
+        public static final double JMM_OFFSET_1 = -0.117676; // 22 tooth
+        public static final double JMM_OFFSET_2 = -0.352539; // 29 tooth
+
+        public static final SensorDirectionValue JMM_1_INVERTED = SensorDirectionValue.Clockwise_Positive;
+        public static final SensorDirectionValue JMM_2_INVERTED = SensorDirectionValue.Clockwise_Positive;
 
         public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
 
@@ -134,8 +142,7 @@ public final class TurretConstants {
         public static final Distance CAMERA_HEIGHT = Meters.of(0.77);
     }
 
-    public static record TurretAim(Pose2d fieldRelativeTurretPose, Pose2d fieldRelativeGoalPose) {
-    }
+    public static record TurretAim(Pose2d fieldRelativeTurretPose, Pose2d fieldRelativeGoalPose) {}
 
     public static final class Kinetics {
         // yaw corections from the april tag location in the off-angles

@@ -1,13 +1,11 @@
 package raidzero.robot.subsystems.turret;
 
-import com.ctre.phoenix6.Utils;
+import static edu.wpi.first.units.Units.Degrees;
 
+import com.ctre.phoenix6.Utils;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-
-import static edu.wpi.first.units.Units.Degrees;
-
 import raidzero.lib.R0Subsystem;
 
 public class Hood extends R0Subsystem<HoodIO> {
@@ -16,7 +14,7 @@ public class Hood extends R0Subsystem<HoodIO> {
 
     /**
      * Aims to the angle target
-     * 
+     *
      * @return a {@link Command}
      */
     public Command manualAim() {
@@ -25,7 +23,7 @@ public class Hood extends R0Subsystem<HoodIO> {
 
     /**
      * Aims to the specified angle
-     * 
+     *
      * @param angle the {@link Angle}
      * @return a {@link Command}
      */
@@ -46,7 +44,7 @@ public class Hood extends R0Subsystem<HoodIO> {
 
     /**
      * Increments the target setpoint for manual aiming
-     * 
+     *
      * @param angle the {@link Angle} increment
      * @return
      */

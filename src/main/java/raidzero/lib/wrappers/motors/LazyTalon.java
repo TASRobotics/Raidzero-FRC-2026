@@ -12,7 +12,6 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -22,9 +21,7 @@ public class LazyTalon implements LazyCTRE {
     private CANcoder canCoder;
     private boolean enableFOC = true;
 
-    public LazyTalon(int motorID, String canBus, TalonFXConfiguration configuration, int followID, String followCanBus,
-            TalonFXConfiguration followConfiguration, MotorAlignmentValue followerInverted, int canCoderID,
-            String canCoderCanBus, CANcoderConfiguration canCoderConfiguration) {
+    public LazyTalon(int motorID, String canBus, TalonFXConfiguration configuration, int followID, String followCanBus, TalonFXConfiguration followConfiguration, MotorAlignmentValue followerInverted, int canCoderID, String canCoderCanBus, CANcoderConfiguration canCoderConfiguration) {
         motor = new TalonFX(motorID, canBus);
         motor.getConfigurator().apply(configuration);
 
