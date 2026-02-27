@@ -24,7 +24,7 @@ public class Auto {
     private final Swerve swerve;
     private final Map<String, PathPlannerPath> pathCache = new HashMap<>();
 
-    private PathConstraints currentConstraints = DEFAULT_CONSTRAINTS;
+    private PathConstraints currentConstraints = SLOW_CONSTRAINTS;
 
     public static final PathConstraints DEFAULT_CONSTRAINTS = new PathConstraints(
         3.0, 2.0,
@@ -33,7 +33,7 @@ public class Auto {
     );
 
     public static final PathConstraints SLOW_CONSTRAINTS = new PathConstraints(
-        1.5, 1.2,
+        1.0, 1.2,
         Units.degreesToRadians(360),
         Units.degreesToRadians(480)
     );
