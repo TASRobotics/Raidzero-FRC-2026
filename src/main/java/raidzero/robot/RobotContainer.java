@@ -8,6 +8,9 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -34,11 +37,20 @@ public class RobotContainer {
     public final Swerve drivetrain = Swerve.system();
     public final Limelight limelight = Limelight.system();
 
+    private final Auto autos = new Auto(Swerve.system());
+
+    private final SendableChooser<Command> autoChooser;
+
     /**
      * Constructs a {@link RobotContainer} instance
      */
     public RobotContainer() {
         configureBindings();
+
+        autoChooser = AutoBuilder.buildAutoChooser();
+        autoChooser.addOption("Test", autos.testAuto());
+
+        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     /**
@@ -78,6 +90,6 @@ public class RobotContainer {
      * @return A {@link Command} representing the selected autonomous command
      */
     public Command getAutonomousCommand() {
-        return Commands.none();
+        return autoChooser.getSelected();
     }
 }
