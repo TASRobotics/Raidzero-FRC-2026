@@ -39,7 +39,7 @@ public class LimelightState {
         this.limelightName = limelightName;
         setPipeline(pipeline);
         this.ntPublisher = NetworkTableInstance.getDefault()
-            .getStructTopic(limelightName + "NT", Pose2d.struct)
+            .getStructTopic(limelightName.split("-")[1] + "NT", Pose2d.struct)
             .publish();
 
         this.ignore = false;
@@ -164,7 +164,7 @@ public class LimelightState {
             ignore = false;
         }
 
-        SmartDashboard.putBoolean(limelightName + "Pose", !ignore && !ignoreAll);
+        SmartDashboard.putBoolean(limelightName.split("-")[1] + "Pose", !ignore && !ignoreAll);
     }
 
     /**
