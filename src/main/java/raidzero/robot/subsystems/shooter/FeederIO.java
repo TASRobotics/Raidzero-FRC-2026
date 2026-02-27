@@ -56,27 +56,17 @@ public interface FeederIO extends SubsystemIO {
             // Superstructure.orchestra.addInstrument(this.motor.getMotor());
         }
 
-        /**
-         * Runs the feeder motors at the given speed
-         *
-         * @param velocity The speed to run the feeder motors at as an {@link AngularVelocity}
-         */
+        @Override
         public void go(AngularVelocity velocity) {
             motor.setPIDVelocityTarget(velocity, 0);
         }
 
-        /**
-         * Stops the feeder motors
-         */
+        @Override
         public void stop() {
             motor.stop();
         }
 
-        /**
-         * Gets the angular velocity of the feeder motors
-         *
-         * @return The angular velocity of the feeder motors as an {@link AngularVelocity}
-         */
+        @Override
         public AngularVelocity getVelocity() {
             return motor.getVelocity();
         }

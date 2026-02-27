@@ -57,27 +57,17 @@ public interface IntakeIO extends SubsystemIO {
             // Superstructure.orchestra.addInstrument(this.motor.getMotor());
         }
 
-        /**
-         * Runs the intake motors at the given speed
-         *
-         * @param velocity The speed to run the intake motors at as an {@link AngularVelocity}
-         */
+        @Override
         public void go(AngularVelocity velocity) {
             motor.setPIDVelocityTarget(velocity, 0);
         }
 
-        /**
-         * Stops the intake motors
-         */
+        @Override
         public void stop() {
             motor.stop();
         }
 
-        /**
-         * Gets the angular velocity of the intake motors
-         *
-         * @return The angular velocity of the intake motors as an {@link AngularVelocity}
-         */
+        @Override
         public AngularVelocity getVelocity() {
             return motor.getVelocity();
         }

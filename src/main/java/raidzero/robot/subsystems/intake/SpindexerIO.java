@@ -57,27 +57,17 @@ public interface SpindexerIO extends SubsystemIO {
             // Superstructure.orchestra.addInstrument(this.motor.getMotor());
         }
 
-        /**
-         * Spins the spindexer at the specified speed
-         *
-         * @param velocity The speed to spin the spindexer as an {@link AngularVelocity}
-         */
+        @Override
         public void go(AngularVelocity velocity) {
             motor.setPIDVelocityTarget(velocity, 0);
         }
 
-        /**
-         * Stops the spindexer motor
-         */
+        @Override
         public void stop() {
             motor.stop();
         }
 
-        /**
-         * Gets the angular velocity of the spindexer
-         *
-         * @return The angular velocity of the spindexer as {@link AngularVelocity}
-         */
+        @Override
         public AngularVelocity getVelocity() {
             return motor.getVelocity();
         }

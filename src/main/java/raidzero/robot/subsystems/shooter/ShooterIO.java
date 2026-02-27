@@ -78,6 +78,7 @@ public interface ShooterIO extends SubsystemIO {
             flywheel.stop();
         }
 
+        @Override
         public AngularVelocity getVelocity() {
             return flywheel.getVelocity();
         }
