@@ -1,5 +1,6 @@
 package raidzero.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
@@ -126,23 +127,21 @@ public class Superstructure {
 
     public static void applyButtonBindings() {
         driver.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go()));
-        driver.rightTrigger().whileTrue(shooter.shoot());
+        driver.rightTrigger().whileTrue(shooter.manualShoot());
 
         driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
         driver.rightStick().onTrue(Commands.runOnce(Superstructure::runSubsystemInitRoutines, turret, hood));
 
-        // driver.rightBumper().whileTrue(turret.movePercent(-0.1));
-        // driver.leftBumper().whileTrue(turret.movePercent(0.1));
         driver.leftBumper().whileTrue(intake.go());
 
         driver.b().onTrue(extender.extend());
         driver.x().onTrue(extender.retract());
 
-        driver.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(1.0)));
-        driver.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-1.0)));
+        driver.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
+        driver.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
 
-        driver.povRight().onTrue(hood.incrementPitch(Rotations.of(0.01)));
-        driver.povLeft().onTrue(hood.incrementPitch(Rotations.of(-0.01)));
+        driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
+        driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
 
         // driver.y().onTrue(Commands.runOnce(() -> orchestra.play(), intake, extender, spindexer, feeder, shooter,
         // hood, turret).until(driver.a()));

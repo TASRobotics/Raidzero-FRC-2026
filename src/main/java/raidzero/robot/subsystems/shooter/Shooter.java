@@ -37,15 +37,15 @@ public class Shooter extends R0Subsystem<ShooterIO> {
         return runOnce(() -> velocityTarget = velocityTarget.plus(speed));
     }
 
-    public Command shoot(AngularVelocity speed) {
-        this.velocityTarget = speed;
-        return run(() -> io.setVelocity(speed));
-    }
+    // public Command shoot(AngularVelocity speed) {
+    // this.velocityTarget = speed;
+    // return run(() -> io.setVelocity(speed));
+    // }
 
-    public void setInterfaceVelocity(AngularVelocity velocity) {
-        this.velocityTarget = velocity;
-        io.setVelocity(velocity);
-    }
+    // public void setInterfaceVelocity(AngularVelocity velocity) {
+    // this.velocityTarget = velocity;
+    // io.setVelocity(velocity);
+    // }
 
     /**
      * Sets the shooter velocity to the specified angular velocity

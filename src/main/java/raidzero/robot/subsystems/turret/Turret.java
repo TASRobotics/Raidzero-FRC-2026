@@ -88,7 +88,9 @@ public class Turret extends R0Subsystem<TurretIO> {
     /**
      * Sets the startup angle of the turret
      */
-    public void setStartupAngle() {}
+    public void setStartupAngle() {
+        io.setStartupYaw(JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()));
+    }
 
     /**
      * Gets the distance from the hub april tag to the turret
@@ -130,7 +132,7 @@ public class Turret extends R0Subsystem<TurretIO> {
         return allianceTargetFieldPose;
     }
 
-    private Angle ScreamRemainderTheorem(double readingOnFirst, double readingOnSecond) {
+    private Angle JaredModuloMagic(double readingOnFirst, double readingOnSecond) {
         double[] possibleReadings = new double[(int) Yaw.JARED_TEETH_1];
         for (int i = 0; i < (int) Yaw.JARED_TEETH_2; i++) {
             possibleReadings[i] = (readingOnFirst + i * Yaw.JARED_TEETH_1) % Yaw.JARED_TEETH_2;
@@ -140,9 +142,22 @@ public class Turret extends R0Subsystem<TurretIO> {
         }
         for (int i = 0; i < (int) Yaw.JARED_TEETH_2; i++) {
             if (Math.abs(possibleReadings[i] - readingOnSecond) < Yaw.TOLERANCE_SRT) {
-                return Rotations.of(i * Yaw.JARED_TEETH_1 + readingOnFirst);
+                SmartDashboard.putBoolean("JMM Success", true);
+
+                double raw_angle = i * Yaw.JARED_TEETH_1 + readingOnFirst;
+
+                double turret_rotations = raw_angle / Yaw.TURRET_RING_TEETH;
+                SmartDashboard.putNumber("JMM Raw Angle", turret_rotations);
+
+                if (turret_rotations > Yaw.FORWARD_SOFT_LIMIT.in(Rotations)) {
+                    return Rotations
+                        .of(turret_rotations - 2.278);
+                }
+
+                return Rotations.of(turret_rotations);
             }
         }
+        SmartDashboard.putBoolean("JMM Success", false);
         DriverStation.reportWarning("Looks like the SRT failed in Turret.java", false);
         return Rotations.of(0.0);
     }
@@ -183,17 +198,10 @@ public class Turret extends R0Subsystem<TurretIO> {
             "Static Hub Distance",
             staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
         );
-        SmartDashboard.putNumber(
-            "Kinetic Hub Distance",
-            kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
-        );
-
-        SmartDashboard.putNumber("JMM1 Reading", io.getJMM1Reading());
-        SmartDashboard.putNumber("JMM2 Reading", io.getJMM2Reading());
-        SmartDashboard.putNumber(
-            "JMM output angle",
-            ScreamRemainderTheorem(io.getJMM1Reading(), io.getJMM2Reading()).in(Rotations)
-        );
+        // SmartDashboard.putNumber(
+        // "Kinetic Hub Distance",
+        // kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
+        // );
     }
 
     private Turret(TurretIO io) {
