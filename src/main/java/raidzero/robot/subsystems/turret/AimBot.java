@@ -81,7 +81,7 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
      * linear on ball + tangential on ball = exit velocity
      *
      * @param relativeSpeeds current robot chasis speeds
-     * @return
+     * @return Whip speeds as a {@link ChassisSpeeds}
      */
     private ChassisSpeeds calculateWhip(ChassisSpeeds relativeSpeeds, Pose2d futurePose) {
         var vx = relativeSpeeds.vxMetersPerSecond
