@@ -1,0 +1,84 @@
+{
+ "name":"auto",
+ "version":2,
+ "type":"Swerve",
+ "variables":{
+  "expressions":{},
+  "poses":{}
+ },
+ "config":{
+  "frontLeft":{
+   "x":{
+    "exp":"0.2794 m",
+    "val":0.2794
+   },
+   "y":{
+    "exp":"0.2921 m",
+    "val":0.2921
+   }
+  },
+  "backLeft":{
+   "x":{
+    "exp":"-0.2794 m",
+    "val":-0.2794
+   },
+   "y":{
+    "exp":"0.2921 m",
+    "val":0.2921
+   }
+  },
+  "mass":{
+   "exp":"57.6061839996 kg",
+   "val":57.6061839996
+  },
+  "inertia":{
+   "exp":"50.4919096064 kg m ^ 2",
+   "val":50.4919096064
+  },
+  "gearing":{
+   "exp":"4.7640625",
+   "val":4.7640625
+  },
+  "radius":{
+   "exp":"0.05008479989 m",
+   "val":0.05008479989
+  },
+  "vmax":{
+   "exp":"6358 RPM",
+   "val":665.8082030507968
+  },
+  "tmax":{
+   "exp":"1.2 N * m",
+   "val":1.2
+  },
+  "cof":{
+   "exp":"1.2",
+   "val":1.2
+  },
+  "bumper":{
+   "front":{
+    "exp":"0.381 m",
+    "val":0.381
+   },
+   "side":{
+    "exp":"0.3556 m",
+    "val":0.3556
+   },
+   "back":{
+    "exp":"0.381 m",
+    "val":0.381
+   }
+  },
+  "differentialTrackWidth":{
+   "exp":"22 in",
+   "val":0.5588
+  }
+ },
+ "generationFeatures":[],
+ "codegen":{
+  "root":"",
+  "genVars":true,
+  "genTrajData":true,
+  "useChoreoLib":true
+ }
+}
