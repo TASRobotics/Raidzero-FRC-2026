@@ -12,7 +12,6 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -34,7 +33,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.Optional;
 import java.util.function.Supplier;
-
 import raidzero.lib.Util;
 import raidzero.robot.subsystems.drive.TunerConstants.TunerSwerveDrivetrain;
 
@@ -326,6 +324,13 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         );
     }
 
+    /**
+     * Returns a command that will pathfind to the specified pose using PathPlanner
+     * 
+     * @param pose The target pose
+     * @param goalEndVelocity The target end velocity as a {@link LinearVelocity}
+     * @return A {@link Command} to pathfind to the specified pose
+     */
     public Command goToPoseAuto(Pose2d pose, LinearVelocity goalEndVelocity) {
         return defer(() -> {
             Pose2d targetPose = pose;

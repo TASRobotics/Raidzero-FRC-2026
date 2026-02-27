@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+
+import raidzero.lib.Util;
 import raidzero.robot.subsystems.drive.Swerve;
 
 public class Auto {
@@ -36,6 +38,11 @@ public class Auto {
         Units.degreesToRadians(480)
     );
 
+    /**
+     * Constructs a {@link Auto} instance
+     * 
+     * @param swerve A {@link Swerve} instance
+     */
     public Auto(Swerve swerve) {
         this.swerve = swerve;
         autoloadPaths();
@@ -117,69 +124,86 @@ public class Auto {
         }, Set.of(swerve));
     }
 
+    /**
+     * Flips the given pose across the field if the current alliance is Red
+     * 
+     * @param bluePose The pose with respect to the blue alliance
+     * @return The pose transformed for the current alliance (flipped if Red, unchanged if Blue)
+     */
     private Pose2d getAlliancePose(Pose2d bluePose) {
-        boolean isRed = DriverStation.getAlliance()
-            .filter(a -> a == DriverStation.Alliance.Red)
-            .isPresent();
-        return isRed ? FlippingUtil.flipFieldPose(bluePose) : bluePose;
+        return Util.isRedAlliance() ? FlippingUtil.flipFieldPose(bluePose) : bluePose;
     }
 
     // --- AUTONOMOUS ROUTINES ---
 
+    /**
+     * A test auto
+     * 
+     * @return A {@link Command} for the test autonomous routine
+     */
+    public Command testAuto() {
+        return build(
+            "Test1", () -> Commands.sequence(
+                otf("Test1"),
+                Commands.waitSeconds(0.5)
+            )
+        );
+    }
+
     // public Command getLeftMidAuto() {
-    //     return build("LeftMidStart", () -> Commands.sequence(
-    //         otf("LeftMidStart"),
-    //         swerve.randomIntake(2),
-    //         otf("LeftMidShoot"),
-    //         Commands.waitSeconds(3),
-    //         follow("LeftMidCollect"),
-    //         swerve.randomIntake(2),
-    //         otf("LeftMidShoot"),
-    //         Commands.waitSeconds(3),
-    //         otf("LeftMidClimb")
-    //     ));
+    // return build("LeftMidStart", () -> Commands.sequence(
+    // otf("LeftMidStart"),
+    // swerve.randomIntake(2),
+    // otf("LeftMidShoot"),
+    // Commands.waitSeconds(3),
+    // follow("LeftMidCollect"),
+    // swerve.randomIntake(2),
+    // otf("LeftMidShoot"),
+    // Commands.waitSeconds(3),
+    // otf("LeftMidClimb")
+    // ));
     // }
 
     // public Command getLeftDepotAuto() {
-    //     return build("LeftMidStart", () -> Commands.sequence(
-    //         otf("LeftMidStart"),
-    //         swerve.randomIntake(2),
-    //         otf("LeftMidShoot"),
-    //         Commands.waitSeconds(3),
-    //         follow("LeftMidCollect"),
-    //         swerve.randomIntake(2),
-    //         otf("MidToDepot"),
-    //         follow("DepotCross"),
-    //         follow("DepotClimb")
-    //     ));
+    // return build("LeftMidStart", () -> Commands.sequence(
+    // otf("LeftMidStart"),
+    // swerve.randomIntake(2),
+    // otf("LeftMidShoot"),
+    // Commands.waitSeconds(3),
+    // follow("LeftMidCollect"),
+    // swerve.randomIntake(2),
+    // otf("MidToDepot"),
+    // follow("DepotCross"),
+    // follow("DepotClimb")
+    // ));
     // }
 
     // public Command getRightMidAuto() {
-    //     return build("RightMidStart", () -> Commands.sequence(
-    //         otf("RightMidStart"),
-    //         swerve.randomIntake(2),
-    //         otf("RightMidShoot"),
-    //         Commands.waitSeconds(3),
-    //         follow("RightMidCollect"),
-    //         swerve.randomIntake(2),
-    //         otf("RightMidShoot"),
-    //         Commands.waitSeconds(3),
-    //         follow("RightMidCollect"),
-    //         swerve.randomIntake(2),
-    //         otf("RightMidClimb")
-    //     ));
+    // return build("RightMidStart", () -> Commands.sequence(
+    // otf("RightMidStart"),
+    // swerve.randomIntake(2),
+    // otf("RightMidShoot"),
+    // Commands.waitSeconds(3),
+    // follow("RightMidCollect"),
+    // swerve.randomIntake(2),
+    // otf("RightMidShoot"),
+    // Commands.waitSeconds(3),
+    // follow("RightMidCollect"),
+    // swerve.randomIntake(2),
+    // otf("RightMidClimb")
+    // ));
     // }
 
     // public Command getRightOutpostAuto() {
-    //     return build("RightMidStart", () -> Commands.sequence(
-    //         otf("RightMidStart"),
-    //         swerve.randomIntake(2),
-    //         otf("RightMidShoot"),
-    //         Commands.waitSeconds(3),
-    //         follow("RightMidCollect"),
-    //         swerve.randomIntake(2),
-    //         otf("MidToOutpost"),
-    //         follow("OutpostClimb")
-    //     ));
+    // return build("RightMidStart", () -> Commands.sequence(
+    // otf("RightMidStart"),
+    // swerve.randomIntake(2),
+    // otf("RightMidShoot"),
+    // Commands.waitSeconds(3),
+    // follow("RightMidCollect"),
+    // swerve.randomIntake(2),
+    // otf("MidToOutpost"),
+    // follow("OutpostClimb")
+    // ));
     // }
 }

@@ -175,6 +175,11 @@ public class LimelightState {
         return (ignore || currEstimate == null || currEstimate.pose == null) ? null : currEstimate.pose.getRotation();
     }
 
+    /**
+     * Checks if the current pose estimate should be ignored
+     *
+     * @return True if the pose estimate should be ignored, false otherwise
+     */
     private boolean checkIgnore() {
         return !poseInField(currEstimate.pose) ||
             (Math.abs(LimelightHelpers.getBotPose3d_wpiBlue(limelightName).getZ()) > 0.4) ||
