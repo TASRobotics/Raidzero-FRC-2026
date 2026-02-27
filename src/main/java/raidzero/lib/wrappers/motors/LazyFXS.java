@@ -37,18 +37,17 @@ public class LazyFXS implements LazyCTRE {
      * @param canCoderConfiguration The configuration to apply to the CANCoder
      */
     public LazyFXS(int motorID, String canBus, TalonFXSConfiguration configuration, int followID, String followCanBus, TalonFXSConfiguration followConfiguration, MotorAlignmentValue followerInverted, int canCoderID, String canCoderCanBus, CANcoderConfiguration canCoderConfiguration) {
-        motor = new TalonFXS(motorID, canBus);
-        motor = new TalonFXS(motorID, new CANBus("canDoAttitude"));
+        motor = new TalonFXS(motorID, new CANBus(canBus));
         motor.getConfigurator().apply(configuration);
 
         if (followConfiguration != null) {
-            follower = new TalonFXS(followID, followCanBus);
+            follower = new TalonFXS(followID, new CANBus(followCanBus));
             follower.getConfigurator().apply(followConfiguration);
             follower.setControl(new Follower(motorID, followerInverted));
         }
 
         if (canCoderConfiguration != null) {
-            canCoder = new CANcoder(canCoderID, canCoderCanBus);
+            canCoder = new CANcoder(canCoderID, new CANBus(canCoderCanBus));
             canCoder.getConfigurator().apply(canCoderConfiguration);
         }
     }
