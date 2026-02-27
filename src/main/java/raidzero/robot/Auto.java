@@ -93,7 +93,13 @@ public class Auto {
      */
     public Command otf(String pathName) {
         return Commands.defer(
-            () -> AutoBuilder.pathfindThenFollowPath(get(pathName), currentConstraints),
+            () -> Commands.sequence(
+                AutoBuilder.pathfindToPoseFlipped(
+                    get(pathName).getStartingHolonomicPose().orElse(new Pose2d()), SLOW_CONSTRAINTS,
+                    get(pathName).getIdealStartingState().velocity()
+                ),
+                follow(pathName)
+            ),
             Set.of(swerve)
         );
     }
