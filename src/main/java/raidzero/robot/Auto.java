@@ -109,7 +109,7 @@ public class Auto {
 
             return Commands.sequence(
                 Commands.runOnce(() -> {
-                    if (RobotBase.isSimulation() || startPathName == "StraightLine" || startPathName == "RightRightAngle")
+                    if (RobotBase.isSimulation() || startPathName.equals("StraightLine") || startPathName.equals("RightRightAngle"))
                         swerve.resetPose(initialPose);
                 }),
                 autoLogic.get()
