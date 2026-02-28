@@ -117,30 +117,22 @@ public class Superstructure {
      * Applies driver button bindings
      */
     public static void applyButtonBindings() {
-        driver.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go())).onFalse(spindexer.antiJam());
-        // driver.leftTrigger().whileTrue(
-        // driver.leftTrigger().and(feeder.ballDetected().negate()).whileTrue(
-        // (spindexer.go()
-        // .withTimeout(0.5)
-        // .andThen(spindexer.antiJamBig()))
-        // );
-        driver.leftTrigger().whileTrue(feeder.go());
+        operator.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go())).onFalse(spindexer.antiJam());
 
-        // );
-        driver.rightTrigger().whileTrue(shooter.manualShoot());
+        operator.rightBumper().onTrue(hood.aim(Degrees.of(10)));
+        operator.leftStick().onTrue(extender.zeroEncoderPosition());
+
+        operator.rightTrigger().toggleOnTrue(shooter.shoot());
 
         driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
 
-        driver.leftBumper().toggleOnTrue(intake.go());
+        operator.leftBumper().toggleOnTrue(intake.go());
 
-        driver.b().onTrue(extender.extend());
-        driver.x().onTrue(extender.retract());
+        operator.b().onTrue(extender.extend());
+        operator.x().onTrue(extender.retract());
 
         // y = climb
 
-        // driver.a().onTrue(
-        // extender.agitate().alongWith(spindexer.antiJam())
-        // );
         driver.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
         driver.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
 
