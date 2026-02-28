@@ -9,14 +9,11 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import java.util.function.BooleanSupplier;
 import raidzero.robot.commands.Aim;
 import raidzero.robot.subsystems.drive.Limelight;
 import raidzero.robot.subsystems.drive.Swerve;
@@ -82,12 +79,9 @@ public class Superstructure {
 
     private static Trigger swerveApprTrench = new Trigger(() -> {
         Pose2d pose = swerve.getState().Pose;
-        ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(swerve.getState().Speeds, pose.getRotation());
 
-        boolean posX = ((pose.getX() > 4.4 && pose.getX() < 5.1) || (pose.getX() > 10.94 && pose.getX() < 11.44)) &&
-            fieldRelativeSpeeds.vxMetersPerSecond > 0.1;
-        boolean negX = ((pose.getX() > 5.1 && pose.getX() < 5.6) || (pose.getX() > 11.44 && pose.getX() < 12.14)) &&
-            fieldRelativeSpeeds.vxMetersPerSecond < -0.1;
+        boolean posX = ((pose.getX() > 4.0 && pose.getX() < 5.1) || (pose.getX() > 10.94 && pose.getX() < 11.44));
+        boolean negX = ((pose.getX() > 5.1 && pose.getX() < 6.1) || (pose.getX() > 11.44 && pose.getX() < 12.14));
 
         return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
     });
