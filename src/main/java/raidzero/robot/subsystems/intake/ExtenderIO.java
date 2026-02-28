@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Rotations;
 import static raidzero.robot.subsystems.intake.IntakeConstants.Extender;
 
+import edu.wpi.first.units.measure.Angle;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
@@ -29,6 +30,13 @@ public interface ExtenderIO extends SubsystemIO {
      * Sets the starting angle for the intake
      */
     void setStartupAngle();
+
+    /**
+     * Sets the encoder position for the extender
+     *
+     * @param position The new encoder position
+     */
+    void overrideEncoderPosition(Angle position);
 
     /**
      * Returns true if the extender is extended, false otherwise
@@ -66,8 +74,6 @@ public interface ExtenderIO extends SubsystemIO {
                     Extender.ENABLE_REVERSE_SOFT_LIMIT, Extender.REVERSE_SOFT_LIMIT.in(Rotations)
                 )
                 .build();
-
-            // Superstructure.orchestra.addInstrument(this.motor.getMotor());
         }
 
         @Override
@@ -88,6 +94,11 @@ public interface ExtenderIO extends SubsystemIO {
         @Override
         public void setStartupAngle() {
             motor.getMotor().setPosition(Extender.STARTUP_ANGLE);
+        }
+
+        @Override
+        public void overrideEncoderPosition(Angle position) {
+            motor.getMotor().setPosition(position);
         }
 
         @Override

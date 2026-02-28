@@ -138,12 +138,12 @@ public class Turret extends R0Subsystem<TurretIO> {
         }
         for (int i = 0; i < (int) Yaw.JARED_TEETH_2; i++) {
             if (Math.abs(possibleReadings[i] - readingOnSecond) < Yaw.TOLERANCE_SRT) {
-                SmartDashboard.putBoolean("JMM Success", true);
+                // SmartDashboard.putBoolean("JMM Success", true);
 
                 double raw_angle = i * Yaw.JARED_TEETH_1 + readingOnFirst;
 
                 double turret_rotations = raw_angle / Yaw.TURRET_RING_TEETH;
-                SmartDashboard.putNumber("JMM Raw Angle", turret_rotations);
+                // SmartDashboard.putNumber("JMM Raw Angle", turret_rotations);
 
                 if (turret_rotations > Yaw.FORWARD_SOFT_LIMIT.in(Rotations)) {
                     return Rotations
@@ -153,7 +153,7 @@ public class Turret extends R0Subsystem<TurretIO> {
                 return Rotations.of(turret_rotations);
             }
         }
-        SmartDashboard.putBoolean("JMM Success", false);
+        // SmartDashboard.putBoolean("JMM Success", false);
         DriverStation.reportWarning("Looks like the SRT failed in Turret.java", false);
         return Rotations.of(0.0);
     }

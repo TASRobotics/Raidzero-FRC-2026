@@ -47,6 +47,7 @@ public class Superstructure {
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     private static CommandXboxController driver = new CommandXboxController(0);
+    private static CommandXboxController operator = new CommandXboxController(1);
 
     public static final Trigger hubActive = new Trigger(() -> {
         double t = Timer.getMatchTime();
@@ -101,9 +102,10 @@ public class Superstructure {
             )
         );
 
-        shooter.setDefaultCommand(shooter.stop());
-        hood.setDefaultCommand(hood.manualAim());
+        hood.setDefaultCommand(hood.aim());
         turret.setDefaultCommand(new Aim());
+
+        shooter.setDefaultCommand(shooter.stop());
         feeder.setDefaultCommand(feeder.stop());
         spindexer.setDefaultCommand(spindexer.stop());
         extender.setDefaultCommand(extender.stop());
@@ -115,19 +117,23 @@ public class Superstructure {
      */
     public static void applyButtonBindings() {
         driver.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go()));
-        driver.rightTrigger().whileTrue(shooter.manualShoot());
+        // operator.leftTrigger().onFalse(null);
+
+        driver.rightTrigger().toggleOnTrue(shooter.shoot());
+
+        driver.rightBumper().whileTrue(hood.aim(Degrees.of(10)));
+
+        driver.rightStick().onTrue(hood.runOnce(() -> hood.setStartupAngle()));
+        driver.leftStick().onTrue(extender.zeroEncoderPosition());
 
         driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
-        driver.rightStick().onTrue(Commands.runOnce(Superstructure::runSubsystemInitRoutines, turret, hood));
-        driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
-        driver.rightStick().onTrue(Commands.runOnce(Superstructure::runSubsystemInitRoutines, turret, hood));
 
-        driver.leftBumper().whileTrue(intake.go());
+        driver.leftBumper().toggleOnTrue(intake.go());
 
         driver.b().onTrue(extender.extend());
         driver.x().onTrue(extender.retract());
-        driver.b().onTrue(extender.extend());
-        driver.x().onTrue(extender.retract());
+
+        // y = climb
 
         driver.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
         driver.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));

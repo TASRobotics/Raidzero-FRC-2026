@@ -1,5 +1,7 @@
 package raidzero.robot.subsystems.intake;
 
+import static edu.wpi.first.units.Units.Rotations;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.R0Subsystem;
@@ -43,6 +45,15 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      */
     public void setStartupAngle() {
         io.setStartupAngle();
+    }
+
+    /**
+     * Zeros the encoder position for the extender
+     *
+     * @return A {@link Command} that zeros the encoder position
+     */
+    public Command zeroEncoderPosition() {
+        return runOnce(() -> io.overrideEncoderPosition(Rotations.of(0.0)));
     }
 
     /**

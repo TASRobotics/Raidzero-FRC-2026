@@ -125,22 +125,22 @@ public final class TurretConstants {
         public static MotorTelemetry TELEMETRY = new MotorTelemetry();
     }
 
-    public static final class Limelight {
-        public static final Angle MOUNT_ANGLE = Degrees.of(5.0);
+    // public static final class Limelight {
+    // public static final Angle MOUNT_ANGLE = Degrees.of(5.0);
 
-        public static final Time LATENCY = Seconds.of(0.040); // Make constant? Get from NetworkTables? Physically test?
+    // public static final Time LATENCY = Seconds.of(0.040); // Make constant? Get from NetworkTables? Physically test?
 
-        public static final String LIMELIGHT_NAME = "limelight-turret";
+    // public static final String LIMELIGHT_NAME = "limelight-turret";
 
-        public static final int[] RED_ALLIANCE_TAG_IDS = { 10, 11, 8 };
-        public static final int[] BLUE_ALLIANCE_TAG_IDS = { 25, 27, 24 };
+    // public static final int[] RED_ALLIANCE_TAG_IDS = { 10, 11, 8 };
+    // public static final int[] BLUE_ALLIANCE_TAG_IDS = { 25, 27, 24 };
 
-        public static final int[] STARTUP_REFERENCE_TAG_IDS = { 2, 8, 24, 18 };
+    // public static final int[] STARTUP_REFERENCE_TAG_IDS = { 2, 8, 24, 18 };
 
-        public static final Distance HUB_HEIGHT = Inches.of(44.25);
+    // public static final Distance HUB_HEIGHT = Inches.of(44.25);
 
-        public static final Distance CAMERA_HEIGHT = Meters.of(0.77);
-    }
+    // public static final Distance CAMERA_HEIGHT = Meters.of(0.77);
+    // }
 
     public static record TurretAim(Pose2d fieldRelativeTurretPose, Pose2d fieldRelativeGoalPose) {}
 
@@ -161,17 +161,19 @@ public final class TurretConstants {
         public static final Translation2d GOAL_LOCATION_RED = new Translation2d(Inches.of(287), Inches.of(158.84));
 
         static {
-            PITCH_TABLE.put(1.75, 15.0);
+            PITCH_TABLE.put(1.909, 16.0);
+            PITCH_TABLE.put(2.94, 21.0);
+            PITCH_TABLE.put(3.228, 23.0);
+            PITCH_TABLE.put(3.558, 23.0);
+            PITCH_TABLE.put(4.255, 26.0);
+            PITCH_TABLE.put(5.06, 30.0);
 
-            RPS_TABLE.put(1.55, 30.0);
-            RPS_TABLE.put(1.75, 31.0);
-            RPS_TABLE.put(2.00, 33.0);
-            RPS_TABLE.put(2.08, 35.5);
-            RPS_TABLE.put(2.28, 37.0);
-            RPS_TABLE.put(2.40, 38.0);
-            RPS_TABLE.put(2.59, 40.5);
-            RPS_TABLE.put(2.71, 42.0);
-            RPS_TABLE.put(2.84, 42.0);
+            RPS_TABLE.put(1.909, 31.0);
+            RPS_TABLE.put(2.94, 34.5);
+            RPS_TABLE.put(3.228, 35.0);
+            RPS_TABLE.put(3.558, 35.0);
+            RPS_TABLE.put(4.255, 36.5);
+            RPS_TABLE.put(5.06, 38.0);
 
             TOF_TABLE.put(1.35, 1.0771);
             TOF_TABLE.put(1.87, 1.3412);
