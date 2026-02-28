@@ -8,6 +8,10 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -77,6 +81,18 @@ public class Superstructure {
         return !inactiveNow;
     });
 
+    private static Trigger swerveApprTrench = new Trigger(() -> {
+        Pose2d pose = swerve.getState().Pose;
+        ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(swerve.getState().Speeds, pose.getRotation());
+
+        boolean posX = ((pose.getX() > 0.0 && pose.getX() < 0.0) || (pose.getX() > 0.0 && pose.getX() < 0.0)) &&
+            fieldRelativeSpeeds.vxMetersPerSecond > 0.1;
+        boolean negX = ((pose.getX() > 0.0 && pose.getX() < 0.0) || (pose.getX() > 0.0 && pose.getX() < 0.0)) &&
+            fieldRelativeSpeeds.vxMetersPerSecond < -0.1;
+
+        return posX || negX;
+    });
+
     /**
      * RUns the initialization routines for subsystems
      */
@@ -134,5 +150,12 @@ public class Superstructure {
 
         driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
         driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
+    }
+
+    /**
+     * Binds subsystem triggers
+     */
+    public static void bindTriggers() {
+        swerveApprTrench.whileTrue(hood.aim(Degrees.of(10)));
     }
 }
