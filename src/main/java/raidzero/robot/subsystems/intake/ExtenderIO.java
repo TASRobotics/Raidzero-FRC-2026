@@ -11,6 +11,7 @@ import raidzero.lib.wrappers.motors.LazyTalonBuilder;
 import raidzero.robot.Superstructure;
 
 public interface ExtenderIO extends SubsystemIO {
+
     /**
      * Extends the intake outwards
      */
@@ -22,6 +23,21 @@ public interface ExtenderIO extends SubsystemIO {
     void retract();
 
     /**
+     * Agitates the intake at level 1
+     */
+    void agitateL1();
+
+    /**
+     * Agitates the intake at level 2
+     */
+    void agitateL2();
+
+    /**
+     * Agitates the intake at level 3
+     */
+    void agitateL3();
+
+    /**
      * Stops the intake extension motor
      */
     void stop();
@@ -30,6 +46,16 @@ public interface ExtenderIO extends SubsystemIO {
      * Sets the starting angle for the intake
      */
     void setStartupAngle();
+
+    /**
+     * Increases the agitation of the extender
+     */
+    void increaseAgitate();
+
+    /**
+     * Decreases the agitation of the extender
+     */
+    void decreaseAgitate();
 
     /**
      * Sets the encoder position for the extender
@@ -87,8 +113,37 @@ public interface ExtenderIO extends SubsystemIO {
         }
 
         @Override
+        public void agitateL1() {
+            motor.setMMExpoTarget(Extender.AGITATE_ONE_SETPOINT, 0);
+        }
+
+        @Override
+        public void agitateL2() {
+            motor.setMMExpoTarget(Extender.AGITATE_TWO_SETPOINT, 0);
+        }
+
+        @Override
+        public void agitateL3() {
+            motor.setMMExpoTarget(Extender.AGITATE_THREE_SETPOINT, 0);
+        }
+
+        @Override
         public void stop() {
             motor.stop();
+        }
+
+        @Override
+        public void increaseAgitate() {
+            Extender.AGITATE_ONE_SETPOINT.plus(Rotations.of(0.01));
+            Extender.AGITATE_TWO_SETPOINT.plus(Rotations.of(0.01));
+            Extender.AGITATE_THREE_SETPOINT.plus(Rotations.of(0.01));
+        }
+
+        @Override
+        public void decreaseAgitate() {
+            Extender.AGITATE_ONE_SETPOINT.minus(Rotations.of(0.01));
+            Extender.AGITATE_TWO_SETPOINT.minus(Rotations.of(0.01));
+            Extender.AGITATE_THREE_SETPOINT.minus(Rotations.of(0.01));
         }
 
         @Override
