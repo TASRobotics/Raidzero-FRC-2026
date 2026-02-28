@@ -13,8 +13,10 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.function.BooleanSupplier;
 import raidzero.robot.commands.Aim;
 import raidzero.robot.subsystems.drive.Limelight;
 import raidzero.robot.subsystems.drive.Swerve;
@@ -37,7 +39,6 @@ public class Superstructure {
     private static Spindexer spindexer = Spindexer.system();
     private static Extender extender = Extender.system();
     private static Intake intake = Intake.system();
-
     private static Limelight limelight = Limelight.system();
     private static Swerve swerve = Swerve.system();
 
@@ -128,26 +129,36 @@ public class Superstructure {
      * Applies driver button bindings
      */
     public static void applyButtonBindings() {
-        driver.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go()));
+        driver.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go())).onFalse(spindexer.antiJam());
+        // driver.leftTrigger().whileTrue(
+        // driver.leftTrigger().and(feeder.ballDetected().negate()).whileTrue(
+        // (spindexer.go()
+        // .withTimeout(0.5)
+        // .andThen(spindexer.antiJamBig()))
+        // );
+        driver.leftTrigger().whileTrue(feeder.go());
+
+        // );
         driver.rightTrigger().whileTrue(shooter.manualShoot());
 
         driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
         driver.rightStick().onTrue(Commands.runOnce(Superstructure::runSubsystemInitRoutines, turret, hood));
-        driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
-        driver.rightStick().onTrue(Commands.runOnce(Superstructure::runSubsystemInitRoutines, turret, hood));
 
         driver.leftBumper().whileTrue(intake.go());
-
+        driver.povUp().onTrue(extender.increaseAgitate());
+        driver.povDown().onTrue(extender.decreaseAgitate());
         driver.b().onTrue(extender.extend());
         driver.x().onTrue(extender.retract());
-        driver.b().onTrue(extender.extend());
-        driver.x().onTrue(extender.retract());
 
+        // driver.a().onTrue(
+        // extender.agitate().alongWith(spindexer.antiJam())
+        // );
         driver.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
         driver.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
 
         driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
         driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
+
     }
 
     /**
