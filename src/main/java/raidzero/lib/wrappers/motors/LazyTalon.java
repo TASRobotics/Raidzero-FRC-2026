@@ -1,5 +1,6 @@
 package raidzero.lib.wrappers.motors;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -21,7 +22,21 @@ public class LazyTalon implements LazyCTRE {
     private CANcoder canCoder;
     private boolean enableFOC = true;
 
-    public LazyTalon(int motorID, String canBus, TalonFXConfiguration configuration, int followID, String followCanBus, TalonFXConfiguration followConfiguration, MotorAlignmentValue followerInverted, int canCoderID, String canCoderCanBus, CANcoderConfiguration canCoderConfiguration) {
+    /**
+     * Constructs a LazyTalon with the given configuration
+     *
+     * @param motorID The CAN ID of the motor
+     * @param canBus The CAN bus the motor is on
+     * @param configuration The configuration to apply to the motor
+     * @param followID The CAN ID of the follower motor
+     * @param followCanBus The CAN bus the follower motor is on
+     * @param followConfiguration The configuration to apply to the follower motor
+     * @param followerInverted The inversion of the follower motor relative to the leader motor as a {@link MotorAlignmentValue}
+     * @param canCoderID The CAN ID of the CANcoder
+     * @param canCoderCanBus The CAN bus the CANcoder is on
+     * @param canCoderConfiguration The configuration to apply to the CANcoder
+     */
+    public LazyTalon(int motorID, CANBus canBus, TalonFXConfiguration configuration, int followID, CANBus followCanBus, TalonFXConfiguration followConfiguration, MotorAlignmentValue followerInverted, int canCoderID, CANBus canCoderCanBus, CANcoderConfiguration canCoderConfiguration) {
         motor = new TalonFX(motorID, canBus);
         motor.getConfigurator().apply(configuration);
 

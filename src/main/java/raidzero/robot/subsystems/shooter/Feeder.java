@@ -1,7 +1,6 @@
 package raidzero.robot.subsystems.shooter;
 
 import com.ctre.phoenix6.Utils;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -13,9 +12,9 @@ public class Feeder extends R0Subsystem<FeederIO> {
     private static Feeder system;
 
     /**
-     * Runs the feeder at the set feeder speed
-     * 
-     * @return a {@link Command}
+     * Runs the feeder at the configured speed
+     *
+     * @return A {@link Command} that runs the feeder
      */
     public Command go() {
         return run(() -> io.go(ShooterConstants.Feeder.FEEDER_SPEED));
@@ -31,19 +30,18 @@ public class Feeder extends R0Subsystem<FeederIO> {
     }
 
     /**
-     * Constructs a Feeder instance with the given IO implementation
-     * 
-     * @param io the IO implementation to use
+     * Constructs the {@link Feeder} subsystem
+     *
+     * @param io The {@link FeederIO} implementation to use for this subsystem
      */
     private Feeder(FeederIO io) {
         super(io);
     }
 
     /**
-     * Gets the singleton instance of the Feeder subsystem, creating it if it
-     * doesn't exist
-     * 
-     * @return the singleton instance of the Feeder subsystem
+     * Gets the {@link Feeder} subsystem instance
+     *
+     * @return The {@link Feeder} subsystem instance
      */
     public static Feeder system() {
         if (system == null) {

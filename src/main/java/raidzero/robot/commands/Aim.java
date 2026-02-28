@@ -10,6 +10,9 @@ import raidzero.robot.subsystems.turret.TurretConstants.Yaw;
 public class Aim extends Command {
     private final Turret turret = Turret.system();
 
+    /**
+     * Constructs the {@link Aim} command
+     */
     public Aim() {
         addRequirements(turret);
     }

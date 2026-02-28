@@ -23,7 +23,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     public Command shoot() {
         return run(() -> {
             AngularVelocity target = RotationsPerSecond
-                    .of(Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
+                .of(Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
 
             io.setVelocity(target);
         });
@@ -81,16 +81,18 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     }
 
     /**
-     * Constructs a Shooter instance with the given IO implementation
-     * @param io the IO implementation to use
+     * Constructs the {@link Shooter} subsystem
+     *
+     * @param io The {@link ShooterIO} implementation to use for this subsystem
      */
     private Shooter(ShooterIO io) {
         super(io);
     }
 
     /**
-     * Gets the singleton instance of the Shooter subsystem, creating it if it doesn't exist
-     * @return the singleton instance of the Shooter subsystem
+     * Gets the {@link Shooter} subsystem instance
+     *
+     * @return The {@link Shooter} subsystem instance
      */
     public static Shooter system() {
         if (system == null) {
@@ -109,7 +111,6 @@ public class Shooter extends R0Subsystem<ShooterIO> {
         super.periodic();
         SmartDashboard.putNumber("Shooter speed", io.getVelocity().in(RotationsPerSecond));
         SmartDashboard.putNumber("Shooter target speed", velocityTarget.in(RotationsPerSecond));
-
     }
 
 }

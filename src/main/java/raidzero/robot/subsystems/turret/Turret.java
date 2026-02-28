@@ -1,10 +1,9 @@
 package raidzero.robot.subsystems.turret;
 
-import com.ctre.phoenix6.Utils;
-
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 
+import com.ctre.phoenix6.Utils;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,7 +18,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-
 import raidzero.lib.R0Subsystem;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
@@ -49,7 +47,7 @@ public class Turret extends R0Subsystem<TurretIO> {
     /**
      * Moves the robot to the given setpoint
      *
-     * @param setpoint
+     * @param setpoint The setpoint to move to
      */
     public void moveTo(Angle setpoint) {
         io.moveTo(setpoint);
@@ -59,7 +57,7 @@ public class Turret extends R0Subsystem<TurretIO> {
      * Moves the yaw at the given duty cycle percent
      *
      * @param percent the percent [0,1]
-     * @return a {@link Command} to be scheduled and run
+     * @return A {@link Command} to be scheduled and run
      */
     public Command movePercent(double percent) {
         return run(() -> io.runYawPercent(percent));
@@ -68,7 +66,7 @@ public class Turret extends R0Subsystem<TurretIO> {
     /**
      * Stops both the pitch and the yaw motors
      *
-     * @return a {@link Command} to be scheduled and run
+     * @return A {@link Command} to be scheduled and run
      */
     public Command stop() {
         return run(() -> io.stop());
@@ -165,9 +163,10 @@ public class Turret extends R0Subsystem<TurretIO> {
 
         ChassisSpeeds rawSpeeds = swerve.getState().Speeds;
         ChassisSpeeds filteredSpeeds = new ChassisSpeeds(
-                vxFilter.calculate(rawSpeeds.vxMetersPerSecond),
-                vyFilter.calculate(rawSpeeds.vyMetersPerSecond),
-                omegaFilter.calculate(rawSpeeds.omegaRadiansPerSecond));
+            vxFilter.calculate(rawSpeeds.vxMetersPerSecond),
+            vyFilter.calculate(rawSpeeds.vyMetersPerSecond),
+            omegaFilter.calculate(rawSpeeds.omegaRadiansPerSecond)
+        );
 
         staticAimBot = staticAimBot.adjustStaticAim(
                 swerve.getState().Pose, new Rotation2d(getCurrentYaw()),
@@ -209,6 +208,7 @@ public class Turret extends R0Subsystem<TurretIO> {
         kineticAimBot = new AimBot(new Pose2d(), new Pose2d(), new Pose2d());
 
         boolean isRedAlliance = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
+        allianceTargetFieldPose = isRedAlliance ? Kinetics.GOAL_LOCATION_RED : Kinetics.GOAL_LOCATION_BLUE;
         allianceTargetFieldPose = isRedAlliance ? Kinetics.GOAL_LOCATION_RED : Kinetics.GOAL_LOCATION_BLUE;
 
         staticTable = nt.getTable("Turret/Static");

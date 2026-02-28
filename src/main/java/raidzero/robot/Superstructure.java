@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -25,6 +26,8 @@ import raidzero.robot.subsystems.turret.Hood;
 import raidzero.robot.subsystems.turret.Turret;
 
 public class Superstructure {
+    public static CANBus canDoAttitude = new CANBus("canDoAttitude");
+
     private static Shooter shooter = Shooter.system();
     private static Turret turret = Turret.system();
     private static Hood hood = Hood.system();
@@ -50,6 +53,7 @@ public class Superstructure {
         if (t < 0)
             return false;
 
+        // >140 = auto, >130 = transition, <=30 = endgame
         // Match timing (seconds remaining)
         if (t > 140 || t > 130 || t <= 30)
             return true;
@@ -73,13 +77,21 @@ public class Superstructure {
         return !inactiveNow;
     });
 
+    /**
+     * RUns the initialization routines for subsystems
+     */
     public static void runSubsystemInitRoutines() {
         turret.setStartupAngle();
         hood.setStartupAngle();
         extender.setStartupAngle();
     }
 
+    /**
+     * Applies the default commands
+     */
     public static void applyDefaultCommands() {
+        // CAN_SHOOT.whileTrue(shooter.shoot());
+
         swerve.setDefaultCommand(
             swerve.applyRequest(
                 () -> fieldCentricDrive
@@ -104,9 +116,13 @@ public class Superstructure {
 
         driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
         driver.rightStick().onTrue(Commands.runOnce(Superstructure::runSubsystemInitRoutines, turret, hood));
+        driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
+        driver.rightStick().onTrue(Commands.runOnce(Superstructure::runSubsystemInitRoutines, turret, hood));
 
         driver.leftBumper().whileTrue(intake.go());
 
+        driver.b().onTrue(extender.extend());
+        driver.x().onTrue(extender.retract());
         driver.b().onTrue(extender.extend());
         driver.x().onTrue(extender.retract());
 

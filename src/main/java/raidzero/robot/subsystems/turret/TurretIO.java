@@ -10,13 +10,14 @@ import edu.wpi.first.units.measure.Angle;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyFXS;
 import raidzero.lib.wrappers.motors.LazyFXSBuilder;
+import raidzero.robot.Superstructure;
 
 public interface TurretIO extends SubsystemIO {
 
     /**
      * Moves the yaw to the specified position
      *
-     * @param Yaw the {@link Angle}
+     * @param yaw the {@link Angle}
      */
     void moveTo(Angle yaw);
 
@@ -62,9 +63,12 @@ public interface TurretIO extends SubsystemIO {
         private LazyFXS yaw;
         private CANcoder jmm1, jmm2;
 
+        /**
+         * Constructs a real instance of the Turret IO
+         */
         public Real() {
             yaw = new LazyFXSBuilder(
-                Yaw.MOTOR_ID, Yaw.CAN_BUS_NAME,
+                Yaw.MOTOR_ID, Superstructure.canDoAttitude,
                 Yaw.MOTOR_ARRANGEMENT,
                 Yaw.SENSOR_TO_MECHANISM_RATIO,
                 Yaw.INVERTED,

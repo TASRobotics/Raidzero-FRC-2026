@@ -8,8 +8,9 @@ public class Intake extends R0Subsystem<IntakeIO> {
     private static Intake system;
 
     /**
-     * Runs the intake at the specified speed
-     * @return a {@link Command}
+     * Runs the intake motors at the configured speed
+     *
+     * @return A {@link Command} that runs the intake
      */
     public Command go() {
         return run(() -> io.go(IntakeConstants.Intake.INTAKE_SPEED));
@@ -24,17 +25,18 @@ public class Intake extends R0Subsystem<IntakeIO> {
     }
 
     /**
-     * Constructs an Intake instance with the given IO implementation
-     * 
-     * @param io the IO implementation to use
+     * Constructs the {@link Intake} subsystem
+     *
+     * @param io The {@link IntakeIO} implementation to use for this subsystem
      */
     private Intake(IntakeIO io) {
         super(io);
     }
 
     /**
-     * Gets the singleton instance of the Intake subsystem, creating it if it doesn't exist
-     * @return the singleton instance of the Intake subsystem
+     * Gets the {@link Intake} subsystem instance
+     *
+     * @return The {@link Intake} subsystem instance
      */
     public static Intake system() {
         if (system == null) {

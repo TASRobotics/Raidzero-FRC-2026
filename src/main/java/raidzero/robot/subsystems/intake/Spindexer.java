@@ -7,9 +7,9 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
     private static Spindexer system;
 
     /**
-     * Runs the spindexer at the set index speed
-     * 
-     * @return a {@link Command}
+     * Spins the spindexer at the index speed
+     *
+     * @return a {@link Command} that spins the spindexer at the index speed
      */
     public Command go() {
         return run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED));
@@ -25,17 +25,18 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
     }
 
     /**
-     * Constructs a Spindexer instance with the given IO implementation
-     * 
-     * @param io the IO implementation to use
+     * Constructs a new {@link Spindexer} subsystem
+     *
+     * @param io The {@link SpindexerIO} implementation to use for this subsystem
      */
-    private Spindexer(SpindexerIO io) {
+    public Spindexer(SpindexerIO io) {
         super(io);
     }
 
     /**
-     * Gets the singleton instance of the Spindexer subsystem, creating it if it doesn't exist
-     * @return the singleton instance of the Spindexer subsystem
+     * Gets the {@link Spindexer} subsystem instance
+     *
+     * @return The {@link Spindexer} subsystem instance
      */
     public static Spindexer system() {
         if (system == null) {
