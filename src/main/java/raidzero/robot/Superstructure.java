@@ -110,6 +110,9 @@ public class Superstructure {
         intake.setDefaultCommand(intake.stop());
     }
 
+    /**
+     * Applies driver button bindings
+     */
     public static void applyButtonBindings() {
         driver.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go()));
         driver.rightTrigger().whileTrue(shooter.manualShoot());
@@ -131,9 +134,5 @@ public class Superstructure {
 
         driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
         driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
-    }
-
-    public static void periodic() {
-
     }
 }

@@ -16,6 +16,11 @@ public class Extender extends R0Subsystem<ExtenderIO> {
         return run(() -> io.extend());
     }
 
+    /**
+     * Retracts the intake inwards
+     *
+     * @return a {@link Command}
+     */
     public Command retract() {
         return run(() -> io.retract());
     }
