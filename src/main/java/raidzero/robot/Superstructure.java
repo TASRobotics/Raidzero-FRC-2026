@@ -85,9 +85,9 @@ public class Superstructure {
         Pose2d pose = swerve.getState().Pose;
         ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(swerve.getState().Speeds, pose.getRotation());
 
-        boolean posX = ((pose.getX() > 0.0 && pose.getX() < 0.0) || (pose.getX() > 0.0 && pose.getX() < 0.0)) &&
+        boolean posX = ((pose.getX() > 4.4 && pose.getX() < 5.1) || (pose.getX() > 10.94 && pose.getX() < 11.44)) &&
             fieldRelativeSpeeds.vxMetersPerSecond > 0.1;
-        boolean negX = ((pose.getX() > 0.0 && pose.getX() < 0.0) || (pose.getX() > 0.0 && pose.getX() < 0.0)) &&
+        boolean negX = ((pose.getX() > 5.1 && pose.getX() < 5.6) || (pose.getX() > 11.44 && pose.getX() < 12.14)) &&
             fieldRelativeSpeeds.vxMetersPerSecond < -0.1;
 
         return posX || negX;
