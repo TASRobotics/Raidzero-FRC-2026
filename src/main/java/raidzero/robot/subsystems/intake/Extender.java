@@ -26,6 +26,25 @@ public class Extender extends R0Subsystem<ExtenderIO> {
     }
 
     /**
+     * Agitates the intake by briefly moving to the agitate setpoint, then retracting
+     *
+     * @return a {@link Command}
+     */
+    public Command agitate() {
+        return run(() -> io.agitateL1())
+            .withTimeout(0.2)
+            // .andThen(
+            // run(() -> io.agitateL2())
+            // .withTimeout(0.2)
+            // )
+            // .andThen(
+            // run(() -> io.agitateL3())
+            // .withTimeout(0.3)
+            // )
+            .andThen(run(() -> io.retract()));
+    }
+
+    /**
      * Stops the extender motors
      *
      * @return A {@link Command} that stops the extender
@@ -43,6 +62,14 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      */
     public void setStartupAngle() {
         io.setStartupAngle();
+    }
+
+    public Command increaseAgitate() {
+        return runOnce(() -> io.increaseAgitate());
+    }
+
+    public Command decreaseAgitate() {
+        return runOnce(() -> io.decreaseAgitate());
     }
 
     /**

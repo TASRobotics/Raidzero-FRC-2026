@@ -15,6 +15,16 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
         return run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED));
     }
 
+    public Command antiJam() {
+        return run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
+            .withTimeout(0.1);
+    }
+
+    public Command antiJamBig() {
+        return run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
+            .withTimeout(0.6);
+    }
+
     /**
      * Stops the spindexer
      *

@@ -24,6 +24,11 @@ public class Intake extends R0Subsystem<IntakeIO> {
         return run(() -> io.stop());
     }
 
+    public Command antiJam() {
+        return run(() -> io.go(IntakeConstants.Intake.INTAKE_SPEED))
+            .withTimeout(0.1);
+    }
+
     /**
      * Constructs the {@link Intake} subsystem
      *
