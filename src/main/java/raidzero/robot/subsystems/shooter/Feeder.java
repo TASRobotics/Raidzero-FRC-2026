@@ -20,9 +20,9 @@ public class Feeder extends R0Subsystem<FeederIO> {
     }
 
     /**
-     * Stops the feeder motors
+     * Stops the feeder motor
      *
-     * @return A {@link Command} that stops the feeder
+     * @return a {@link Command}
      */
     public Command stop() {
         return run(() -> io.stop());

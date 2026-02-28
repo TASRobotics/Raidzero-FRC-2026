@@ -17,9 +17,8 @@ public class Intake extends R0Subsystem<IntakeIO> {
     }
 
     /**
-     * Stops the intake motors
-     *
-     * @return A {@link Command} that stops the intake
+     * Stops the intake
+     * @return a {@link Command}
      */
     public Command stop() {
         return run(() -> io.stop());

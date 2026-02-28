@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.Seconds;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -31,8 +32,18 @@ public final class TurretConstants {
         public static final MotorArrangementValue MOTOR_ARRANGEMENT = MotorArrangementValue.Minion_JST;
 
         public static final double SENSOR_TO_MECHANISM_RATIO = 280.0 / 10.0; // old ratio: 250.0 / 10.0;
+        public static final double TURRET_RING_TEETH = 280.0;
         public static final double JARED_TEETH_1 = 29.0; // * jared modulo method 1
         public static final double JARED_TEETH_2 = 22.0;
+
+        public static final int JMM_1_ID = 6; // 29 tooth
+        public static final int JMM_2_ID = 5; // 22 tooth
+
+        public static final double JMM_OFFSET_1 = -0.352539; // 29 tooth
+        public static final double JMM_OFFSET_2 = -0.117676; // 22 tooth
+
+        public static final SensorDirectionValue JMM_1_INVERTED = SensorDirectionValue.Clockwise_Positive;
+        public static final SensorDirectionValue JMM_2_INVERTED = SensorDirectionValue.Clockwise_Positive;
 
         public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
 
@@ -68,8 +79,7 @@ public final class TurretConstants {
 
         public static MotorTelemetry TELEMETRY = new MotorTelemetry();
 
-        public static final Translation2d TURRET_MOUNT_OFFSET = new Translation2d(Inches.of(5.106), Inches.of(4.85));
-        public static final double TOLERANCE_SRT = 0.0001;
+        public static final double TOLERANCE_SRT = 0.5;
     }
 
     public static final class Pitch {
@@ -135,6 +145,8 @@ public final class TurretConstants {
     public static record TurretAim(Pose2d fieldRelativeTurretPose, Pose2d fieldRelativeGoalPose) {}
 
     public static final class Kinetics {
+        public static final Translation2d TURRET_MOUNT_OFFSET = new Translation2d(Meters.of(.123), Meters.of(-0.138));
+
         // yaw corections from the april tag location in the off-angles
         public static final InterpolatingDoubleTreeMap YAW_CORRECTION_TABLE = new InterpolatingDoubleTreeMap();
 

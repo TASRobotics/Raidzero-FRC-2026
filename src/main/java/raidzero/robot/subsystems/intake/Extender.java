@@ -8,18 +8,18 @@ public class Extender extends R0Subsystem<ExtenderIO> {
     private static Extender system;
 
     /**
-     * Extends the intake
+     * Extends the intake outwards
      *
-     * @return A {@link Command} that extends the intake
+     * @return a {@link Command}
      */
     public Command extend() {
         return run(() -> io.extend());
     }
 
     /**
-     * Retracts the intake
+     * Retracts the intake inwards
      *
-     * @return A {@link Command} that retracts the intake
+     * @return a {@link Command}
      */
     public Command retract() {
         return run(() -> io.retract());
@@ -34,17 +34,12 @@ public class Extender extends R0Subsystem<ExtenderIO> {
         return run(() -> io.stop());
     }
 
-    /**
-     * Checks if the extender is fully extended
-     *
-     * @return A {@link Trigger} that is active when the extender is fully extended
-     */
     public Trigger isExtended() {
         return new Trigger(() -> io.isExtended());
     }
 
     /**
-     * Sets the startup angle of the extender to the current position
+     * Sets the starting angle for the intake
      */
     public void setStartupAngle() {
         io.setStartupAngle();

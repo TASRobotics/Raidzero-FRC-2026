@@ -59,8 +59,6 @@ public interface ShooterIO extends SubsystemIO {
                 .withFollower(Flywheel.FOLLOW_ID, Superstructure.canDoAttitude, Flywheel.FOLLOWER_INVERTED)
                 .build();
 
-            // Superstructure.orchestra.addInstrument(flywheel.getMotor());
-
             flywheel.setCoast();
         }
 

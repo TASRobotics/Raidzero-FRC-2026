@@ -30,53 +30,35 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     }
 
     /**
-     * Runs the shooter at the current velocity target
+     * Runs the shooter at the velocity set by the {@link #velocityTarget} variable,
+     * which can be changed with the
+     * {@link #incrementVelocitySetpoint(AngularVelocity)} method
      *
-     * @return A {@link Command} that runs the shooter at the current velocity target
+     * @return a {@link Command}
      */
     public Command manualShoot() {
         return run(() -> io.setVelocity(velocityTarget));
     }
 
     /**
-     * Increments the shooter velocity target by the specified speed
+     * Increments the velocity setpoint by the specified amount, which will affect
+     * the speed of the shooter when the {@link #manualShoot()} command is running
      *
-     * @param speed The speed to increment the shooter velocity target by as an {@link AngularVelocity}
-     * @return A {@link Command} that increments the shooter velocity target by the specified speed
+     * @param speed the amount to increment the velocity setpoint by
+     * @return a {@link Command}
      */
     public Command incrementVelocitySetpoint(AngularVelocity speed) {
         return runOnce(() -> velocityTarget = velocityTarget.plus(speed));
     }
 
     /**
-     * Sets the shooter velocity to the specified speed and updates the velocity target
-     *
-     * @param speed The speed to set the shooter velocity to as an {@link AngularVelocity}
-     * @return A {@link Command} that sets the shooter velocity to the specified speed
+     * Runs the shooter at the specified speed
+     * @param speed the speed at which to run the shooter
+     * @return a {@link Command}
      */
     public Command shoot(AngularVelocity speed) {
         this.velocityTarget = speed;
         return run(() -> io.setVelocity(speed));
-    }
-
-    /**
-     * Sets the shooter velocity to the specified speed and updates the velocity target
-     *
-     * @param velocity The speed to set the shooter velocity to as an {@link AngularVelocity}
-     */
-    public void setInterfaceVelocity(AngularVelocity velocity) {
-        this.velocityTarget = velocity;
-        io.setVelocity(velocity);
-    }
-
-    /**
-     * Sets the shooter velocity to the specified angular velocity
-     *
-     * @param rps the shooter velocity
-     * @return a {@link Command}
-     */
-    public Command setVelocity(AngularVelocity rps) {
-        return run(() -> io.setVelocity(rps));
     }
 
     /**

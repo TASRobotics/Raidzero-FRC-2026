@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
-import raidzero.robot.subsystems.turret.TurretConstants.Yaw;
 
 /**
  * All field centic poses
@@ -24,7 +23,7 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
      */
     public AimBot adjustStaticAim(Pose2d robotPose, Rotation2d currentTurretYaw, Translation2d allianceGoalLocation) {
         // where is turret center offset from robot center
-        Translation2d turretOffsetVectorFieldCentric = Yaw.TURRET_MOUNT_OFFSET.rotateBy(robotPose.getRotation());
+        Translation2d turretOffsetVectorFieldCentric = Kinetics.TURRET_MOUNT_OFFSET.rotateBy(robotPose.getRotation());
         Translation2d fieldRelativeTurret = robotPose.getTranslation().plus(turretOffsetVectorFieldCentric);
 
         // where is turret angle from field zero (+x axis)
@@ -47,7 +46,7 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
     public AimBot adjustKineticLead(ChassisSpeeds robotSpeeds) {
         Pose2d kineticRobotPose = calculateKineticRobotPose(robotSpeeds, robot);
 
-        Translation2d turretOffsetRotated = Yaw.TURRET_MOUNT_OFFSET.rotateBy(kineticRobotPose.getRotation());
+        Translation2d turretOffsetRotated = Kinetics.TURRET_MOUNT_OFFSET.rotateBy(kineticRobotPose.getRotation());
         Pose2d kineticTurretPose = new Pose2d(kineticRobotPose.getTranslation().plus(turretOffsetRotated),
                 turret.getRotation());
 
@@ -85,13 +84,20 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
      */
     private ChassisSpeeds calculateWhip(ChassisSpeeds relativeSpeeds, Pose2d futurePose) {
         var vx = relativeSpeeds.vxMetersPerSecond
-                - relativeSpeeds.omegaRadiansPerSecond * Yaw.TURRET_MOUNT_OFFSET.getY();
+                - relativeSpeeds.omegaRadiansPerSecond * Kinetics.TURRET_MOUNT_OFFSET.getY();
         var vy = relativeSpeeds.vyMetersPerSecond
-                + relativeSpeeds.omegaRadiansPerSecond * Yaw.TURRET_MOUNT_OFFSET.getX();
+                + relativeSpeeds.omegaRadiansPerSecond * Kinetics.TURRET_MOUNT_OFFSET.getX();
         var omega = relativeSpeeds.omegaRadiansPerSecond;
         return ChassisSpeeds.fromRobotRelativeSpeeds(vx, vy, omega, futurePose.getRotation());
     }
 
+    /**
+     * Calculates the pose of the goal with a kinetic lead for SOTM
+     * @param whipSpeeds the whip speeds of the robot
+     * @param kineticTurret the kinetic pose of the turret
+     * @param staticGoal the static pose of the goal
+     * @return the {@link Pose2d} of the goal with a kinetic lead
+     */
     private Pose2d calculateKineticGoal(ChassisSpeeds whipSpeeds, Pose2d kineticTurret, Pose2d staticGoal) {
         Translation2d virtualGoalTranslation = staticGoal.getTranslation();
         double turretToGoalDist = kineticTurret.getTranslation().getDistance(virtualGoalTranslation);
@@ -115,5 +121,4 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
 
         return virtualGoalPose;
     }
-
 }

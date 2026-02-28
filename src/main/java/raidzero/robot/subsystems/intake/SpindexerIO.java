@@ -12,9 +12,9 @@ import raidzero.robot.subsystems.intake.IntakeConstants.Spindexer;
 public interface SpindexerIO extends SubsystemIO {
 
     /**
-     * Spins the spindexer at the specified speed
+     * Runs the indexer at the specified speed
      *
-     * @param speed The speed to spin the spindexer at in radians per second
+     * @param speed the speed at which to run the indexer
      */
     void go(AngularVelocity speed);
 

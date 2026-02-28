@@ -18,7 +18,7 @@ public interface ClimbIO extends SubsystemIO {
     void moveTo(Angle position);
 
     /**
-     * Stops the climb motor
+     * Stops the winch motor
      */
     void stop();
 

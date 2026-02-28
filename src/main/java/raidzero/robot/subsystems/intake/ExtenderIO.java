@@ -11,22 +11,22 @@ import raidzero.robot.Superstructure;
 
 public interface ExtenderIO extends SubsystemIO {
     /**
-     * Extends the intake
+     * Extends the intake outwards
      */
     void extend();
 
     /**
-     * Retracts the intake
+     * Retracts the intake inwards
      */
     void retract();
 
     /**
-     * Stops the extender motors
+     * Stops the intake extension motor
      */
     void stop();
 
     /**
-     * Sets the startup angle for the extender
+     * Sets the starting angle for the intake
      */
     void setStartupAngle();
 

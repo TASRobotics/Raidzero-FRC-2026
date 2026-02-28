@@ -16,9 +16,9 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
     }
 
     /**
-     * Spins the spindexer at the outtake speed
+     * Stops the spindexer
      *
-     * @return a {@link Command} that spins the spindexer at the outtake speed
+     * @return a {@link Command}
      */
     public Command stop() {
         return run(() -> io.stop());
