@@ -6,6 +6,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
+import raidzero.robot.Superstructure;
 import raidzero.robot.subsystems.shooter.ShooterConstants.Feeder;
 
 public interface FeederIO extends SubsystemIO {
@@ -36,7 +37,7 @@ public interface FeederIO extends SubsystemIO {
          */
         public Real() {
             motor = new LazyTalonBuilder(
-                Feeder.MOTOR_ID, Feeder.CAN_BUS_NAME,
+                Feeder.MOTOR_ID, Superstructure.canDoAttitude,
                 Feeder.SENSOR_TO_MECHANISM_RATIO, Feeder.INVERTED,
                 Feeder.STATOR_CURRENT_LIMIT.in(Amps), Feeder.SUPPLY_CURRENT_LIMIT.in(Amps)
             )

@@ -6,6 +6,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
+import raidzero.robot.Superstructure;
 import raidzero.robot.subsystems.intake.IntakeConstants.Spindexer;
 
 public interface SpindexerIO extends SubsystemIO {
@@ -37,7 +38,7 @@ public interface SpindexerIO extends SubsystemIO {
          */
         public Real() {
             motor = new LazyTalonBuilder(
-                Spindexer.MOTOR_ID, Spindexer.CAN_BUS_NAME,
+                Spindexer.MOTOR_ID, Superstructure.canDoAttitude,
                 Spindexer.SENSOR_TO_MECHANISM_RATIO, Spindexer.INVERTED,
                 Spindexer.STATOR_CURRENT_LIMIT.in(Amps), Spindexer.SUPPLY_CURRENT_LIMIT.in(Amps)
             )

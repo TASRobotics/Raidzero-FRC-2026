@@ -3,6 +3,7 @@ package raidzero.lib.wrappers.motors;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.ParentConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
@@ -22,28 +23,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbackSensorSourceValue> {
     private MotorArrangementValue motorArrangement;
     private int motorID, followID, canCoderID;
-    private String canBus = "", followCanBus = "", canCoderCanBus = "";
+    private CANBus canBus = CANBus.roboRIO(), followCanBus = CANBus.roboRIO(), canCoderCanBus = CANBus.roboRIO();
 
     private TalonFXSConfiguration motorConfiguration = null, followConfiguration = null;
     private CANcoderConfiguration canCoderConfiguration = null;
 
     private MotorAlignmentValue followerInverted;
-
-    /**
-     * Constructs a LazyFXS instance with the specified motor configurations
-     *
-     * @param motorID                the device id of the motor controller
-     * @param motorArrangement       what type of motor the FXS is connected to
-     * @param sensorToMechanismRatio the gear ratio of the sensor to the mechanism
-     *                               (tell the mech team (driven / driving) *
-     *                               planetary product)
-     * @param invertedValue          what direction that is positive for the motor
-     * @param statorCurrentLimit     the maximum stator current
-     * @param supplyCurrentLimit     the maximum supply current
-     */
-    public LazyFXSBuilder(int motorID, MotorArrangementValue motorArrangement, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
-        this(motorID, "", motorArrangement, sensorToMechanismRatio, invertedValue, statorCurrentLimit, supplyCurrentLimit);
-    }
 
     /**
      * Constructs a LazyFXS instance with the specified motor configurations
@@ -56,7 +41,7 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
      * @param statorCurrentLimit The maximum stator current
      * @param supplyCurrentLimit The maximum supply current
      */
-    public LazyFXSBuilder(int motorID, String canBus, MotorArrangementValue motorArrangement, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
+    public LazyFXSBuilder(int motorID, CANBus canBus, MotorArrangementValue motorArrangement, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
         this.motorID = motorID;
         this.canBus = canBus;
 
@@ -77,9 +62,9 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
     }
 
     @Override
-    public LazyFXSBuilder withFollower(int followerID, String canBus, MotorAlignmentValue isInverted) {
+    public LazyFXSBuilder withFollower(int followerID, CANBus followCanBus, MotorAlignmentValue isInverted) {
         this.followID = followerID;
-        this.followCanBus = canBus;
+        this.followCanBus = followCanBus;
         this.followerInverted = isInverted;
 
         followConfiguration = new TalonFXSConfiguration();
@@ -89,7 +74,7 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
     }
 
     @Override
-    public LazyFXSBuilder withCANCoder(int CANCoderID, String canCoderCanBus, ExternalFeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection) {
+    public LazyFXSBuilder withCANCoder(int CANCoderID, CANBus canCoderCanBus, ExternalFeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection) {
 
         this.canCoderID = CANCoderID;
         this.canCoderCanBus = canCoderCanBus;
@@ -105,7 +90,7 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
     }
 
     @Override
-    public LazyFXSBuilder withCANCoder(int CANCoderID, String canCoderCanBus, ExternalFeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio) {
+    public LazyFXSBuilder withCANCoder(int CANCoderID, CANBus canCoderCanBus, ExternalFeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio) {
         withCANCoder(CANCoderID, canCoderCanBus, sensorType, magnetOffset, sensorDirection);
 
         canCoderConfiguration.MagnetSensor.AbsoluteSensorDiscontinuityPoint = discontinuityPoint;

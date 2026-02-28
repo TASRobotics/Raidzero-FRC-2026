@@ -36,18 +36,18 @@ public class LazyTalon implements LazyCTRE {
      * @param canCoderCanBus The CAN bus the CANcoder is on
      * @param canCoderConfiguration The configuration to apply to the CANcoder
      */
-    public LazyTalon(int motorID, String canBus, TalonFXConfiguration configuration, int followID, String followCanBus, TalonFXConfiguration followConfiguration, MotorAlignmentValue followerInverted, int canCoderID, String canCoderCanBus, CANcoderConfiguration canCoderConfiguration) {
-        motor = new TalonFX(motorID, new CANBus(canBus));
+    public LazyTalon(int motorID, CANBus canBus, TalonFXConfiguration configuration, int followID, CANBus followCanBus, TalonFXConfiguration followConfiguration, MotorAlignmentValue followerInverted, int canCoderID, CANBus canCoderCanBus, CANcoderConfiguration canCoderConfiguration) {
+        motor = new TalonFX(motorID, canBus);
         motor.getConfigurator().apply(configuration);
 
         if (followConfiguration != null) {
-            follower = new TalonFX(followID, new CANBus(followCanBus));
+            follower = new TalonFX(followID, followCanBus);
             follower.getConfigurator().apply(followConfiguration);
             follower.setControl(new Follower(motorID, followerInverted));
         }
 
         if (canCoderConfiguration != null) {
-            canCoder = new CANcoder(canCoderID, new CANBus(canCoderCanBus));
+            canCoder = new CANcoder(canCoderID, canCoderCanBus);
             canCoder.getConfigurator().apply(canCoderConfiguration);
         }
     }

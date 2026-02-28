@@ -6,6 +6,7 @@ import edu.wpi.first.units.measure.Angle;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
+import raidzero.robot.Superstructure;
 import raidzero.robot.subsystems.climb.ClimbConstants.Winch;
 
 public interface ClimbIO extends SubsystemIO {
@@ -29,7 +30,7 @@ public interface ClimbIO extends SubsystemIO {
          */
         public Real() {
             motor = new LazyTalonBuilder(
-                Winch.MOTOR_ID, Winch.SENSOR_TO_MECHANISM_RATIO, Winch.INVERTED,
+                Winch.MOTOR_ID, Superstructure.canDoAttitude, Winch.SENSOR_TO_MECHANISM_RATIO, Winch.INVERTED,
                 Winch.STATOR_CURRENT_LIMIT.in(Amps), Winch.SUPPLY_CURRENT_LIMIT.in(Amps)
             ).build();
         }

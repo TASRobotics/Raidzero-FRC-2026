@@ -7,6 +7,7 @@ import static raidzero.robot.subsystems.intake.IntakeConstants.Extender;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
+import raidzero.robot.Superstructure;
 
 public interface ExtenderIO extends SubsystemIO {
     /**
@@ -44,7 +45,7 @@ public interface ExtenderIO extends SubsystemIO {
          */
         public Real() {
             motor = new LazyTalonBuilder(
-                Extender.MOTOR_ID, Extender.CAN_BUS_NAME,
+                Extender.MOTOR_ID, Superstructure.canDoAttitude,
                 Extender.SENSOR_TO_MECHANISM_RATIO, Extender.INVERTED,
                 Extender.STATOR_CURRENT_LIMIT.in(Amps), Extender.SUPPLY_CURRENT_LIMIT.in(Amps)
             )
@@ -59,7 +60,7 @@ public interface ExtenderIO extends SubsystemIO {
                     Extender.CRUISE_VELOCITY,
                     Extender.ACCELERATION
                 )
-                .withFollower(Extender.FOLLOW_ID, Extender.CAN_BUS_NAME, Extender.FOLLOW_ALIGNMENT)
+                .withFollower(Extender.FOLLOW_ID, Superstructure.canDoAttitude, Extender.FOLLOW_ALIGNMENT)
                 .withSoftLimits(
                     Extender.ENALBE_FORWARD_SOFT_LIMIT, Extender.FORWARD_SOFT_LIMIT.in(Rotations),
                     Extender.ENABLE_REVERSE_SOFT_LIMIT, Extender.REVERSE_SOFT_LIMIT.in(Rotations)
