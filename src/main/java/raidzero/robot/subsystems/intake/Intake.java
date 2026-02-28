@@ -25,6 +25,16 @@ public class Intake extends R0Subsystem<IntakeIO> {
     }
 
     /**
+     * Runs the intake at the anti-jam speed for a short duration to attempt to clear jams
+     *
+     * @return A {@link Command} that runs the intake at the anti-jam speed
+     */
+    public Command antiJam() {
+        return run(() -> io.go(IntakeConstants.Intake.INTAKE_SPEED))
+            .withTimeout(0.1);
+    }
+
+    /**
      * Constructs the {@link Intake} subsystem
      *
      * @param io The {@link IntakeIO} implementation to use for this subsystem
