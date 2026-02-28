@@ -74,7 +74,7 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     /**
      * Gets the current yaw of the turret
-     * 
+     *
      * @return the current yaw of the turret as an {@link Angle}
      */
     public Angle getCurrentYaw() {
@@ -90,7 +90,7 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     /**
      * Gets the distance from the hub april tag to the turret
-     * 
+     *
      * @param kineticLead whether or not to use kinetic leading for
      *                    shoot-on-the-move
      * @return the distance from the hub april tag to the turret as a
@@ -98,8 +98,9 @@ public class Turret extends R0Subsystem<TurretIO> {
      */
     public Distance getHubDistance(boolean kineticLead) {
         return Meters.of(
-                kineticLead ? kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
-                        : staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose));
+            kineticLead ? kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose) :
+                staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
+        );
     }
 
     /**
@@ -146,7 +147,7 @@ public class Turret extends R0Subsystem<TurretIO> {
 
                 if (turret_rotations > Yaw.FORWARD_SOFT_LIMIT.in(Rotations)) {
                     return Rotations
-                            .of(turret_rotations - 2.278);
+                        .of(turret_rotations - 2.278);
                 }
 
                 return Rotations.of(turret_rotations);
@@ -169,8 +170,9 @@ public class Turret extends R0Subsystem<TurretIO> {
         );
 
         staticAimBot = staticAimBot.adjustStaticAim(
-                swerve.getState().Pose, new Rotation2d(getCurrentYaw()),
-                allianceTargetFieldPose);
+            swerve.getState().Pose, new Rotation2d(getCurrentYaw()),
+            allianceTargetFieldPose
+        );
 
         kineticAimBot = staticAimBot.adjustKineticLead(filteredSpeeds);
 
@@ -189,8 +191,9 @@ public class Turret extends R0Subsystem<TurretIO> {
         kineticGoalSender.set(kineticAimBot.goal());
 
         SmartDashboard.putNumber(
-                "Static Hub Distance",
-                staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose));
+            "Static Hub Distance",
+            staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
+        );
         // SmartDashboard.putNumber(
         // "Kinetic Hub Distance",
         // kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)

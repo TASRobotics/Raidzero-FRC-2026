@@ -17,7 +17,7 @@ public class Intake extends R0Subsystem<IntakeIO> {
     }
 
     /**
-     * Stops the intake 
+     * Stops the intake
      * @return a {@link Command}
      */
     public Command stop() {

@@ -6,8 +6,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
-import raidzero.robot.subsystems.shooter.ShooterConstants.Flywheel;
 import raidzero.robot.Superstructure;
+import raidzero.robot.subsystems.shooter.ShooterConstants.Flywheel;
 
 public interface ShooterIO extends SubsystemIO {
 

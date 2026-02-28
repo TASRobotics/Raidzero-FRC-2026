@@ -13,7 +13,7 @@ public interface SpindexerIO extends SubsystemIO {
 
     /**
      * Runs the indexer at the specified speed
-     * 
+     *
      * @param speed the speed at which to run the indexer
      */
     void go(AngularVelocity speed);

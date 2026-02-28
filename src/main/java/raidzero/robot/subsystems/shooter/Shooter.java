@@ -33,7 +33,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      * Runs the shooter at the velocity set by the {@link #velocityTarget} variable,
      * which can be changed with the
      * {@link #incrementVelocitySetpoint(AngularVelocity)} method
-     * 
+     *
      * @return a {@link Command}
      */
     public Command manualShoot() {
@@ -43,7 +43,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     /**
      * Increments the velocity setpoint by the specified amount, which will affect
      * the speed of the shooter when the {@link #manualShoot()} command is running
-     * 
+     *
      * @param speed the amount to increment the velocity setpoint by
      * @return a {@link Command}
      */

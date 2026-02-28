@@ -17,7 +17,7 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
 
     /**
      * Stops the spindexer
-     * 
+     *
      * @return a {@link Command}
      */
     public Command stop() {

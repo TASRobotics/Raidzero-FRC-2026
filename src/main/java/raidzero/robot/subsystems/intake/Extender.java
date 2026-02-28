@@ -9,7 +9,7 @@ public class Extender extends R0Subsystem<ExtenderIO> {
 
     /**
      * Extends the intake outwards
-     * 
+     *
      * @return a {@link Command}
      */
     public Command extend() {

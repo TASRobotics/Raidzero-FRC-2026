@@ -1,11 +1,10 @@
 package raidzero.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import raidzero.lib.R0Subsystem;
 
 public class Feeder extends R0Subsystem<FeederIO> {
@@ -22,7 +21,7 @@ public class Feeder extends R0Subsystem<FeederIO> {
 
     /**
      * Stops the feeder motor
-     * 
+     *
      * @return a {@link Command}
      */
     public Command stop() {
