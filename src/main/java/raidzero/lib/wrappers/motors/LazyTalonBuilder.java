@@ -3,6 +3,7 @@ package raidzero.lib.wrappers.motors;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.ParentConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -18,28 +19,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSensorSourceValue> {
     private int motorID, followID, canCoderID;
-    private String canBus = "", followCanBus = "", canCoderCanBus = "";
+    private CANBus canBus = CANBus.roboRIO(), followCanBus = CANBus.roboRIO(), canCoderCanBus = CANBus.roboRIO();
 
     private TalonFXConfiguration motorConfiguration = null, followConfiguration = null;
     private CANcoderConfiguration canCoderConfiguration = null;
 
     private MotorAlignmentValue followerInverted;
-
-    /**
-     * Constructs a LazyTalon instance with the specified motor identifier and
-     * configuration parameters.
-     *
-     * @param motorID                the device id of the motor controller
-     * @param sensorToMechanismRatio the gear ratio of the sensor to the mechanism
-     *                               (tell the mech team (driven / driving) *
-     *                               planetary product)
-     * @param invertedValue          what direction that is positive for the motor
-     * @param statorCurrentLimit     the maximum stator current
-     * @param supplyCurrentLimit     the maximum supply current
-     */
-    public LazyTalonBuilder(int motorID, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
-        this(motorID, "", sensorToMechanismRatio, invertedValue, statorCurrentLimit, supplyCurrentLimit);
-    }
 
     /**
      * Constructs a LazyTalon instance with the specified motor identifier, CAN bus, and
@@ -51,7 +36,7 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
      * @param statorCurrentLimit The maximum stator current
      * @param supplyCurrentLimit
      */
-    public LazyTalonBuilder(int motorID, String canBus, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
+    public LazyTalonBuilder(int motorID, CANBus canBus, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
         this.motorID = motorID;
         this.canBus = canBus;
 
@@ -70,7 +55,7 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
     }
 
     @Override
-    public LazyTalonBuilder withFollower(int followerID, String canBus, MotorAlignmentValue isInverted) {
+    public LazyTalonBuilder withFollower(int followerID, CANBus canBus, MotorAlignmentValue isInverted) {
         this.followID = followerID;
         this.followCanBus = canBus;
         this.followerInverted = isInverted;
@@ -81,7 +66,7 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
     }
 
     @Override
-    public LazyTalonBuilder withCANCoder(int CANCoderID, String canCoderCanBus, FeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection) {
+    public LazyTalonBuilder withCANCoder(int CANCoderID, CANBus canCoderCanBus, FeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection) {
 
         this.canCoderID = CANCoderID;
         this.canCoderCanBus = canCoderCanBus;
@@ -97,7 +82,7 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
     }
 
     @Override
-    public LazyTalonBuilder withCANCoder(int CANCoderID, String canCoderCanBus, FeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio) {
+    public LazyTalonBuilder withCANCoder(int CANCoderID, CANBus canCoderCanBus, FeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio) {
         withCANCoder(CANCoderID, canCoderCanBus, sensorType, magnetOffset, sensorDirection);
 
         canCoderConfiguration.MagnetSensor.AbsoluteSensorDiscontinuityPoint = discontinuityPoint;

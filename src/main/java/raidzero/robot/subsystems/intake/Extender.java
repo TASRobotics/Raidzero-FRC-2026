@@ -8,21 +8,40 @@ public class Extender extends R0Subsystem<ExtenderIO> {
     private static Extender system;
 
     /**
-     * Extends the intake
+     * Extends the intake outwards
      *
-     * @return A {@link Command} that extends the intake
+     * @return a {@link Command}
      */
     public Command extend() {
         return run(() -> io.extend());
     }
 
     /**
-     * Retracts the intake
+     * Retracts the intake inwards
      *
-     * @return A {@link Command} that retracts the intake
+     * @return a {@link Command}
      */
     public Command retract() {
         return run(() -> io.retract());
+    }
+
+    /**
+     * Agitates the intake by briefly moving to the agitate setpoint, then retracting
+     *
+     * @return a {@link Command}
+     */
+    public Command agitate() {
+        return run(() -> io.agitateL1())
+            .withTimeout(0.2)
+            // .andThen(
+            // run(() -> io.agitateL2())
+            // .withTimeout(0.2)
+            // )
+            // .andThen(
+            // run(() -> io.agitateL3())
+            // .withTimeout(0.3)
+            // )
+            .andThen(run(() -> io.retract()));
     }
 
     /**
@@ -34,20 +53,33 @@ public class Extender extends R0Subsystem<ExtenderIO> {
         return run(() -> io.stop());
     }
 
-    /**
-     * Checks if the extender is fully extended
-     *
-     * @return A {@link Trigger} that is active when the extender is fully extended
-     */
     public Trigger isExtended() {
         return new Trigger(() -> io.isExtended());
     }
 
     /**
-     * Sets the startup angle of the extender to the current position
+     * Sets the starting angle for the intake
      */
     public void setStartupAngle() {
         io.setStartupAngle();
+    }
+
+    /**
+     * Increases the agitate level of the extender
+     *
+     * @return A {@link Command} that increases the agitate level of the extender
+     */
+    public Command increaseAgitate() {
+        return runOnce(() -> io.increaseAgitate());
+    }
+
+    /**
+     * Decreases the agitate level of the extender
+     *
+     * @return A {@link Command} that decreases the agitate level of the extender
+     */
+    public Command decreaseAgitate() {
+        return runOnce(() -> io.decreaseAgitate());
     }
 
     /**

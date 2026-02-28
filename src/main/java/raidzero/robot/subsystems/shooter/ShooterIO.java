@@ -6,6 +6,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
+import raidzero.robot.Superstructure;
 import raidzero.robot.subsystems.shooter.ShooterConstants.Flywheel;
 
 public interface ShooterIO extends SubsystemIO {
@@ -41,7 +42,7 @@ public interface ShooterIO extends SubsystemIO {
 
         Real() {
             flywheel = new LazyTalonBuilder(
-                Flywheel.MOTOR_ID, Flywheel.CAN_BUS_NAME,
+                Flywheel.MOTOR_ID, Superstructure.canDoAttitude,
                 Flywheel.SENSOR_TO_MECHANISM_RATIO, Flywheel.INVERTED,
                 Flywheel.STATOR_CURRENT_LIMIT.in(Amps),
                 Flywheel.SUPPLY_CURRENT_LIMIT.in(Amps)
@@ -55,10 +56,8 @@ public interface ShooterIO extends SubsystemIO {
                     0, 0, Flywheel.CRUISE_VELOCITY,
                     Flywheel.ACCELERATION
                 )
-                .withFollower(Flywheel.FOLLOW_ID, Flywheel.CAN_BUS_NAME, Flywheel.FOLLOWER_INVERTED)
+                .withFollower(Flywheel.FOLLOW_ID, Superstructure.canDoAttitude, Flywheel.FOLLOWER_INVERTED)
                 .build();
-
-            // Superstructure.orchestra.addInstrument(flywheel.getMotor());
 
             flywheel.setCoast();
         }
@@ -78,6 +77,7 @@ public interface ShooterIO extends SubsystemIO {
             flywheel.stop();
         }
 
+        @Override
         public AngularVelocity getVelocity() {
             return flywheel.getVelocity();
         }

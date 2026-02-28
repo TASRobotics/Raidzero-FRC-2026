@@ -7,6 +7,7 @@ import edu.wpi.first.units.measure.Angle;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyFXS;
 import raidzero.lib.wrappers.motors.LazyFXSBuilder;
+import raidzero.robot.Superstructure;
 
 public interface HoodIO extends SubsystemIO {
     /**
@@ -41,7 +42,7 @@ public interface HoodIO extends SubsystemIO {
          */
         public Real() {
             pitch = new LazyFXSBuilder(
-                Pitch.MOTOR_ID, Pitch.CAN_BUS_NAME,
+                Pitch.MOTOR_ID, Superstructure.canDoAttitude,
                 Pitch.MOTOR_ARRANGEMENT,
                 Pitch.SENSOR_TO_MECHANISM_RATIO,
                 Pitch.INVERTED,

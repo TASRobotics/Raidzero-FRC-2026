@@ -7,27 +7,54 @@ import static raidzero.robot.subsystems.intake.IntakeConstants.Extender;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
+import raidzero.robot.Superstructure;
 
 public interface ExtenderIO extends SubsystemIO {
+
     /**
-     * Extends the intake
+     * Extends the intake outwards
      */
     void extend();
 
     /**
-     * Retracts the intake
+     * Retracts the intake inwards
      */
     void retract();
 
     /**
-     * Stops the extender motors
+     * Agitates the intake at level 1
+     */
+    void agitateL1();
+
+    /**
+     * Agitates the intake at level 2
+     */
+    void agitateL2();
+
+    /**
+     * Agitates the intake at level 3
+     */
+    void agitateL3();
+
+    /**
+     * Stops the intake extension motor
      */
     void stop();
 
     /**
-     * Sets the startup angle for the extender
+     * Sets the starting angle for the intake
      */
     void setStartupAngle();
+
+    /**
+     * Increases the agitation of the extender
+     */
+    void increaseAgitate();
+
+    /**
+     * Decreases the agitation of the extender
+     */
+    void decreaseAgitate();
 
     /**
      * Returns true if the extender is extended, false otherwise
@@ -44,7 +71,7 @@ public interface ExtenderIO extends SubsystemIO {
          */
         public Real() {
             motor = new LazyTalonBuilder(
-                Extender.MOTOR_ID, Extender.CAN_BUS_NAME,
+                Extender.MOTOR_ID, Superstructure.canDoAttitude,
                 Extender.SENSOR_TO_MECHANISM_RATIO, Extender.INVERTED,
                 Extender.STATOR_CURRENT_LIMIT.in(Amps), Extender.SUPPLY_CURRENT_LIMIT.in(Amps)
             )
@@ -59,7 +86,7 @@ public interface ExtenderIO extends SubsystemIO {
                     Extender.CRUISE_VELOCITY,
                     Extender.ACCELERATION
                 )
-                .withFollower(Extender.FOLLOW_ID, Extender.CAN_BUS_NAME, Extender.FOLLOW_ALIGNMENT)
+                .withFollower(Extender.FOLLOW_ID, Superstructure.canDoAttitude, Extender.FOLLOW_ALIGNMENT)
                 .withSoftLimits(
                     Extender.ENALBE_FORWARD_SOFT_LIMIT, Extender.FORWARD_SOFT_LIMIT.in(Rotations),
                     Extender.ENABLE_REVERSE_SOFT_LIMIT, Extender.REVERSE_SOFT_LIMIT.in(Rotations)
@@ -80,8 +107,37 @@ public interface ExtenderIO extends SubsystemIO {
         }
 
         @Override
+        public void agitateL1() {
+            motor.setMMExpoTarget(Extender.AGITATE_ONE_SETPOINT, 0);
+        }
+
+        @Override
+        public void agitateL2() {
+            motor.setMMExpoTarget(Extender.AGITATE_TWO_SETPOINT, 0);
+        }
+
+        @Override
+        public void agitateL3() {
+            motor.setMMExpoTarget(Extender.AGITATE_THREE_SETPOINT, 0);
+        }
+
+        @Override
         public void stop() {
             motor.stop();
+        }
+
+        @Override
+        public void increaseAgitate() {
+            Extender.AGITATE_ONE_SETPOINT.plus(Rotations.of(0.01));
+            Extender.AGITATE_TWO_SETPOINT.plus(Rotations.of(0.01));
+            Extender.AGITATE_THREE_SETPOINT.plus(Rotations.of(0.01));
+        }
+
+        @Override
+        public void decreaseAgitate() {
+            Extender.AGITATE_ONE_SETPOINT.minus(Rotations.of(0.01));
+            Extender.AGITATE_TWO_SETPOINT.minus(Rotations.of(0.01));
+            Extender.AGITATE_THREE_SETPOINT.minus(Rotations.of(0.01));
         }
 
         @Override

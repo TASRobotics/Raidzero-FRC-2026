@@ -31,7 +31,7 @@ public final class ClimbConstants {
         public static final double POSITION_D = 0.0;
 
         public static final double POSITION_S = 0.2;
-        public static final double POSITION_G = 0.0; // * NOTE: this should be 0
+        public static final double POSITION_G = 0.0;
         public static final double POSITION_V = 0.0;
         public static final double POSITION_A = 0.0;
 

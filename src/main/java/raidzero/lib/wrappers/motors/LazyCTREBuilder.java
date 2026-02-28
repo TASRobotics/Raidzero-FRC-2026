@@ -1,5 +1,6 @@
 package raidzero.lib.wrappers.motors;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.ParentConfiguration;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -18,7 +19,7 @@ public interface LazyCTREBuilder<T, S> {
      *                       master motor
      * @return this motor instance for method chaining
      */
-    public LazyCTREBuilder<T, S> withFollower(int followerID, String canBus, MotorAlignmentValue alignmentValue);
+    public LazyCTREBuilder<T, S> withFollower(int followerID, CANBus canBus, MotorAlignmentValue alignmentValue);
 
     /**
      * Configures a {@link CANcoder} remote feedback sensor
@@ -30,7 +31,7 @@ public interface LazyCTREBuilder<T, S> {
      * @param sensorDirection the sensor direciton relative to the mechanism
      * @return this motor instance for method chaining
      */
-    public LazyCTREBuilder<T, S> withCANCoder(int CANCoderID, String canCoderCanBus, S sensorType, double magnetOffset, SensorDirectionValue sensorDirection);
+    public LazyCTREBuilder<T, S> withCANCoder(int CANCoderID, CANBus canCoderCanBus, S sensorType, double magnetOffset, SensorDirectionValue sensorDirection);
 
     /**
      * Configures a {@link CANcoder} remote feedback sensor with a specified rotor
@@ -45,7 +46,7 @@ public interface LazyCTREBuilder<T, S> {
      * @param rotorToSensorRatio the gear ratio of the sensor to the motor
      * @return this motor instance for method chaining
      */
-    public LazyCTREBuilder<T, S> withCANCoder(int CANCoderID, String canCoderCanBus, S sensorType, double magnetOffset, SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio);
+    public LazyCTREBuilder<T, S> withCANCoder(int CANCoderID, CANBus canCoderCanBus, S sensorType, double magnetOffset, SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio);
 
     /**
      * Configures the PID and Feedforward gains for this motor

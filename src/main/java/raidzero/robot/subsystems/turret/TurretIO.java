@@ -1,20 +1,16 @@
 package raidzero.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
-import static raidzero.robot.subsystems.turret.TurretConstants.Limelight;
 import static raidzero.robot.subsystems.turret.TurretConstants.Yaw;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.hardware.CANcoder;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
-import raidzero.lib.LimelightHelpers;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyFXS;
 import raidzero.lib.wrappers.motors.LazyFXSBuilder;
+import raidzero.robot.Superstructure;
 
 public interface TurretIO extends SubsystemIO {
 
@@ -40,27 +36,6 @@ public interface TurretIO extends SubsystemIO {
     void setStartupYaw(Angle yaw);
 
     /**
-     * Returns true if the bot has line-of-sight with the hub
-     *
-     * @return true if the bot has line-of-sight with the hub
-     */
-    boolean hasHubLOS();
-
-    /**
-     * Gets the yaw angle from the goal target
-     *
-     * @return the {@link Angle}
-     */
-    Angle getYawFromTarget();
-
-    /**
-     * Gets the distance to the hub
-     *
-     * @return the {@link Distance}
-     */
-    Distance getHubDistance();
-
-    /**
      * Sets the yaw to move in a set speed in percent
      *
      * @param percent the percent [0, 1]
@@ -72,16 +47,28 @@ public interface TurretIO extends SubsystemIO {
      */
     void stop();
 
+    /**
+     * Gets the reading from the first Jared modulo method sensor (22 teeth)
+     * @return the sensor reading in rotations
+     */
+    double getJMM1Reading();
+
+    /**
+     * Gets the reading from the second Jared modulo method sensor (29 teeth)
+     * @return the sensor reading in rotations
+     */
+    double getJMM2Reading();
+
     public class Real implements TurretIO {
         private LazyFXS yaw;
-        private double lastTagDistance;
+        private CANcoder jmm1, jmm2;
 
         /**
          * Constructs a real instance of the Turret IO
          */
         public Real() {
             yaw = new LazyFXSBuilder(
-                Yaw.MOTOR_ID, Yaw.CAN_BUS_NAME,
+                Yaw.MOTOR_ID, Superstructure.canDoAttitude,
                 Yaw.MOTOR_ARRANGEMENT,
                 Yaw.SENSOR_TO_MECHANISM_RATIO,
                 Yaw.INVERTED,
@@ -106,9 +93,21 @@ public interface TurretIO extends SubsystemIO {
                 )
                 .build();
 
-            lastTagDistance = 0;
+            CANcoderConfiguration jmm1Config = new CANcoderConfiguration();
+            jmm1Config.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1.0;
+            jmm1Config.MagnetSensor.SensorDirection = Yaw.JMM_1_INVERTED;
+            jmm1Config.MagnetSensor.MagnetOffset = Yaw.JMM_OFFSET_1;
 
-            // Superstructure.orchestra.addInstrument(this.yaw.getMotor());
+            jmm1 = new CANcoder(Yaw.JMM_1_ID, Yaw.CAN_BUS_NAME);
+            jmm1.getConfigurator().apply(jmm1Config);
+
+            CANcoderConfiguration jmm2Config = new CANcoderConfiguration();
+            jmm2Config.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1.0;
+            jmm2Config.MagnetSensor.SensorDirection = Yaw.JMM_2_INVERTED;
+            jmm2Config.MagnetSensor.MagnetOffset = Yaw.JMM_OFFSET_2;
+
+            jmm2 = new CANcoder(Yaw.JMM_2_ID, Yaw.CAN_BUS_NAME);
+            jmm2.getConfigurator().apply(jmm2Config);
         }
 
         @Override
@@ -127,50 +126,6 @@ public interface TurretIO extends SubsystemIO {
         }
 
         @Override
-        public boolean hasHubLOS() {
-            return LimelightHelpers.getTV(Limelight.LIMELIGHT_NAME);
-        }
-
-        @Override
-        public Angle getYawFromTarget() {
-            if (!LimelightHelpers.getTV(Limelight.LIMELIGHT_NAME)) {
-                return Degrees.of(0);
-            }
-
-            return Degrees.of(LimelightHelpers.getTX(Limelight.LIMELIGHT_NAME));
-        }
-
-        @Override
-        public Distance getHubDistance() {
-            if (!LimelightHelpers.getTV(Limelight.LIMELIGHT_NAME)) {
-                return Meters.of(lastTagDistance);
-            }
-
-            double[] cameraPoseArray = LimelightHelpers.getCameraPose_TargetSpace(Limelight.LIMELIGHT_NAME);
-
-            if (cameraPoseArray.length >= 6) {
-                Pose3d cameraPose = new Pose3d(
-                    cameraPoseArray[0], // X
-                    cameraPoseArray[1], // Y
-                    cameraPoseArray[2], // Z
-                    new Rotation3d(
-                        Math.toRadians(cameraPoseArray[3]), // Roll
-                        Math.toRadians(cameraPoseArray[4]), // Pitch
-                        Math.toRadians(cameraPoseArray[5]) // Yaw
-                    )
-                );
-
-                // Distance from camera to target (origin is the target)
-                double distance = cameraPose.getTranslation().getNorm();
-                lastTagDistance = distance;
-
-                return Meters.of(distance);
-            } else {
-                return Meters.of(lastTagDistance);
-            }
-        }
-
-        @Override
         public void runYawPercent(double percent) {
             yaw.setDutyCycle(percent);
         }
@@ -178,6 +133,16 @@ public interface TurretIO extends SubsystemIO {
         @Override
         public void stop() {
             yaw.stop();
+        }
+
+        @Override
+        public double getJMM1Reading() {
+            return jmm1.getAbsolutePosition().getValueAsDouble() * Yaw.JARED_TEETH_1;
+        }
+
+        @Override
+        public double getJMM2Reading() {
+            return jmm2.getAbsolutePosition().getValueAsDouble() * Yaw.JARED_TEETH_2;
         }
 
         @Override

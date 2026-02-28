@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.R0Subsystem;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
@@ -44,9 +43,6 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     private AimBot staticAimBot = null;
     private AimBot kineticAimBot = null;
-
-    // todo: auto set the turret to unwrap when idle (not shooting)
-    // todo: hood backlash compensation (go down and back up when moving in the negative direction to compensate)
 
     /**
      * Moves the robot to the given setpoint
@@ -76,10 +72,11 @@ public class Turret extends R0Subsystem<TurretIO> {
         return run(() -> io.stop());
     }
 
-    public Angle getYawFromTarget() {
-        return io.getYawFromTarget();
-    }
-
+    /**
+     * Gets the current yaw of the turret
+     *
+     * @return the current yaw of the turret as an {@link Angle}
+     */
     public Angle getCurrentYaw() {
         return io.getYaw();
     }
@@ -87,28 +84,23 @@ public class Turret extends R0Subsystem<TurretIO> {
     /**
      * Sets the startup angle of the turret
      */
-    public void setStartupAngle() {}
+    public void setStartupAngle() {
+        io.setStartupYaw(JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()));
+    }
 
     /**
      * Gets the distance from the hub april tag to the turret
      *
-     * @param kineticLead Whether or not to use the kinetic leading pose or the static aiming pose for distance calculation (kinetic leading pose is more accurate when the robot is moving)
-     * @return The distance from the hub april tag to the turret in meters
+     * @param kineticLead whether or not to use kinetic leading for
+     *                    shoot-on-the-move
+     * @return the distance from the hub april tag to the turret as a
+     *         {@link Distance}
      */
     public Distance getHubDistance(boolean kineticLead) {
         return Meters.of(
             kineticLead ? kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose) :
                 staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
         );
-    }
-
-    /**
-     * Checks if the turret limelight can see the hub april tags on the scoring side
-     *
-     * @return A {@link Trigger} object
-     */
-    public Trigger hasHubLOS() {
-        return new Trigger(() -> io.hasHubLOS());
     }
 
     /**
@@ -124,36 +116,46 @@ public class Turret extends R0Subsystem<TurretIO> {
     /**
      * Gets the goal pose on the current alliance
      *
-     * @return The goal pose on the current alliance in field-relative coordinates
+     * @return the goal pose on the current alliance as a {@link Translation2d}
      */
     public Translation2d getAllianceTarget() {
         return allianceTargetFieldPose;
     }
 
     /**
-     * Uses the Scream Remainder Theorem to calculate the turret angle
-     *
-     * @param teethOnFirst The number of teeth on the first gear
-     * @param teethOnSecond The number of teeth on the second gear
-     * @param readingOnFirst The reading from the first gear
-     * @param readingOnSecond The reading from the second gear
-     * @return The calculated turret angle in rotations
+     * Calculates the absolute turret angle using the Jared Modulo Magic Method
+     * @param readingOnFirst the reading from the first Jared modulo method sensor
+     * @param readingOnSecond the reading from the second Jared modulo method sensor
+     * @return the calculated absolute turret angle as an {@link Angle}
      */
-    private double ScreamRemainderTheorem(int teethOnFirst, int teethOnSecond, double readingOnFirst, double readingOnSecond) {
-        double[] possibleReadings = new double[(int) teethOnSecond];
-        for (int i = 0; i < (int) teethOnSecond; i++) {
-            possibleReadings[i] = (readingOnFirst + i * teethOnFirst) % teethOnSecond;
+    private Angle JaredModuloMagic(double readingOnFirst, double readingOnSecond) {
+        double[] possibleReadings = new double[(int) Yaw.JARED_TEETH_1];
+        for (int i = 0; i < (int) Yaw.JARED_TEETH_2; i++) {
+            possibleReadings[i] = (readingOnFirst + i * Yaw.JARED_TEETH_1) % Yaw.JARED_TEETH_2;
             if (possibleReadings[i] < 0) {
-                possibleReadings[i] += teethOnSecond;
+                possibleReadings[i] += Yaw.JARED_TEETH_2;
             }
         }
-        for (int i = 0; i < (int) teethOnSecond; i++) {
+        for (int i = 0; i < (int) Yaw.JARED_TEETH_2; i++) {
             if (Math.abs(possibleReadings[i] - readingOnSecond) < Yaw.TOLERANCE_SRT) {
-                return i * teethOnFirst + readingOnFirst;
+                SmartDashboard.putBoolean("JMM Success", true);
+
+                double raw_angle = i * Yaw.JARED_TEETH_1 + readingOnFirst;
+
+                double turret_rotations = raw_angle / Yaw.TURRET_RING_TEETH;
+                SmartDashboard.putNumber("JMM Raw Angle", turret_rotations);
+
+                if (turret_rotations > Yaw.FORWARD_SOFT_LIMIT.in(Rotations)) {
+                    return Rotations
+                        .of(turret_rotations - 2.278);
+                }
+
+                return Rotations.of(turret_rotations);
             }
         }
+        SmartDashboard.putBoolean("JMM Success", false);
         DriverStation.reportWarning("Looks like the SRT failed in Turret.java", false);
-        return 0.0;
+        return Rotations.of(0.0);
     }
 
     @Override
@@ -192,12 +194,16 @@ public class Turret extends R0Subsystem<TurretIO> {
             "Static Hub Distance",
             staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
         );
-        SmartDashboard.putNumber(
-            "Kinetic Hub Distance",
-            kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
-        );
+        // SmartDashboard.putNumber(
+        // "Kinetic Hub Distance",
+        // kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
+        // );
     }
 
+    /**
+     * Constructs a Turret instance with the given IO implementation
+     * @param io the IO implementation to use
+     */
     private Turret(TurretIO io) {
         super(io);
 
@@ -205,6 +211,7 @@ public class Turret extends R0Subsystem<TurretIO> {
         kineticAimBot = new AimBot(new Pose2d(), new Pose2d(), new Pose2d());
 
         boolean isRedAlliance = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
+        allianceTargetFieldPose = isRedAlliance ? Kinetics.GOAL_LOCATION_RED : Kinetics.GOAL_LOCATION_BLUE;
         allianceTargetFieldPose = isRedAlliance ? Kinetics.GOAL_LOCATION_RED : Kinetics.GOAL_LOCATION_BLUE;
 
         staticTable = nt.getTable("Turret/Static");
@@ -217,9 +224,8 @@ public class Turret extends R0Subsystem<TurretIO> {
     }
 
     /**
-     *  Gets the {@link Turret} subsystem instance
-      *
-     * @return The {@link Turret} subsystem instance
+     * Gets the singleton instance of the Turret subsystem, creating it if it doesn't exist
+     * @return the singleton instance of the Turret subsystem
      */
     public static Turret system() {
         if (system == null) {
