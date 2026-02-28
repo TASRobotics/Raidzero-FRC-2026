@@ -122,9 +122,6 @@ public class Superstructure {
         // .withTimeout(0.5)
         // .andThen(spindexer.antiJamBig()))
         // );
-
-        // driver.leftTrigger().whileTrue(new ConditionalCommand(spindexer.go(), spindexer.antiJamBig(), feeder.ballDetected()));
-
         driver.leftTrigger().whileTrue(feeder.go());
 
         // );
@@ -139,9 +136,9 @@ public class Superstructure {
         driver.b().onTrue(extender.extend());
         driver.x().onTrue(extender.retract());
 
-        driver.a().onTrue(
-            extender.agitate().alongWith(spindexer.antiJam())
-        );
+        // driver.a().onTrue(
+        // extender.agitate().alongWith(spindexer.antiJam())
+        // );
         driver.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
         driver.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
 

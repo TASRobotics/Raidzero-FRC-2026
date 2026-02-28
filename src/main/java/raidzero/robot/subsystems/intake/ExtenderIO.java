@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Rotations;
 import static raidzero.robot.subsystems.intake.IntakeConstants.Extender;
 
-import edu.wpi.first.units.measure.Angle;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
@@ -23,12 +22,18 @@ public interface ExtenderIO extends SubsystemIO {
     void retract();
 
     /**
-     * Agitates the intake
+     * Agitates the intake at level 1
      */
     void agitateL1();
 
+    /**
+     * Agitates the intake at level 2
+     */
     void agitateL2();
 
+    /**
+     * Agitates the intake at level 3
+     */
     void agitateL3();
 
     /**
@@ -41,8 +46,14 @@ public interface ExtenderIO extends SubsystemIO {
      */
     void setStartupAngle();
 
+    /**
+     * Increases the agitation of the extender
+     */
     void increaseAgitate();
 
+    /**
+     * Decreases the agitation of the extender
+     */
     void decreaseAgitate();
 
     /**

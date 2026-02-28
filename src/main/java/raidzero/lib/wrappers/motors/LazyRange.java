@@ -30,7 +30,8 @@ public class LazyRange {
     }
 
     /**
-     * Returns whether the CANrange sensor detects an object within the proximity threshold.
+     * Returns whether the CANrange sensor detects an object within the proximity
+     * threshold.
      *
      * @return true if an object is detected, false otherwise
      */
@@ -47,5 +48,8 @@ public class LazyRange {
         return canRange;
     }
 
+    /**
+     * Updates the telemetry for the CANrange sensor.
+     */
     public void updateTelemetry() {}
 }

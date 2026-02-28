@@ -64,10 +64,20 @@ public class Extender extends R0Subsystem<ExtenderIO> {
         io.setStartupAngle();
     }
 
+    /**
+     * Increases the agitate level of the extender
+     *
+     * @return A {@link Command} that increases the agitate level of the extender
+     */
     public Command increaseAgitate() {
         return runOnce(() -> io.increaseAgitate());
     }
 
+    /**
+     * Decreases the agitate level of the extender
+     *
+     * @return A {@link Command} that decreases the agitate level of the extender
+     */
     public Command decreaseAgitate() {
         return runOnce(() -> io.decreaseAgitate());
     }
