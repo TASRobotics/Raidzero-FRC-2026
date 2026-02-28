@@ -8,10 +8,8 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -90,7 +88,7 @@ public class Superstructure {
         boolean negX = ((pose.getX() > 5.1 && pose.getX() < 5.6) || (pose.getX() > 11.44 && pose.getX() < 12.14)) &&
             fieldRelativeSpeeds.vxMetersPerSecond < -0.1;
 
-        return posX || negX;
+        return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
     });
 
     /**
