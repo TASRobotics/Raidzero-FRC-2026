@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -26,6 +27,8 @@ import raidzero.robot.subsystems.turret.Turret;
 
 public class Superstructure {
     // public static Orchestra orchestra = new Orchestra();
+
+    public static CANBus canDoAttitude = new CANBus("canDoAttitude");
 
     private static Shooter shooter = Shooter.system();
     private static Turret turret = Turret.system();

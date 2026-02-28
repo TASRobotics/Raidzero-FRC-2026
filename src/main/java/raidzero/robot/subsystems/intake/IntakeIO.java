@@ -7,6 +7,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
+import raidzero.robot.Superstructure;
 
 public interface IntakeIO extends SubsystemIO {
     /**
@@ -36,7 +37,7 @@ public interface IntakeIO extends SubsystemIO {
          */
         public Real() {
             motor = new LazyTalonBuilder(
-                Intake.MOTOR_ID, Intake.CAN_BUS_NAME,
+                Intake.MOTOR_ID, Superstructure.canDoAttitude,
                 Intake.SENSOR_TO_MECHANISM_RATIO, Intake.INVERTED,
                 Intake.STATOR_CURRENT_LIMIT.in(Amps), Intake.SUPPLY_CURRENT_LIMIT.in(Amps)
             )
@@ -51,33 +52,23 @@ public interface IntakeIO extends SubsystemIO {
                     Intake.CRUISE_VELOCITY,
                     Intake.ACCELERATION
                 )
-                .withFollower(Intake.FOLLOW_ID, Intake.CAN_BUS_NAME, Intake.FOLLOW_ALIGNMENT)
+                .withFollower(Intake.FOLLOW_ID, Superstructure.canDoAttitude, Intake.FOLLOW_ALIGNMENT)
                 .build();
 
             // Superstructure.orchestra.addInstrument(this.motor.getMotor());
         }
 
-        /**
-         * Runs the intake motors at the given speed
-         *
-         * @param velocity The speed to run the intake motors at as an {@link AngularVelocity}
-         */
+        @Override
         public void go(AngularVelocity velocity) {
             motor.setPIDVelocityTarget(velocity, 0);
         }
 
-        /**
-         * Stops the intake motors
-         */
+        @Override
         public void stop() {
             motor.stop();
         }
 
-        /**
-         * Gets the angular velocity of the intake motors
-         *
-         * @return The angular velocity of the intake motors as an {@link AngularVelocity}
-         */
+        @Override
         public AngularVelocity getVelocity() {
             return motor.getVelocity();
         }

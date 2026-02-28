@@ -15,6 +15,7 @@ import raidzero.lib.LimelightHelpers;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyFXS;
 import raidzero.lib.wrappers.motors.LazyFXSBuilder;
+import raidzero.robot.Superstructure;
 
 public interface TurretIO extends SubsystemIO {
 
@@ -81,7 +82,7 @@ public interface TurretIO extends SubsystemIO {
          */
         public Real() {
             yaw = new LazyFXSBuilder(
-                Yaw.MOTOR_ID, Yaw.CAN_BUS_NAME,
+                Yaw.MOTOR_ID, Superstructure.canDoAttitude,
                 Yaw.MOTOR_ARRANGEMENT,
                 Yaw.SENSOR_TO_MECHANISM_RATIO,
                 Yaw.INVERTED,
