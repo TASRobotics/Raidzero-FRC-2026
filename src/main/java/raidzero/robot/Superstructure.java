@@ -3,10 +3,8 @@ package raidzero.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -27,8 +25,6 @@ import raidzero.robot.subsystems.turret.Hood;
 import raidzero.robot.subsystems.turret.Turret;
 
 public class Superstructure {
-    // public static Orchestra orchestra = new Orchestra();
-
     private static Shooter shooter = Shooter.system();
     private static Turret turret = Turret.system();
     private static Hood hood = Hood.system();
@@ -47,21 +43,7 @@ public class Superstructure {
         .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.05)
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-    // private static final SwerveRequest.SwerveDriveBrake brake = new
-    // SwerveRequest.SwerveDriveBrake();
-
     private static CommandXboxController driver = new CommandXboxController(0);
-
-    // public static Trigger driverWantsControl = driver.axisMagnitudeGreaterThan(0,
-    // 0.1) // left x
-    // .or(driver.axisMagnitudeGreaterThan(4, 0.1)) // right x
-    // .or(driver.axisMagnitudeGreaterThan(1, .1)) // left y
-    // .or(driver.axisMagnitudeGreaterThan(5, 0.1)); // right y
-
-    // private static CommandGenericHID operator = new CommandGenericHID(1);
-
-    // public static Trigger hoardingToggle = operator.button(0);
-    // public static Trigger shootingToggle = operator.button(1);
 
     public static final Trigger hubActive = new Trigger(() -> {
         double t = Timer.getMatchTime();
@@ -91,22 +73,13 @@ public class Superstructure {
         return !inactiveNow;
     });
 
-    // public static Trigger CAN_SHOOT =
-    // turret.hasHubLOS().and(hubActive).and(swerve.inShootingArea()).and(shootingToggle);
-    // public static Trigger HOARDING_MODE =
-    // turret.hasHubLOS().negate().and(swerve.inShootingArea().negate())
-    // .and(hoardingToggle);
-
     public static void runSubsystemInitRoutines() {
         turret.setStartupAngle();
         hood.setStartupAngle();
         extender.setStartupAngle();
-        // orchestra.loadMusic("mario.chrp");
     }
 
     public static void applyDefaultCommands() {
-        // CAN_SHOOT.whileTrue(shooter.shoot());
-
         swerve.setDefaultCommand(
             swerve.applyRequest(
                 () -> fieldCentricDrive
@@ -142,9 +115,6 @@ public class Superstructure {
 
         driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
         driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
-
-        // driver.y().onTrue(Commands.runOnce(() -> orchestra.play(), intake, extender, spindexer, feeder, shooter,
-        // hood, turret).until(driver.a()));
     }
 
     public static void periodic() {

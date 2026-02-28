@@ -23,38 +23,42 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     public Command shoot() {
         return run(() -> {
             AngularVelocity target = RotationsPerSecond
-                .of(Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
+                    .of(Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
 
             io.setVelocity(target);
         });
     }
 
+    /**
+     * Runs the shooter at the velocity set by the {@link #velocityTarget} variable,
+     * which can be changed with the
+     * {@link #incrementVelocitySetpoint(AngularVelocity)} method
+     * 
+     * @return a {@link Command}
+     */
     public Command manualShoot() {
         return run(() -> io.setVelocity(velocityTarget));
     }
 
+    /**
+     * Increments the velocity setpoint by the specified amount, which will affect
+     * the speed of the shooter when the {@link #manualShoot()} command is running
+     * 
+     * @param speed the amount to increment the velocity setpoint by
+     * @return a {@link Command}
+     */
     public Command incrementVelocitySetpoint(AngularVelocity speed) {
         return runOnce(() -> velocityTarget = velocityTarget.plus(speed));
     }
 
-    // public Command shoot(AngularVelocity speed) {
-    // this.velocityTarget = speed;
-    // return run(() -> io.setVelocity(speed));
-    // }
-
-    // public void setInterfaceVelocity(AngularVelocity velocity) {
-    // this.velocityTarget = velocity;
-    // io.setVelocity(velocity);
-    // }
-
     /**
-     * Sets the shooter velocity to the specified angular velocity
-     *
-     * @param rps the shooter velocity
+     * Runs the shooter at the specified speed
+     * @param speed the speed at which to run the shooter
      * @return a {@link Command}
      */
-    public Command setVelocity(AngularVelocity rps) {
-        return run(() -> io.setVelocity(rps));
+    public Command shoot(AngularVelocity speed) {
+        this.velocityTarget = speed;
+        return run(() -> io.setVelocity(speed));
     }
 
     /**
@@ -76,10 +80,18 @@ public class Shooter extends R0Subsystem<ShooterIO> {
         return run(() -> io.stop());
     }
 
+    /**
+     * Constructs a Shooter instance with the given IO implementation
+     * @param io the IO implementation to use
+     */
     private Shooter(ShooterIO io) {
         super(io);
     }
 
+    /**
+     * Gets the singleton instance of the Shooter subsystem, creating it if it doesn't exist
+     * @return the singleton instance of the Shooter subsystem
+     */
     public static Shooter system() {
         if (system == null) {
             if (Utils.isSimulation()) {

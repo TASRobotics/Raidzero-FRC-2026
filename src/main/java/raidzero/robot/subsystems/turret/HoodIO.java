@@ -7,7 +7,6 @@ import edu.wpi.first.units.measure.Angle;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyFXS;
 import raidzero.lib.wrappers.motors.LazyFXSBuilder;
-import raidzero.robot.Superstructure;
 
 public interface HoodIO extends SubsystemIO {
     /**
@@ -59,8 +58,6 @@ public interface HoodIO extends SubsystemIO {
                     Pitch.ACCELERATION
                 )
                 .build();
-
-            // Superstructure.orchestra.addInstrument(pitch.getMotor());
         }
 
         @Override

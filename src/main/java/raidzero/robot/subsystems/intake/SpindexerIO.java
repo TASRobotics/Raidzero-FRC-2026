@@ -1,20 +1,33 @@
 package raidzero.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.Amps;
-import static raidzero.robot.subsystems.intake.IntakeConstants.Spindexer;
-
 import edu.wpi.first.units.measure.AngularVelocity;
+
+import static edu.wpi.first.units.Units.Amps;
+
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
-import raidzero.robot.Superstructure;
+
+import static raidzero.robot.subsystems.intake.IntakeConstants.Spindexer;
 
 public interface SpindexerIO extends SubsystemIO {
 
+    /**
+     * Runs the indexer at the specified speed
+     * @param speed the speed at which to run the indexer
+     */
     void go(AngularVelocity speed);
 
+    /**
+     * Stops the indexer motor
+     */
     void stop();
 
+    /**
+     * Gets the current velocity of the indexer
+     * 
+     * @return the current velocity of the indexer
+     */
     AngularVelocity getVelocity();
 
     public class Real implements SpindexerIO {

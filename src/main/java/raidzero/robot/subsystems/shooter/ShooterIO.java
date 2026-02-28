@@ -1,12 +1,12 @@
 package raidzero.robot.subsystems.shooter;
 
+import edu.wpi.first.units.measure.AngularVelocity;
+
 import static edu.wpi.first.units.Units.Amps;
 
-import edu.wpi.first.units.measure.AngularVelocity;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
-import raidzero.robot.Superstructure;
 import raidzero.robot.subsystems.shooter.ShooterConstants.Flywheel;
 
 public interface ShooterIO extends SubsystemIO {
@@ -58,8 +58,6 @@ public interface ShooterIO extends SubsystemIO {
                 )
                 .withFollower(Flywheel.FOLLOW_ID, Flywheel.CAN_BUS_NAME, Flywheel.FOLLOWER_INVERTED)
                 .build();
-
-            // Superstructure.orchestra.addInstrument(flywheel.getMotor());
 
             flywheel.setCoast();
         }

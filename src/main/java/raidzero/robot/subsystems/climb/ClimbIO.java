@@ -16,6 +16,9 @@ public interface ClimbIO extends SubsystemIO {
      */
     void moveTo(Angle position);
 
+    /**
+     * Stops the winch
+     */
     void stop();
 
     public class Real implements ClimbIO {

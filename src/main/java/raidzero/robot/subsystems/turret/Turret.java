@@ -1,9 +1,10 @@
 package raidzero.robot.subsystems.turret;
 
+import com.ctre.phoenix6.Utils;
+
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 
-import com.ctre.phoenix6.Utils;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,7 +19,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import raidzero.lib.R0Subsystem;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
@@ -44,10 +45,6 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     private AimBot staticAimBot = null;
     private AimBot kineticAimBot = null;
-
-    // todo: auto set the turret to unwrap when idle (not shooting)
-    // todo: hood backlash compensation (go down and back up when moving in the
-    // negative direction to compensate)
 
     /**
      * Moves the robot to the given setpoint
@@ -77,10 +74,11 @@ public class Turret extends R0Subsystem<TurretIO> {
         return run(() -> io.stop());
     }
 
-    public Angle getYawFromTarget() {
-        return io.getYawFromTarget();
-    }
-
+    /**
+     * Gets the current yaw of the turret
+     * 
+     * @return the current yaw of the turret as an {@link Angle}
+     */
     public Angle getCurrentYaw() {
         return io.getYaw();
     }
@@ -94,23 +92,16 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     /**
      * Gets the distance from the hub april tag to the turret
-     *
-     * @return
+     * 
+     * @param kineticLead whether or not to use kinetic leading for
+     *                    shoot-on-the-move
+     * @return the distance from the hub april tag to the turret as a
+     *         {@link Distance}
      */
     public Distance getHubDistance(boolean kineticLead) {
         return Meters.of(
-            kineticLead ? kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose) :
-                staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
-        );
-    }
-
-    /**
-     * Checks if the turret limelight can see the hub april tags on the scoring side
-     *
-     * @return a {@link Trigger} object
-     */
-    public Trigger hasHubLOS() {
-        return new Trigger(() -> io.hasHubLOS());
+                kineticLead ? kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
+                        : staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose));
     }
 
     /**
@@ -126,12 +117,18 @@ public class Turret extends R0Subsystem<TurretIO> {
     /**
      * Gets the goal pose on the current alliance
      *
-     * @return
+     * @return the goal pose on the current alliance as a {@link Translation2d}
      */
     public Translation2d getAllianceTarget() {
         return allianceTargetFieldPose;
     }
 
+    /**
+     * Calculates the absolute turret angle using the Jared Modulo Magic Method
+     * @param readingOnFirst the reading from the first Jared modulo method sensor
+     * @param readingOnSecond the reading from the second Jared modulo method sensor
+     * @return the calculated absolute turret angle as an {@link Angle}
+     */
     private Angle JaredModuloMagic(double readingOnFirst, double readingOnSecond) {
         double[] possibleReadings = new double[(int) Yaw.JARED_TEETH_1];
         for (int i = 0; i < (int) Yaw.JARED_TEETH_2; i++) {
@@ -151,7 +148,7 @@ public class Turret extends R0Subsystem<TurretIO> {
 
                 if (turret_rotations > Yaw.FORWARD_SOFT_LIMIT.in(Rotations)) {
                     return Rotations
-                        .of(turret_rotations - 2.278);
+                            .of(turret_rotations - 2.278);
                 }
 
                 return Rotations.of(turret_rotations);
@@ -168,15 +165,13 @@ public class Turret extends R0Subsystem<TurretIO> {
 
         ChassisSpeeds rawSpeeds = swerve.getState().Speeds;
         ChassisSpeeds filteredSpeeds = new ChassisSpeeds(
-            vxFilter.calculate(rawSpeeds.vxMetersPerSecond),
-            vyFilter.calculate(rawSpeeds.vyMetersPerSecond),
-            omegaFilter.calculate(rawSpeeds.omegaRadiansPerSecond)
-        );
+                vxFilter.calculate(rawSpeeds.vxMetersPerSecond),
+                vyFilter.calculate(rawSpeeds.vyMetersPerSecond),
+                omegaFilter.calculate(rawSpeeds.omegaRadiansPerSecond));
 
         staticAimBot = staticAimBot.adjustStaticAim(
-            swerve.getState().Pose, new Rotation2d(getCurrentYaw()),
-            allianceTargetFieldPose
-        );
+                swerve.getState().Pose, new Rotation2d(getCurrentYaw()),
+                allianceTargetFieldPose);
 
         kineticAimBot = staticAimBot.adjustKineticLead(filteredSpeeds);
 
@@ -195,15 +190,18 @@ public class Turret extends R0Subsystem<TurretIO> {
         kineticGoalSender.set(kineticAimBot.goal());
 
         SmartDashboard.putNumber(
-            "Static Hub Distance",
-            staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
-        );
+                "Static Hub Distance",
+                staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose));
         // SmartDashboard.putNumber(
         // "Kinetic Hub Distance",
         // kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
         // );
     }
 
+    /**
+     * Constructs a Turret instance with the given IO implementation
+     * @param io the IO implementation to use
+     */
     private Turret(TurretIO io) {
         super(io);
 
@@ -222,6 +220,10 @@ public class Turret extends R0Subsystem<TurretIO> {
         kineticTurretSender = kineticTable.getStructTopic("kineticTurret", Pose2d.struct).publish();
     }
 
+    /**
+     * Gets the singleton instance of the Turret subsystem, creating it if it doesn't exist
+     * @return the singleton instance of the Turret subsystem
+     */
     public static Turret system() {
         if (system == null) {
             if (Utils.isSimulation()) {

@@ -6,15 +6,27 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
-import raidzero.robot.Superstructure;
 import raidzero.robot.subsystems.shooter.ShooterConstants.Feeder;
 
 public interface FeederIO extends SubsystemIO {
 
+    /**
+     * Runs the feeder at the specified speed
+     * 
+     * @param speed the speed at which to run the feeder
+     */
     void go(AngularVelocity speed);
 
+    /**
+     * Stops the feeder motor
+     */
     void stop();
 
+    /**
+     * Gets the current velocity of the feeder
+     * 
+     * @return the current velocity of the feeder
+     */
     AngularVelocity getVelocity();
 
     public class Real implements FeederIO {
@@ -22,24 +34,19 @@ public interface FeederIO extends SubsystemIO {
 
         public Real() {
             motor = new LazyTalonBuilder(
-                Feeder.MOTOR_ID, Feeder.CAN_BUS_NAME,
-                Feeder.SENSOR_TO_MECHANISM_RATIO, Feeder.INVERTED,
-                Feeder.STATOR_CURRENT_LIMIT.in(Amps), Feeder.SUPPLY_CURRENT_LIMIT.in(Amps)
-            )
-                .withPIDFConfiguration(
-                    Feeder.P, Feeder.I, Feeder.D,
-                    Feeder.S, Feeder.G, Feeder.V, Feeder.A,
-                    Feeder.FF_GRAVITY_TYPE, Feeder.FF_SIGN,
-                    0
-                )
-                .withMotionMagicConfiguration(
-                    0, 0,
-                    Feeder.CRUISE_VELOCITY,
-                    Feeder.ACCELERATION
-                )
-                .build();
-
-            // Superstructure.orchestra.addInstrument(this.motor.getMotor());
+                    Feeder.MOTOR_ID, Feeder.CAN_BUS_NAME,
+                    Feeder.SENSOR_TO_MECHANISM_RATIO, Feeder.INVERTED,
+                    Feeder.STATOR_CURRENT_LIMIT.in(Amps), Feeder.SUPPLY_CURRENT_LIMIT.in(Amps))
+                    .withPIDFConfiguration(
+                            Feeder.P, Feeder.I, Feeder.D,
+                            Feeder.S, Feeder.G, Feeder.V, Feeder.A,
+                            Feeder.FF_GRAVITY_TYPE, Feeder.FF_SIGN,
+                            0)
+                    .withMotionMagicConfiguration(
+                            0, 0,
+                            Feeder.CRUISE_VELOCITY,
+                            Feeder.ACCELERATION)
+                    .build();
         }
 
         public void go(AngularVelocity velocity) {
@@ -61,5 +68,6 @@ public interface FeederIO extends SubsystemIO {
 
     }
 
-    public class Sim extends Real {}
+    public class Sim extends Real {
+    }
 }
