@@ -2,6 +2,7 @@ package raidzero.lib;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -173,6 +174,17 @@ public class LimelightState {
      */
     public Rotation2d getYaw() {
         return (ignore || currEstimate == null || currEstimate.pose == null) ? null : currEstimate.pose.getRotation();
+    }
+
+    /**
+     * Returns the Z height of the current pose estimate if not null or not being ignored
+     *
+     * @return A {@link Double} of the Z height of the current pose estimate, or {@link Double#NaN} if the estimate is null or being ignored
+     */
+    public double getZ() {
+        Pose3d pose = LimelightHelpers.getBotPose3d_wpiBlue(limelightName);
+
+        return (ignore || pose == null || currEstimate == null || currEstimate.pose == null) ? Double.NaN : pose.getZ();
     }
 
     private boolean checkIgnore() {
