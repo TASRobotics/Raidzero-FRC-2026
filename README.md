@@ -41,10 +41,10 @@
 
 | Limelight | IP           | X       | Y      | Z       | Roll | Pitch | Yaw    |
 |-----------|--------------|---------|--------|---------|------|-------|--------|
-| FL        | 10.42.53.11  | ....... | ...... | ....... | ...  | ....  | ...... |
-| FR        | 10.42.53.12  | ....... | ...... | ....... | ...  | ....  | ...... |
-| BR        | 10.42.53.13  | ....... | ...... | ....... | ...  | ....  | ...... |
-| BL        | 10.42.53.14  | ....... | ...... | ....... | ...  | ....  | ...... |
+| Left      | 10.42.53.11  | -0.343  | 0.502  | -0.241  | 0.0  |  15   |  -90   |
+| Front     | 10.42.53.12  | -0.102  | 0.459  |  0.089  | 0.0  | -10   |    0   |
+| Right     | 10.42.53.13  |  0.343  | 0.502  | -0.279  | 0.0  |  15   |   90   |
+| Rear      | 10.42.53.14  | -0.254  | 0.502  | -0.330  | 0.0  |  15   |  180   |
 
 <details>
     <summary>Directions</summary>
@@ -71,8 +71,8 @@
 <details>
     <summary>Notes</summary>
     <ul>
-        <li>Forward of the bot is the scoring side</li>
-        <li>Back of the bot contains the RoboRIO</li>
+        <li>Intake is the front of the bot</li>
+        <li>RoboRIO is the back of the bot</li>
         <li>All units are in meters and degrees</li>
         <li>XYZ measurements are relative to the center of the bot in CAD</li>
     </ul>
