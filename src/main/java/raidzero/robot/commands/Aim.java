@@ -26,33 +26,7 @@ public class Aim extends Command {
         double robotRelativeTurretSetpoint = aquireAim.goal().getRotation().minus(aquireAim.robot().getRotation())
             .getRotations();
 
-        double currentRotations = turret.getCurrentYaw().in(Rotations);
-
-        double bestSetpoint = findBestWrap(
-            currentRotations,
-            robotRelativeTurretSetpoint
-        );
-
-        turret.moveTo(Rotations.of(bestSetpoint));
-    }
-
-    private double findBestWrap(double currentRotations, double desiredRotations) {
-        double revLimit = Yaw.REVERSE_SOFT_LIMIT.in(Rotations);
-        double fwdLimit = Yaw.FORWARD_SOFT_LIMIT.in(Rotations);
-        double bestSetpoint = currentRotations;
-        double bestDistance = Double.MAX_VALUE;
-
-        for (int i = -2; i <= 2; i++) {
-            double candidate = desiredRotations + i;
-            if (candidate >= revLimit && candidate <= fwdLimit) {
-                double dist = Math.abs(candidate - currentRotations);
-                if (dist < bestDistance) {
-                    bestDistance = dist;
-                    bestSetpoint = candidate;
-                }
-            }
-        }
-        return bestSetpoint;
+        turret.moveTo(Rotations.of(robotRelativeTurretSetpoint));
     }
 
     @Override

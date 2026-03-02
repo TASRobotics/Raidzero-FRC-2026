@@ -50,7 +50,29 @@ public class Turret extends R0Subsystem<TurretIO> {
      * @param setpoint The setpoint to move to
      */
     public void moveTo(Angle setpoint) {
-        io.moveTo(setpoint);
+        io.moveTo(this.findBestWrap(setpoint));
+    }
+
+    private Angle findBestWrap(Angle desiredAngle) {
+        double desiredRotations = desiredAngle.in(Rotations);
+        double currentRotations = io.getYaw().in(Rotations);
+
+        double revLimit = Yaw.REVERSE_SOFT_LIMIT.in(Rotations);
+        double fwdLimit = Yaw.FORWARD_SOFT_LIMIT.in(Rotations);
+        double bestSetpoint = currentRotations;
+        double bestDistance = Double.MAX_VALUE;
+
+        for (int i = -2; i <= 2; i++) {
+            double candidate = desiredRotations + i;
+            if (candidate >= revLimit && candidate <= fwdLimit) {
+                double dist = Math.abs(candidate - currentRotations);
+                if (dist < bestDistance) {
+                    bestDistance = dist;
+                    bestSetpoint = candidate;
+                }
+            }
+        }
+        return Rotations.of(bestSetpoint);
     }
 
     /**

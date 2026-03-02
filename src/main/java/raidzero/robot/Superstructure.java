@@ -3,6 +3,7 @@ package raidzero.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.CANBus;
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.robot.commands.Aim;
+import raidzero.robot.commands.StaticAim;
 import raidzero.robot.subsystems.drive.Limelight;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.drive.TunerConstants;
@@ -43,8 +45,10 @@ public class Superstructure {
     private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.5;
 
     private static final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
-        .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.05)
-        .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+            .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.05)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
+    private static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 
     private static CommandXboxController driver = new CommandXboxController(0);
     private static CommandXboxController operator = new CommandXboxController(1);
@@ -103,18 +107,16 @@ public class Superstructure {
         // CAN_SHOOT.whileTrue(shooter.shoot());
 
         swerve.setDefaultCommand(
-            swerve.applyRequest(
-                () -> fieldCentricDrive
-                    .withVelocityX(-driver.getLeftY() * MaxSpeed)
-                    .withVelocityY(-driver.getLeftX() * MaxSpeed)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate)
-            )
-        );
+                swerve.applyRequest(
+                        () -> fieldCentricDrive
+                                .withVelocityX(-driver.getLeftY() * MaxSpeed)
+                                .withVelocityY(-driver.getLeftX() * MaxSpeed)
+                                .withRotationalRate(-driver.getRightX() * MaxAngularRate)));
 
         hood.setDefaultCommand(hood.aim());
         turret.setDefaultCommand(new Aim());
 
-        shooter.setDefaultCommand(shooter.stop());
+        shooter.setDefaultCommand(shooter.shoot());
         feeder.setDefaultCommand(feeder.stop());
         spindexer.setDefaultCommand(spindexer.stop());
         extender.setDefaultCommand(extender.stop());
@@ -125,34 +127,29 @@ public class Superstructure {
      * Applies driver button bindings
      */
     public static void applyButtonBindings() {
+        driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
+        driver.rightBumper().whileTrue(swerve.applyRequest(() -> brake));
+
         operator.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go())).onFalse(spindexer.antiJam());
 
-        operator.rightBumper().onTrue(hood.aim(Degrees.of(10)));
+        operator.rightBumper().whileTrue(hood.aim(Degrees.of(10)));
         operator.leftStick().onTrue(extender.zeroEncoderPosition());
 
-        operator.rightTrigger().toggleOnTrue(shooter.shoot());
-
-        driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
+        operator.rightTrigger().toggleOnTrue(shooter.stop());
 
         operator.leftBumper().toggleOnTrue(intake.go());
 
         operator.b().onTrue(extender.extend());
         operator.x().onTrue(extender.retract());
 
-        // y = climb
-
-        driver.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
-        driver.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
-
-        driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
-        driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
-
+        operator.y().toggleOnTrue(new StaticAim(Rotations.of(0.5)).alongWith(hood.aim(Degrees.of(40))));
     }
 
     /**
      * Binds subsystem triggers
      */
     public static void bindTriggers() {
-        swerveApprTrench.whileTrue(hood.aim(Degrees.of(10)));
+        swerveApprTrench.and(driver.rightBumper().negate())
+                .whileTrue(hood.aim(Degrees.of(10)).alongWith(shooter.stop()));
     }
 }
