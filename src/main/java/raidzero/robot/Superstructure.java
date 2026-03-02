@@ -54,7 +54,7 @@ public class Superstructure {
 
     private static CommandXboxController driver = new CommandXboxController(0);
 
-    private static final Auto autos = new Auto(Swerve.system());
+    private static final Auto autos = new Auto(Swerve.system(), Intake.system());
 
     private static SendableChooser<Command> autoChooser;
 

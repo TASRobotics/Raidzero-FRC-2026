@@ -18,9 +18,11 @@ import java.util.Set;
 import java.util.function.Supplier;
 import raidzero.lib.Util;
 import raidzero.robot.subsystems.drive.Swerve;
+import raidzero.robot.subsystems.intake.Intake;
 
 public class Auto {
     private final Swerve swerve;
+    private final Intake intake;
     private final Map<String, PathPlannerPath> pathCache = new HashMap<>();
 
     private PathConstraints currentConstraints = SLOW_CONSTRAINTS;
@@ -42,8 +44,9 @@ public class Auto {
      *
      * @param swerve A {@link Swerve} instance
      */
-    public Auto(Swerve swerve) {
+    public Auto(Swerve swerve, Intake intake) {
         this.swerve = swerve;
+        this.intake = intake;
         autoloadPaths();
     }
 
@@ -133,7 +136,8 @@ public class Auto {
      * Flips the given pose across the field if the current alliance is Red
      *
      * @param bluePose The pose with respect to the blue alliance
-     * @return The pose transformed for the current alliance (flipped if Red, unchanged if Blue)
+     * @return The pose transformed for the current alliance (flipped if Red,
+     *         unchanged if Blue)
      */
     private Pose2d getAlliancePose(Pose2d bluePose) {
         return Util.isRedAlliance() ? FlippingUtil.flipFieldPose(bluePose) : bluePose;
@@ -213,8 +217,22 @@ public class Auto {
     public Command getRightOutpostAuto() {
         return build(
             "RightMidStart", () -> Commands.sequence(
-                follow("RightMidStart"),
-                follow("RightMidShoot")
+                Commands.deadline(
+                    follow("RightMidStart"),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        intake.go()
+                    )
+                ),
+                follow("RightMidTrenchIn"),
+                Commands.deadline(
+                    follow("RightMidToOutpost"),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        intake.stop()
+                    )
+                ),
+                Commands.waitSeconds(2)
             )
         );
     }
