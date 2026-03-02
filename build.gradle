@@ -7,7 +7,7 @@ plugins {
 }
 
 checkstyle {
-    toolVersion = '8.29'
+    toolVersion = '10.12.5'
     configFile = rootProject.file('checkstyle.xml')
 }
 
