@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -172,6 +173,11 @@ public class Limelight extends SubsystemBase {
                 state.setSeededPose(true);
             }
         }
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("SeededRobot", seededPigeon);
     }
 
     /**

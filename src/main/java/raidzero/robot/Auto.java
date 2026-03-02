@@ -219,18 +219,12 @@ public class Auto {
             "RightMidStart", () -> Commands.sequence(
                 Commands.deadline(
                     follow("RightMidStart"),
-                    Commands.sequence(
-                        Commands.waitSeconds(0.5),
-                        intake.go()
-                    )
+                    intake.go()
                 ),
                 follow("RightMidTrenchIn"),
                 Commands.deadline(
                     follow("RightMidToOutpost"),
-                    Commands.sequence(
-                        Commands.waitSeconds(0.5),
-                        intake.stop()
-                    )
+                    intake.stop()
                 ),
                 Commands.waitSeconds(2)
             )
