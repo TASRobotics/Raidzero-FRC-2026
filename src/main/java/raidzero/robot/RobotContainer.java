@@ -15,7 +15,7 @@ public class RobotContainer {
         Superstructure.runSubsystemInitRoutines();
         Superstructure.applyDefaultCommands();
         Superstructure.applyButtonBindings();
-
+        Superstructure.bindTriggers();
     }
 
     /**
