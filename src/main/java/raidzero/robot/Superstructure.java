@@ -9,13 +9,14 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-
+import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -121,7 +122,8 @@ public class Superstructure {
 
         shooter.setDefaultCommand(shooter.stop());
         hood.setDefaultCommand(hood.manualAim());
-        turret.setDefaultCommand(new Aim());
+        // turret.setDefaultCommand(new Aim());
+        turret.setDefaultCommand(turret.stop());
         feeder.setDefaultCommand(feeder.stop());
         spindexer.setDefaultCommand(spindexer.stop());
         extender.setDefaultCommand(extender.stop());
@@ -175,6 +177,7 @@ public class Superstructure {
      * Configures autonomous command options
      */
     public static void configureAutons() {
+        CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
         autoChooser = AutoBuilder.buildAutoChooser();
         autoChooser.addOption("Depot single", autos.getDepot1Cycle());
         autoChooser.addOption("Left double", autos.getLeft2Cycle());
@@ -185,7 +188,7 @@ public class Superstructure {
 
     /**
      * Gets the selected autonomous command
-     * 
+     *
      * @return A {@link Command} for the selected autonomous routine
      */
     public static Command getAutonomousCommand() {
