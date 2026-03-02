@@ -10,6 +10,8 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -115,14 +117,22 @@ public class Superstructure {
      * Applies driver button bindings
      */
     public static void applyButtonBindings() {
-        driver.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go())).onFalse(spindexer.antiJam());
-        // driver.leftTrigger().whileTrue(
+        // driver.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go())).onFalse(spindexer.antiJam());
+        // // driver.leftTrigger().whileTrue(
         // driver.leftTrigger().and(feeder.ballDetected().negate()).whileTrue(
-        // (spindexer.go()
-        // .withTimeout(0.5)
-        // .andThen(spindexer.antiJamBig()))
+        // feeder.go().alongWith(spindexer.antiJamBig().repeatedly())
         // );
-        driver.leftTrigger().whileTrue(feeder.go());
+
+        driver.leftTrigger().whileTrue(
+            Commands.either(
+                spindexer.go().alongWith(feeder.go()), feeder.go().alongWith(spindexer.antiJamBig().repeatedly()), feeder.ballDetected()
+            )
+        );
+
+        SmartDashboard.putBoolean("antijam", driver.leftTrigger().and(feeder.ballDetected().negate()).getAsBoolean());
+
+        // );
+        // driver.leftTrigger().whileTrue(feeder.go());
 
         // );
         driver.rightTrigger().whileTrue(shooter.manualShoot());

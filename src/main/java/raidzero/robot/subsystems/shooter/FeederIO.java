@@ -44,6 +44,7 @@ public interface FeederIO extends SubsystemIO {
         LazyTalon motor;
         LazyRange canrange;
         double lastDetectedTime = Double.NEGATIVE_INFINITY;
+        boolean firstCall = true;
 
         /**
          * Constructs the real instance of the Feeder IO
@@ -82,6 +83,10 @@ public interface FeederIO extends SubsystemIO {
 
         @Override
         public boolean ballDetected() {
+            if (firstCall) {
+                lastDetectedTime = Timer.getTimestamp();
+                firstCall = false;
+            }
             if (canrange.isDetected()) {
                 lastDetectedTime = Timer.getTimestamp();
             }

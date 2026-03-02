@@ -1,6 +1,7 @@
 package raidzero.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import raidzero.lib.R0Subsystem;
 
 public class Spindexer extends R0Subsystem<SpindexerIO> {
@@ -32,7 +33,8 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
      */
     public Command antiJamBig() {
         return run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
-            .withTimeout(0.6);
+            .withTimeout(0.1)
+            .andThen(run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED)).withTimeout(0.3));
     }
 
     /**
