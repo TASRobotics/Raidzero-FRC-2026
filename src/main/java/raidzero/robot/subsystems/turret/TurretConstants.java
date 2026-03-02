@@ -128,7 +128,8 @@ public final class TurretConstants {
     // public static final class Limelight {
     // public static final Angle MOUNT_ANGLE = Degrees.of(5.0);
 
-    // public static final Time LATENCY = Seconds.of(0.040); // Make constant? Get from NetworkTables? Physically test?
+    // public static final Time LATENCY = Seconds.of(0.040); // Make constant? Get
+    // from NetworkTables? Physically test?
 
     // public static final String LIMELIGHT_NAME = "limelight-turret";
 
@@ -175,13 +176,13 @@ public final class TurretConstants {
             RPS_TABLE.put(4.255, 36.5);
             RPS_TABLE.put(5.06, 38.0);
 
-            TOF_TABLE.put(1.35, 1.0771);
-            TOF_TABLE.put(1.87, 1.3412);
-            TOF_TABLE.put(2.01, 1.3525);
-            TOF_TABLE.put(2.08, 1.3775);
-            TOF_TABLE.put(2.27, 1.4086);
-            TOF_TABLE.put(2.35, 1.4417);
-            TOF_TABLE.put(2.4, 1.475);
+            TOF_TABLE.put(1.878, 1.156);
+            TOF_TABLE.put(2.427, 1.254);
+            TOF_TABLE.put(2.792, 1.28);
+            TOF_TABLE.put(3.640, 1.304);
+            TOF_TABLE.put(4.117, 1.334);
+            TOF_TABLE.put(4.615, 1.37955);
+            TOF_TABLE.put(5.093, 1.4127);
         }
     }
 

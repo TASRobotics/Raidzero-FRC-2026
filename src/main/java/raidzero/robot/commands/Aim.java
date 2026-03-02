@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.robot.subsystems.turret.AimBot;
 import raidzero.robot.subsystems.turret.Turret;
-import raidzero.robot.subsystems.turret.TurretConstants.Yaw;
 
 public class Aim extends Command {
     private final Turret turret = Turret.system();

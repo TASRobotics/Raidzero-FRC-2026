@@ -12,7 +12,6 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.robot.commands.Aim;
@@ -45,8 +44,8 @@ public class Superstructure {
     private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.5;
 
     private static final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.05)
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+        .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.05)
+        .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     private static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 
@@ -107,11 +106,13 @@ public class Superstructure {
         // CAN_SHOOT.whileTrue(shooter.shoot());
 
         swerve.setDefaultCommand(
-                swerve.applyRequest(
-                        () -> fieldCentricDrive
-                                .withVelocityX(-driver.getLeftY() * MaxSpeed)
-                                .withVelocityY(-driver.getLeftX() * MaxSpeed)
-                                .withRotationalRate(-driver.getRightX() * MaxAngularRate)));
+            swerve.applyRequest(
+                () -> fieldCentricDrive
+                    .withVelocityX(-driver.getLeftY() * MaxSpeed)
+                    .withVelocityY(-driver.getLeftX() * MaxSpeed)
+                    .withRotationalRate(-driver.getRightX() * MaxAngularRate)
+            )
+        );
 
         hood.setDefaultCommand(hood.aim());
         turret.setDefaultCommand(new Aim());
@@ -150,6 +151,6 @@ public class Superstructure {
      */
     public static void bindTriggers() {
         swerveApprTrench.and(driver.rightBumper().negate())
-                .whileTrue(hood.aim(Degrees.of(10)).alongWith(shooter.stop()));
+            .whileTrue(hood.aim(Degrees.of(10)).alongWith(shooter.stop()));
     }
 }
