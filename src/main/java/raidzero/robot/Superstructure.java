@@ -85,8 +85,8 @@ public class Superstructure {
     private static Trigger swerveApprTrench = new Trigger(() -> {
         Pose2d pose = swerve.getState().Pose;
 
-        boolean posX = ((pose.getX() > 4.0 && pose.getX() < 5.1) || (pose.getX() > 10.94 && pose.getX() < 11.44));
-        boolean negX = ((pose.getX() > 5.1 && pose.getX() < 6.1) || (pose.getX() > 11.44 && pose.getX() < 12.14));
+        boolean posX = ((pose.getX() > 3.2 && pose.getX() < 4.6) || (pose.getX() > 10.4 && pose.getX() < 11.9));
+        boolean negX = ((pose.getX() > 4.6 && pose.getX() < 6.1) || (pose.getX() > 11.9 && pose.getX() < 13.4));
 
         return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
     });
