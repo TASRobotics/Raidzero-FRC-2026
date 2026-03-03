@@ -58,7 +58,7 @@ public class Superstructure {
     private static CommandXboxController driver = new CommandXboxController(0);
     private static CommandXboxController operator = new CommandXboxController(1);
 
-    private static final Auto autos = new Auto(Swerve.system(), Intake.system());
+    private static final Auto autos = new Auto(Swerve.system(), Intake.system(), Extender.system());
 
     private static SendableChooser<Command> autoChooser;
 
@@ -124,7 +124,7 @@ public class Superstructure {
             )
         );
 
-        hood.setDefaultCommand(hood.aim());
+        hood.setDefaultCommand(hood.aim().onlyIf(swerveApprTrench.negate().and(driver.rightBumper().negate())));
         turret.setDefaultCommand(new Aim());
 
         shooter.setDefaultCommand(shooter.shoot());

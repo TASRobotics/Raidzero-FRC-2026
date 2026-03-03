@@ -18,11 +18,13 @@ import java.util.Set;
 import java.util.function.Supplier;
 import raidzero.lib.Util;
 import raidzero.robot.subsystems.drive.Swerve;
+import raidzero.robot.subsystems.intake.Extender;
 import raidzero.robot.subsystems.intake.Intake;
 
 public class Auto {
     private final Swerve swerve;
     private final Intake intake;
+    private final Extender extender;
     private final Map<String, PathPlannerPath> pathCache = new HashMap<>();
 
     private PathConstraints currentConstraints = SLOW_CONSTRAINTS;
@@ -44,9 +46,10 @@ public class Auto {
      *
      * @param swerve A {@link Swerve} instance
      */
-    public Auto(Swerve swerve, Intake intake) {
+    public Auto(Swerve swerve, Intake intake, Extender extender) {
         this.swerve = swerve;
         this.intake = intake;
+        this.extender = extender;
         autoloadPaths();
     }
 
@@ -129,7 +132,7 @@ public class Auto {
                 }),
                 autoLogic.get()
             );
-        }, Set.of(swerve));
+        }, Set.of(swerve, intake, extender));
     }
 
     /**
@@ -217,15 +220,30 @@ public class Auto {
     public Command getRightOutpostAuto() {
         return build(
             "RightMidStart", () -> Commands.sequence(
+                // Drive the first path as the leader
                 Commands.deadline(
                     follow("RightMidStart"),
-                    intake.go()
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        intake.go()
+                    ),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        extender.extend()
+                    )
                 ),
+
                 follow("RightMidTrenchIn"),
+
+                // Drive and stop intake simultaneously
                 Commands.deadline(
                     follow("RightMidToOutpost"),
-                    intake.stop()
+                    Commands.sequence(
+                        Commands.waitSeconds(1),
+                        intake.stop()
+                    )
                 ),
+
                 Commands.waitSeconds(2)
             )
         );

@@ -99,8 +99,8 @@ public final class IntakeConstants {
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
 
-        // public static final Angle STARTUP_ANGLE = Rotations.of(0.3625);
-        public static final Angle STARTUP_ANGLE = Rotations.of(0.0);
+        public static final Angle STARTUP_ANGLE = Rotations.of(0.3625);
+        // public static final Angle STARTUP_ANGLE = Rotations.of(0.0);
     }
 
     public static final class Spindexer {
