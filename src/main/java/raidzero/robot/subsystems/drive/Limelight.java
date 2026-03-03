@@ -46,6 +46,7 @@ public class Limelight extends SubsystemBase {
         frontState = new LimelightState(
             "limelight-front",
             LimelightState.PIPELINE.TAG,
+            () -> swerve.getState().Pose,
             () -> swerve.getPigeon2().getRotation2d().getDegrees(),
             () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             swerve::addVisionMeasurement
@@ -53,6 +54,7 @@ public class Limelight extends SubsystemBase {
         rightState = new LimelightState(
             "limelight-right",
             LimelightState.PIPELINE.TAG,
+            () -> swerve.getState().Pose,
             () -> swerve.getPigeon2().getRotation2d().getDegrees(),
             () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             swerve::addVisionMeasurement
@@ -60,6 +62,7 @@ public class Limelight extends SubsystemBase {
         rearState = new LimelightState(
             "limelight-rear",
             LimelightState.PIPELINE.TAG,
+            () -> swerve.getState().Pose,
             () -> swerve.getPigeon2().getRotation2d().getDegrees(),
             () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             swerve::addVisionMeasurement
@@ -67,6 +70,7 @@ public class Limelight extends SubsystemBase {
         leftState = new LimelightState(
             "limelight-left",
             LimelightState.PIPELINE.TAG,
+            () -> swerve.getState().Pose,
             () -> swerve.getPigeon2().getRotation2d().getDegrees(),
             () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             swerve::addVisionMeasurement
@@ -150,6 +154,9 @@ public class Limelight extends SubsystemBase {
             seedInterval.stop();
             seedInterval.reset();
             seedTimer.stop();
+            for (LimelightState state : limes) {
+                state.setSeededPose(true);
+            }
         }
     }
 
