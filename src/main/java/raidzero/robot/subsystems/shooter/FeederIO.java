@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Amps;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyRange;
 import raidzero.lib.wrappers.motors.LazyRangeBuilder;
@@ -17,7 +18,8 @@ public interface FeederIO extends SubsystemIO {
     /**
      * Runs the feeder motors at the given speed
      *
-     * @param speed The speed to run the feeder motors at as an {@link AngularVelocity}
+     * @param speed The speed to run the feeder motors at as an
+     *              {@link AngularVelocity}
      */
     void go(AngularVelocity speed);
 
@@ -36,7 +38,8 @@ public interface FeederIO extends SubsystemIO {
     /**
      * Gets the angular velocity of the feeder motors
      *
-     * @return The angular velocity of the feeder motors as an {@link AngularVelocity}
+     * @return The angular velocity of the feeder motors as an
+     *         {@link AngularVelocity}
      */
     AngularVelocity getVelocity();
 
@@ -68,7 +71,10 @@ public interface FeederIO extends SubsystemIO {
                 .build();
 
             canrange = new LazyRangeBuilder(Canrange.CAN_ID, Superstructure.canDoAttitude)
-                .withFovParams(Canrange.FOV_CENTER_X, Canrange.FOV_CENTER_Y, Canrange.FOV_RANGE_X, Canrange.FOV_RANGE_Y)
+                .withFovParams(
+                    Canrange.FOV_CENTER_X, Canrange.FOV_CENTER_Y, Canrange.FOV_RANGE_X,
+                    Canrange.FOV_RANGE_Y
+                )
                 .withProximityParams(Canrange.PROXIMITY_THRESHOLD)
                 .withToFParams(Canrange.UPDATE_MODE, Canrange.UPDATE_FREQUENCY)
                 .build();
@@ -85,7 +91,8 @@ public interface FeederIO extends SubsystemIO {
             if (canrange.isDetected()) {
                 lastDetectedTime = Timer.getTimestamp();
             }
-            return Timer.getTimestamp() - lastDetectedTime <= Canrange.DETECTION_WINDOW;
+
+            return (Timer.getTimestamp() - lastDetectedTime) <= Canrange.DETECTION_WINDOW;
         }
 
         @Override

@@ -39,6 +39,10 @@ public class Feeder extends R0Subsystem<FeederIO> {
         return new Trigger(() -> io.ballDetected());
     }
 
+    public boolean isBallDetected() {
+        return io.ballDetected();
+    }
+
     /**
      * Constructs the {@link Feeder} subsystem
      *
