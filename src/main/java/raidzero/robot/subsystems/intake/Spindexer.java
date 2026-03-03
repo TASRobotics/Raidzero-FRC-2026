@@ -34,7 +34,9 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
     public Command antiJamBig() {
         return run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
             .withTimeout(0.1)
-            .andThen(run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED)).withTimeout(0.3));
+            .andThen(
+                run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED)).withTimeout(0.3)
+            ).repeatedly();
     }
 
     /**
