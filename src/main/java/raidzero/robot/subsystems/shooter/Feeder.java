@@ -66,7 +66,7 @@ public class Feeder extends R0Subsystem<FeederIO> {
     @Override
     public void periodic() {
         super.periodic();
-        SmartDashboard.putNumber("Indexer Velocity", io.getVelocity().in(RotationsPerSecond));
+        // SmartDashboard.putNumber("Indexer Velocity", io.getVelocity().in(RotationsPerSecond));
         SmartDashboard.putBoolean("Ball detected", io.ballDetected());
     }
 }

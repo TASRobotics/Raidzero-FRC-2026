@@ -121,6 +121,20 @@ public class Limelight extends SubsystemBase {
     }
 
     /**
+     * Gets the average Z height of all limelight pose estimates that are not null or being ignored
+     *
+     * @return The average Z height of all limelight pose estimates that are not null or being ignored, or {@link Double#NaN} if there are no valid estimates
+     */
+    public double getAverageZ() {
+        return limes.stream()
+            .map(LimelightState::getZ)
+            .filter(z -> !Double.isNaN(z))
+            .mapToDouble(Double::doubleValue)
+            .average()
+            .orElse(Double.NaN);
+    }
+
+    /**
      * The main loop of the Limelight odometry thread
      */
     private void loop() {

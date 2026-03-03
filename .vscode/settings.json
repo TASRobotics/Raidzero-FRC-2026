@@ -58,5 +58,6 @@
     "edu.wpi.first.math.**.struct.*",
   ],
   "java.dependency.enableDependencyCheckup": false,
-  "java.jdt.ls.vmargs": "-XX:+UseZGC -Xmx12G -Xms4G -Xlog:disable"
+  "java.jdt.ls.vmargs": "-XX:+UseZGC -Xmx12G -Xms4G -Xlog:disable",
+  "wpilib.autoStartRioLog": false
 }

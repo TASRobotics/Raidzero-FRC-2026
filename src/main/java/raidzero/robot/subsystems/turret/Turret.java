@@ -50,7 +50,29 @@ public class Turret extends R0Subsystem<TurretIO> {
      * @param setpoint The setpoint to move to
      */
     public void moveTo(Angle setpoint) {
-        io.moveTo(setpoint);
+        io.moveTo(this.findBestWrap(setpoint));
+    }
+
+    private Angle findBestWrap(Angle desiredAngle) {
+        double desiredRotations = desiredAngle.in(Rotations);
+        double currentRotations = io.getYaw().in(Rotations);
+
+        double revLimit = Yaw.REVERSE_SOFT_LIMIT.in(Rotations);
+        double fwdLimit = Yaw.FORWARD_SOFT_LIMIT.in(Rotations);
+        double bestSetpoint = currentRotations;
+        double bestDistance = Double.MAX_VALUE;
+
+        for (int i = -2; i <= 2; i++) {
+            double candidate = desiredRotations + i;
+            if (candidate >= revLimit && candidate <= fwdLimit) {
+                double dist = Math.abs(candidate - currentRotations);
+                if (dist < bestDistance) {
+                    bestDistance = dist;
+                    bestSetpoint = candidate;
+                }
+            }
+        }
+        return Rotations.of(bestSetpoint);
     }
 
     /**
@@ -138,12 +160,12 @@ public class Turret extends R0Subsystem<TurretIO> {
         }
         for (int i = 0; i < (int) Yaw.JARED_TEETH_2; i++) {
             if (Math.abs(possibleReadings[i] - readingOnSecond) < Yaw.TOLERANCE_SRT) {
-                SmartDashboard.putBoolean("JMM Success", true);
+                // SmartDashboard.putBoolean("JMM Success", true);
 
                 double raw_angle = i * Yaw.JARED_TEETH_1 + readingOnFirst;
 
                 double turret_rotations = raw_angle / Yaw.TURRET_RING_TEETH;
-                SmartDashboard.putNumber("JMM Raw Angle", turret_rotations);
+                // SmartDashboard.putNumber("JMM Raw Angle", turret_rotations);
 
                 if (turret_rotations > Yaw.FORWARD_SOFT_LIMIT.in(Rotations)) {
                     return Rotations
@@ -153,7 +175,7 @@ public class Turret extends R0Subsystem<TurretIO> {
                 return Rotations.of(turret_rotations);
             }
         }
-        SmartDashboard.putBoolean("JMM Success", false);
+        // SmartDashboard.putBoolean("JMM Success", false);
         DriverStation.reportWarning("Looks like the SRT failed in Turret.java", false);
         return Rotations.of(0.0);
     }

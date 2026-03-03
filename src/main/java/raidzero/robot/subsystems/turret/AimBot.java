@@ -12,7 +12,7 @@ import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
  */
 public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
 
-    public static final double CODE_LOOP_LATENCY = 0.002;
+    public static final double CODE_LOOP_LATENCY = 0.01;
 
     /**
      * Adjusts the turret aim to the static goal location without kinetic lead

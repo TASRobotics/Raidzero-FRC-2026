@@ -3,6 +3,7 @@ package raidzero.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.CANBus;
@@ -17,10 +18,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.robot.commands.Aim;
+import raidzero.robot.commands.StaticAim;
 import raidzero.robot.subsystems.drive.Limelight;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.drive.TunerConstants;
@@ -52,7 +53,10 @@ public class Superstructure {
         .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.05)
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
+    private static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+
     private static CommandXboxController driver = new CommandXboxController(0);
+    private static CommandXboxController operator = new CommandXboxController(1);
 
     private static final Auto autos = new Auto(Swerve.system(), Intake.system());
 
@@ -90,8 +94,8 @@ public class Superstructure {
     private static Trigger swerveApprTrench = new Trigger(() -> {
         Pose2d pose = swerve.getState().Pose;
 
-        boolean posX = ((pose.getX() > 4.0 && pose.getX() < 5.1) || (pose.getX() > 10.94 && pose.getX() < 11.44));
-        boolean negX = ((pose.getX() > 5.1 && pose.getX() < 6.1) || (pose.getX() > 11.44 && pose.getX() < 12.14));
+        boolean posX = ((pose.getX() > 3.2 && pose.getX() < 4.6) || (pose.getX() > 10.4 && pose.getX() < 11.9));
+        boolean negX = ((pose.getX() > 4.6 && pose.getX() < 6.1) || (pose.getX() > 11.9 && pose.getX() < 13.4));
 
         return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
     });
@@ -120,10 +124,10 @@ public class Superstructure {
             )
         );
 
-        shooter.setDefaultCommand(shooter.stop());
-        hood.setDefaultCommand(hood.manualAim());
-        // turret.setDefaultCommand(new Aim());
-        turret.setDefaultCommand(turret.stop());
+        hood.setDefaultCommand(hood.aim());
+        turret.setDefaultCommand(new Aim());
+
+        shooter.setDefaultCommand(shooter.shoot());
         feeder.setDefaultCommand(feeder.stop());
         spindexer.setDefaultCommand(spindexer.stop());
         extender.setDefaultCommand(extender.stop());
@@ -134,43 +138,30 @@ public class Superstructure {
      * Applies driver button bindings
      */
     public static void applyButtonBindings() {
-        driver.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go())).onFalse(spindexer.antiJam());
-        // driver.leftTrigger().whileTrue(
-        // driver.leftTrigger().and(feeder.ballDetected().negate()).whileTrue(
-        // (spindexer.go()
-        // .withTimeout(0.5)
-        // .andThen(spindexer.antiJamBig()))
-        // );
-        driver.leftTrigger().whileTrue(feeder.go());
-
-        // );
-        driver.rightTrigger().whileTrue(shooter.manualShoot());
-
         driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
-        driver.rightStick().onTrue(Commands.runOnce(Superstructure::runSubsystemInitRoutines, turret, hood));
+        driver.rightBumper().whileTrue(swerve.applyRequest(() -> brake));
 
-        driver.leftBumper().whileTrue(intake.go());
-        driver.povUp().onTrue(extender.increaseAgitate());
-        driver.povDown().onTrue(extender.decreaseAgitate());
-        driver.b().onTrue(extender.extend());
-        driver.x().onTrue(extender.retract());
+        operator.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go())).onFalse(spindexer.antiJam());
 
-        // driver.a().onTrue(
-        // extender.agitate().alongWith(spindexer.antiJam())
-        // );
-        driver.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
-        driver.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
+        operator.rightBumper().whileTrue(hood.aim(Degrees.of(10)));
+        operator.leftStick().onTrue(extender.zeroEncoderPosition());
 
-        driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
-        driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
+        operator.rightTrigger().toggleOnTrue(shooter.stop());
 
+        operator.leftBumper().toggleOnTrue(intake.go());
+
+        operator.b().onTrue(extender.extend());
+        operator.x().onTrue(extender.retract());
+
+        operator.y().toggleOnTrue(new StaticAim(Rotations.of(0.5)).alongWith(hood.aim(Degrees.of(40))));
     }
 
     /**
      * Binds subsystem triggers
      */
     public static void bindTriggers() {
-        swerveApprTrench.whileTrue(hood.aim(Degrees.of(10)));
+        swerveApprTrench.and(driver.rightBumper().negate())
+            .whileTrue(hood.aim(Degrees.of(10)).alongWith(shooter.stop()));
     }
 
     /**

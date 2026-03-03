@@ -109,8 +109,8 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     @Override
     public void periodic() {
         super.periodic();
-        SmartDashboard.putNumber("Shooter speed", io.getVelocity().in(RotationsPerSecond));
-        SmartDashboard.putNumber("Shooter target speed", velocityTarget.in(RotationsPerSecond));
+        // SmartDashboard.putNumber("Shooter speed", io.getVelocity().in(RotationsPerSecond));
+        // SmartDashboard.putNumber("Shooter target speed", velocityTarget.in(RotationsPerSecond));
     }
 
 }

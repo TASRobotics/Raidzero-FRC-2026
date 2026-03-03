@@ -16,6 +16,6 @@ public abstract class R0Subsystem<T extends SubsystemIO> extends SubsystemBase {
 
     @Override
     public void periodic() {
-        io.updateTelemetry();
+        // io.updateTelemetry();
     }
 }

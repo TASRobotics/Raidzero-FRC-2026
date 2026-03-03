@@ -1,12 +1,14 @@
 package raidzero.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
 
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.lib.R0Subsystem;
+import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
 
 public class Hood extends R0Subsystem<HoodIO> {
     private static Hood system;
@@ -40,6 +42,14 @@ public class Hood extends R0Subsystem<HoodIO> {
         return run(() -> io.moveTo(angle));
     }
 
+    public Command aim() {
+        return run(() -> {
+            Angle target = Degrees.of(Kinetics.PITCH_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
+
+            io.moveTo(target);
+        });
+    }
+
     /**
      * Stops the hood motor
      *
@@ -60,7 +70,8 @@ public class Hood extends R0Subsystem<HoodIO> {
      * Increments the target setpoint for manual aiming
      *
      * @param angle the {@link Angle} increment
-     * @return A {@link Command} that increments the target setpoint for manual aiming
+     * @return A {@link Command} that increments the target setpoint for manual
+     *         aiming
      */
     public Command incrementPitch(Angle angle) {
         return runOnce(() -> angleTarget = angleTarget.plus(angle));
@@ -70,8 +81,8 @@ public class Hood extends R0Subsystem<HoodIO> {
     public void periodic() {
         super.periodic();
 
-        SmartDashboard.putNumber("Target pitch", angleTarget.in(Degrees));
-        SmartDashboard.putNumber("Pitch", io.getPitch().in(Degrees));
+        // SmartDashboard.putNumber("Target pitch", angleTarget.in(Degrees));
+        // SmartDashboard.putNumber("Pitch", io.getPitch().in(Degrees));
     }
 
     /**
