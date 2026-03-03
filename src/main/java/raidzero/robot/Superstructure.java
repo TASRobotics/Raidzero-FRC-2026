@@ -11,9 +11,13 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.Set;
+import java.util.function.BooleanSupplier;
 import raidzero.robot.commands.Aim;
 import raidzero.robot.subsystems.drive.Limelight;
 import raidzero.robot.subsystems.drive.Swerve;
@@ -123,14 +127,31 @@ public class Superstructure {
      * Applies driver button bindings
      */
     public static void applyButtonBindings() {
-        driver.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go())).onFalse(spindexer.antiJam());
+        // driver.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go())).onFalse(spindexer.antiJam());
+        // // driver.leftTrigger().whileTrue(
+        driver.leftTrigger().and(feeder.ballDetected().negate()).whileTrue(
+            feeder.go().alongWith(spindexer.antiJamBig())
+        );
+
+        driver.leftTrigger().and(feeder.ballDetected()).whileTrue(
+            feeder.go().alongWith(spindexer.go())
+        );
+
         // driver.leftTrigger().whileTrue(
-        // driver.leftTrigger().and(feeder.ballDetected().negate()).whileTrue(
-        // (spindexer.go()
-        // .withTimeout(0.5)
-        // .andThen(spindexer.antiJamBig()))
+        // Commands.either(
+        // spindexer.go().alongWith(feeder.go()), feeder.go().alongWith(spindexer.antiJamBig()), feeder.ballDetected()
+        // ).repeatedly()
         // );
-        driver.leftTrigger().whileTrue(feeder.go());
+
+        // Commands.defer(
+        // () -> Commands.either(
+        // spindexer.go().alongWith(feeder.go()), feeder.go().alongWith(spindexer.antiJamBig().repeatedly()), feeder.ballDetected()
+        // ), Set.of(spindexer, feeder)
+        // )
+        SmartDashboard.putBoolean("antijam boolean", feeder.ballDetected().getAsBoolean());
+        SmartDashboard.putBoolean("antijam in super", feeder.ballDetected().getAsBoolean());
+        // );
+        // driver.leftTrigger().whileTrue(feeder.go());
 
         // );
         driver.rightTrigger().whileTrue(shooter.manualShoot());

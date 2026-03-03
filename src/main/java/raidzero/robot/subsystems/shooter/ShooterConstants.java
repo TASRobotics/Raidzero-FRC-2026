@@ -96,7 +96,7 @@ public final class ShooterConstants {
         public static final UpdateModeValue UPDATE_MODE = UpdateModeValue.LongRangeUserFreq;
         public static final double UPDATE_FREQUENCY = 50;
 
-        public static final double DETECTION_WINDOW = 2;
+        public static final double DETECTION_WINDOW = 0.25;
     }
 
 }
