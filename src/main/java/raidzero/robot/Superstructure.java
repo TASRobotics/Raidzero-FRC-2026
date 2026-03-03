@@ -44,8 +44,8 @@ public class Superstructure {
     private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.5;
 
     private static final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
-        .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.05)
-        .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+            .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.05)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     private static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 
@@ -90,6 +90,33 @@ public class Superstructure {
         return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
     });
 
+    private static Trigger swerveMiddleZone = new Trigger(() -> {
+        Pose2d pose = swerve.getState().Pose;
+
+        boolean posX = (pose.getX() > 3.2 && pose.getX() < 6.1) || (pose.getX() > 10.4 && pose.getX() < 13.4);
+        boolean negX = (pose.getX() > 6.1 && pose.getX() < 9.0) || (pose.getX() > 13.4 && pose.getX() < 16.3);
+
+        return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
+    });
+
+    private static Trigger hoardingArea1 = new Trigger(() -> {
+        Pose2d pose = swerve.getState().Pose;
+
+        boolean inX = pose.getX() > 5.8 && pose.getX() < 11.3;
+        boolean inY = pose.getY() > 0.28 && pose.getY() < 3.4;
+
+        return inX && inY;
+    });
+
+    private static Trigger hoardingArea2 = new Trigger(() -> {
+        Pose2d pose = swerve.getState().Pose;
+
+        boolean inX = pose.getX() > 5.8 && pose.getX() < 11.3;
+        boolean inY = pose.getY() > 4.6 && pose.getY() < 7.72;
+
+        return inX && inY;
+    });
+
     /**
      * RUns the initialization routines for subsystems
      */
@@ -106,13 +133,11 @@ public class Superstructure {
         // CAN_SHOOT.whileTrue(shooter.shoot());
 
         swerve.setDefaultCommand(
-            swerve.applyRequest(
-                () -> fieldCentricDrive
-                    .withVelocityX(-driver.getLeftY() * MaxSpeed)
-                    .withVelocityY(-driver.getLeftX() * MaxSpeed)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate)
-            )
-        );
+                swerve.applyRequest(
+                        () -> fieldCentricDrive
+                                .withVelocityX(-driver.getLeftY() * MaxSpeed)
+                                .withVelocityY(-driver.getLeftX() * MaxSpeed)
+                                .withRotationalRate(-driver.getRightX() * MaxAngularRate)));
 
         hood.setDefaultCommand(hood.aim());
         turret.setDefaultCommand(new Aim());
@@ -151,6 +176,7 @@ public class Superstructure {
      */
     public static void bindTriggers() {
         swerveApprTrench.and(driver.rightBumper().negate())
-            .whileTrue(hood.aim(Degrees.of(10)).alongWith(shooter.stop()));
+                .whileTrue(hood.aim(Degrees.of(10)).alongWith(shooter.stop()));
+        turret.isPirouetteing().whileTrue(shooter.stop());
     }
 }
