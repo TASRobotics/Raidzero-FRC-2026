@@ -26,6 +26,7 @@ public class LimelightState {
     private final Supplier<Double> robotYawSupplier;
     private final Supplier<Double> robotYawRateSupplier;
     private final VisionMeasurementConsumer addVisionMeasurementConsumer;
+    private Supplier<Double> hoodAngleSupplier;
 
     /**
      * Constructs a LimelightState instance
@@ -39,13 +40,17 @@ public class LimelightState {
         this.limelightName = limelightName;
         setPipeline(pipeline);
         this.ntPublisher = NetworkTableInstance.getDefault()
-            .getStructTopic(limelightName + "NT", Pose2d.struct)
+            .getStructTopic(limelightName.split("-")[1] + "NT", Pose2d.struct)
             .publish();
 
         this.ignore = false;
         this.robotYawSupplier = robotYawSupplier;
         this.robotYawRateSupplier = robotYawRateSupplier;
         this.addVisionMeasurementConsumer = addVisionMeasurementConsumer;
+    }
+
+    public void setHoodSupplier(Supplier<Double> hoodAngleSupplier) {
+        this.hoodAngleSupplier = hoodAngleSupplier;
     }
 
     /**
@@ -156,6 +161,7 @@ public class LimelightState {
                     currEstimate.timestampSeconds,
                     VecBuilder.fill(stdevX, stdevY, stdevRot)
                         .div(Math.max(LimelightHelpers.getTA(limelightName), 0.05))
+                        .times(hoodAngleSupplier != null && hoodAngleSupplier.get() > 20 ? 1.0 : 1.75)
                 );
             }
 
@@ -164,7 +170,7 @@ public class LimelightState {
             ignore = false;
         }
 
-        SmartDashboard.putBoolean(limelightName + "Pose", !ignore && !ignoreAll);
+        SmartDashboard.putBoolean(limelightName.split("-")[1] + "Pose", !ignore && !ignoreAll);
     }
 
     /**
@@ -200,7 +206,7 @@ public class LimelightState {
                         .getTranslation()
                 ) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
             (currEstimate.rawFiducials.length > 0 && currEstimate.rawFiducials[0].ambiguity > 0.5 &&
-                currEstimate.rawFiducials[0].distToCamera > 4.0) ||
+                currEstimate.rawFiducials[0].distToCamera > 3.0) ||
             currEstimate.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
     }
 

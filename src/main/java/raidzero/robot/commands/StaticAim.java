@@ -12,6 +12,10 @@ public class StaticAim extends Command {
     private final Turret turret = Turret.system();
     Angle target;
 
+    /**
+     * Creates a {@link Command} that aims the turret to a static angle
+     * @param target The target angle for the turret as an {@link Angle}
+     */
     public StaticAim(Angle target) {
         this.target = target;
         this.addRequirements(turret);
