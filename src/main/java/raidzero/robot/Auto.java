@@ -248,17 +248,8 @@ public class Auto {
                         Commands.waitSeconds(1),
                         intake.stop()
                     ),
-                    Commands.sequence(
-                        Commands.waitSeconds(1)
-                        //spindexer                  
-                    ),
-                    Commands.sequence(
-                        Commands.waitSeconds(1)
-                        //feeder                 
-                    )
-                ),
-
-                Commands.waitSeconds(2)
+                    feeder.go()
+                )
             )
         );
     }

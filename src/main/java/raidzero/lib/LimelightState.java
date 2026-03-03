@@ -216,11 +216,11 @@ public class LimelightState {
                     prevEstimate.pose
                         .getTranslation()
                 ) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
-            (seededRobot && currEstimate != null && (currEstimate.pose.getTranslation()
-                .getDistance(
-                    robotPoseSupplier.get()
-                        .getTranslation()
-                ) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
+            // (seededRobot && currEstimate != null && (currEstimate.pose.getTranslation()
+            // .getDistance(
+            // robotPoseSupplier.get()
+            // .getTranslation()
+            // ) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.2)) ||
             (currEstimate.rawFiducials.length > 0 && currEstimate.rawFiducials[0].ambiguity > 0.5 &&
                 currEstimate.rawFiducials[0].distToCamera > 4.5) ||
             currEstimate.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
