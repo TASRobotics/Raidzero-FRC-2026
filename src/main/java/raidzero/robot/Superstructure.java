@@ -45,7 +45,6 @@ public class Superstructure {
     private static Spindexer spindexer = Spindexer.system();
     private static Extender extender = Extender.system();
     private static Intake intake = Intake.system();
-    private static Limelight limelight = Limelight.system();
     private static Swerve swerve = Swerve.system();
 
     private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.5;

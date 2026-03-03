@@ -14,7 +14,7 @@ import raidzero.lib.LimelightState;
 import raidzero.robot.subsystems.turret.Hood;
 import raidzero.robot.subsystems.turret.HoodIO;
 
-public class Limelight extends SubsystemBase {
+public class Limelight {
     private boolean ignoreAllLimes = false;
 
     private LimelightState frontState;
@@ -96,7 +96,7 @@ public class Limelight extends SubsystemBase {
         seedTimer = new Timer();
         seedTimer.start();
 
-        this.startThread();
+        // this.startThread();
     }
 
     /**
@@ -138,7 +138,7 @@ public class Limelight extends SubsystemBase {
     /**
      * The main loop of the Limelight odometry thread
      */
-    private void loop() {
+    public void loop() {
         if (Math.abs(swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720) {
             ignoreAllLimes = true;
         } else {
@@ -146,7 +146,7 @@ public class Limelight extends SubsystemBase {
         }
 
         for (LimelightState state : limes) {
-            state.update(ignoreAllLimes, seededPigeon);
+            state.update(ignoreAllLimes, seededPigeon, swerve.getState().Pose);
         }
 
         if (!seededPigeon && seedTimer.get() < 30 && seedInterval.hasElapsed(1)) {
@@ -173,10 +173,7 @@ public class Limelight extends SubsystemBase {
                 state.setSeededPose(true);
             }
         }
-    }
 
-    @Override
-    public void periodic() {
         SmartDashboard.putBoolean("SeededRobot", seededPigeon);
     }
 
