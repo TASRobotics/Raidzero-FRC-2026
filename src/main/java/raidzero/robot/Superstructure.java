@@ -58,7 +58,7 @@ public class Superstructure {
     private static CommandXboxController driver = new CommandXboxController(0);
     private static CommandXboxController operator = new CommandXboxController(1);
 
-    private static final Auto autos = new Auto(Swerve.system(), Intake.system(), Extender.system());
+    private static final Auto autos = new Auto(swerve, intake, extender, spindexer, feeder);
 
     private static SendableChooser<Command> autoChooser;
 
