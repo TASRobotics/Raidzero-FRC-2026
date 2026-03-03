@@ -25,6 +25,7 @@ public class LimelightState {
     private final Supplier<Double> robotYawSupplier;
     private final Supplier<Double> robotYawRateSupplier;
     private final VisionMeasurementConsumer addVisionMeasurementConsumer;
+    private Supplier<Double> hoodAngleSupplier;
 
     /**
      * Constructs a LimelightState instance
@@ -45,6 +46,10 @@ public class LimelightState {
         this.robotYawSupplier = robotYawSupplier;
         this.robotYawRateSupplier = robotYawRateSupplier;
         this.addVisionMeasurementConsumer = addVisionMeasurementConsumer;
+    }
+
+    public void setHoodSupplier(Supplier<Double> hoodAngleSupplier) {
+        this.hoodAngleSupplier = hoodAngleSupplier;
     }
 
     /**
@@ -155,6 +160,7 @@ public class LimelightState {
                     currEstimate.timestampSeconds,
                     VecBuilder.fill(stdevX, stdevY, stdevRot)
                         .div(Math.max(LimelightHelpers.getTA(limelightName), 0.05))
+                        .times(hoodAngleSupplier != null && hoodAngleSupplier.get() > 20 ? 1.0 : 1.75)
                 );
             }
 
@@ -193,7 +199,7 @@ public class LimelightState {
                         .getTranslation()
                 ) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
             (currEstimate.rawFiducials.length > 0 && currEstimate.rawFiducials[0].ambiguity > 0.5 &&
-                currEstimate.rawFiducials[0].distToCamera > 4.0) ||
+                currEstimate.rawFiducials[0].distToCamera > 3.0) ||
             currEstimate.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
     }
 

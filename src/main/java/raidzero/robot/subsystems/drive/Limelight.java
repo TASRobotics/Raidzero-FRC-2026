@@ -1,5 +1,7 @@
 package raidzero.robot.subsystems.drive;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
@@ -8,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import raidzero.lib.LimelightState;
+import raidzero.robot.subsystems.turret.Hood;
+import raidzero.robot.subsystems.turret.HoodIO;
 
 public class Limelight extends SubsystemBase {
     private boolean ignoreAllLimes = false;
@@ -29,6 +33,7 @@ public class Limelight extends SubsystemBase {
     private Timer seedTimer;
 
     private Swerve swerve = Swerve.system();
+    private Hood hood = Hood.system();
     private static Limelight instance = null;
 
     /**
@@ -66,6 +71,11 @@ public class Limelight extends SubsystemBase {
             () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             swerve::addVisionMeasurement
         );
+
+        frontState.setHoodSupplier(() -> hood.getAngle().in(Degrees));
+        rightState.setHoodSupplier(() -> hood.getAngle().in(Degrees));
+        rearState.setHoodSupplier(() -> hood.getAngle().in(Degrees));
+        leftState.setHoodSupplier(() -> hood.getAngle().in(Degrees));
 
         limelights = Map.of(
             "limelight-front", frontState,

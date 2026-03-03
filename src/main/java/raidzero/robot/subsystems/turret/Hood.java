@@ -22,10 +22,19 @@ public class Hood extends R0Subsystem<HoodIO> {
     }
 
     /**
+     * Gets the current hood angle
+     *
+     * @return The current hood angle as an {@link Angle}
+     */
+    public Angle getAngle() {
+        return io.getPitch();
+    }
+
+    /**
      * Aims to the specified angle
      *
      * @param angle the {@link Angle}
-     * @return a {@link Command}
+     * @return A {@link Command} that aims to the specified angle
      */
     public Command aim(Angle angle) {
         return run(() -> io.moveTo(angle));
