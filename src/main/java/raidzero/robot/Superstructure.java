@@ -8,12 +8,12 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Set;
@@ -79,6 +79,15 @@ public class Superstructure {
 
         boolean inactiveNow = ((shift - 1) % 2 == 0) ? startedInactive : !startedInactive;
         return !inactiveNow;
+    });
+
+    private static Trigger swerveApprTrench = new Trigger(() -> {
+        Pose2d pose = swerve.getState().Pose;
+
+        boolean posX = ((pose.getX() > 3.2 && pose.getX() < 4.6) || (pose.getX() > 10.4 && pose.getX() < 11.9));
+        boolean negX = ((pose.getX() > 4.6 && pose.getX() < 6.1) || (pose.getX() > 11.9 && pose.getX() < 13.4));
+
+        return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
     });
 
     /**
@@ -165,5 +174,12 @@ public class Superstructure {
         driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
         driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
 
+    }
+
+    /**
+     * Binds subsystem triggers
+     */
+    public static void bindTriggers() {
+        swerveApprTrench.whileTrue(hood.aim(Degrees.of(10)));
     }
 }
