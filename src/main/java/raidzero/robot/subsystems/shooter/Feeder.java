@@ -20,6 +20,10 @@ public class Feeder extends R0Subsystem<FeederIO> {
         return run(() -> io.go(ShooterConstants.Feeder.FEEDER_SPEED));
     }
 
+    public Command reverse() {
+        return run(() -> io.go(ShooterConstants.Feeder.FEEDER_SPEED.times(-1.0)));
+    }
+
     /**
      * Stops the feeder motor
      *
@@ -73,4 +77,5 @@ public class Feeder extends R0Subsystem<FeederIO> {
         // SmartDashboard.putNumber("Indexer Velocity", io.getVelocity().in(RotationsPerSecond));
         SmartDashboard.putBoolean("Ball detected", io.ballDetected());
     }
+
 }

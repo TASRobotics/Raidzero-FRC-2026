@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.R0Subsystem;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
@@ -43,6 +44,8 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     private AimBot staticAimBot = null;
     private AimBot kineticAimBot = null;
+
+    private boolean isPirouetteing = false;
 
     /**
      * Moves the robot to the given setpoint
@@ -72,7 +75,13 @@ public class Turret extends R0Subsystem<TurretIO> {
                 }
             }
         }
+        isPirouetteing = bestDistance > 0.5;
+
         return Rotations.of(bestSetpoint);
+    }
+
+    public Trigger isPirouetteing() {
+        return new Trigger(() -> this.isPirouetteing);
     }
 
     /**

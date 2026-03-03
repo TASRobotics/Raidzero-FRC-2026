@@ -20,8 +20,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import java.util.Set;
-import java.util.function.BooleanSupplier;
 import raidzero.robot.commands.Aim;
 import raidzero.robot.commands.StaticAim;
 import raidzero.robot.subsystems.drive.Limelight;
@@ -58,6 +56,9 @@ public class Superstructure {
 
     private static CommandXboxController driver = new CommandXboxController(0);
     private static CommandXboxController operator = new CommandXboxController(1);
+
+    public static boolean autoSpindex = false;
+    public static final Trigger autoSpindexTrigger = new Trigger(() -> autoSpindex);
 
     private static final Auto autos = new Auto(swerve, intake, extender, spindexer, feeder);
 
@@ -101,6 +102,24 @@ public class Superstructure {
         return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
     });
 
+    private static Trigger hoardingArea1 = new Trigger(() -> {
+        Pose2d pose = swerve.getState().Pose;
+
+        boolean inX = pose.getX() > 6.1 && pose.getX() < 11.0;
+        boolean inY = pose.getY() > 0.28 && pose.getY() < 3.4;
+
+        return inX && inY;
+    });
+
+    private static Trigger hoardingArea2 = new Trigger(() -> {
+        Pose2d pose = swerve.getState().Pose;
+
+        boolean inX = pose.getX() > 6.1 && pose.getX() < 11.0;
+        boolean inY = pose.getY() > 4.6 && pose.getY() < 7.72;
+
+        return inX && inY;
+    });
+
     /**
      * RUns the initialization routines for subsystems
      */
@@ -128,7 +147,7 @@ public class Superstructure {
         hood.setDefaultCommand(hood.aim().onlyIf(swerveApprTrench.negate().and(driver.rightBumper().negate())));
         turret.setDefaultCommand(new Aim());
 
-        shooter.setDefaultCommand(shooter.shoot());
+        shooter.setDefaultCommand(shooter.stop());
         feeder.setDefaultCommand(feeder.stop());
         spindexer.setDefaultCommand(spindexer.stop());
         extender.setDefaultCommand(extender.stop());
@@ -139,49 +158,31 @@ public class Superstructure {
      * Applies driver button bindings
      */
     public static void applyButtonBindings() {
-        // driver.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go())).onFalse(spindexer.antiJam());
-        // // driver.leftTrigger().whileTrue(
-        driver.leftTrigger().and(feeder.ballDetected().negate()).whileTrue(
+        // todo: check for speed before spindexing
+        operator.leftTrigger().and(feeder.ballDetected().negate()).whileTrue(
             feeder.go().alongWith(spindexer.antiJamBig())
         );
 
-        driver.leftTrigger().and(feeder.ballDetected()).whileTrue(
+        operator.leftTrigger().and(feeder.ballDetected()).whileTrue(
             feeder.go().alongWith(spindexer.go())
         );
 
-        // driver.leftTrigger().whileTrue(
-        // Commands.either(
-        // spindexer.go().alongWith(feeder.go()), feeder.go().alongWith(spindexer.antiJamBig()), feeder.ballDetected()
-        // ).repeatedly()
-        // );
-
-        // Commands.defer(
-        // () -> Commands.either(
-        // spindexer.go().alongWith(feeder.go()), feeder.go().alongWith(spindexer.antiJamBig().repeatedly()), feeder.ballDetected()
-        // ), Set.of(spindexer, feeder)
-        // )
-        SmartDashboard.putBoolean("antijam boolean", feeder.ballDetected().getAsBoolean());
-        SmartDashboard.putBoolean("antijam in super", feeder.ballDetected().getAsBoolean());
-        // );
-        // driver.leftTrigger().whileTrue(feeder.go());
-
-        // );
-        driver.rightTrigger().whileTrue(shooter.manualShoot());
+        // driver.rightTrigger().whileTrue(shooter.manualShoot());
 
         driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
         driver.rightBumper().whileTrue(swerve.applyRequest(() -> brake));
 
-        operator.leftTrigger().whileTrue(spindexer.go().alongWith(feeder.go())).onFalse(spindexer.antiJam());
-
         operator.rightBumper().whileTrue(hood.aim(Degrees.of(10)));
         operator.leftStick().onTrue(extender.zeroEncoderPosition());
 
-        operator.rightTrigger().toggleOnTrue(shooter.stop());
+        operator.rightTrigger().toggleOnTrue(shooter.shoot());
 
         operator.leftBumper().toggleOnTrue(intake.go());
 
         operator.b().onTrue(extender.extend());
         operator.x().onTrue(extender.retract());
+
+        driver.a().whileTrue(shooter.shoot(RotationsPerSecond.of(-40.0)).alongWith(feeder.reverse()));
 
         operator.y().toggleOnTrue(new StaticAim(Rotations.of(0.5)).alongWith(hood.aim(Degrees.of(40))));
     }
@@ -192,6 +193,23 @@ public class Superstructure {
     public static void bindTriggers() {
         swerveApprTrench.and(driver.rightBumper().negate())
             .whileTrue(hood.aim(Degrees.of(10)).alongWith(shooter.stop()));
+        turret.isPirouetteing().whileTrue(shooter.stop());
+
+        autoSpindexTrigger.and(feeder.ballDetected().negate()).whileTrue(
+            feeder.go().alongWith(spindexer.antiJamBig())
+        );
+
+        autoSpindexTrigger.and(feeder.ballDetected()).whileTrue(
+            feeder.go().alongWith(spindexer.go())
+        );
+
+        // hoardingArea1.whileTrue(new
+        // StaticAim(Rotations.of(0.5)).alongWith(hood.aim(Degrees.of(40))));
+        // hoardingArea1.onFalse(shooter.stop());
+
+        // hoardingArea2.whileTrue(new
+        // StaticAim(Rotations.of(0.5)).alongWith(hood.aim(Degrees.of(40))));
+        // hoardingArea2.onFalse(shooter.stop());
 
         feeder.ballDetected().negate().whileTrue(
             feeder.go().alongWith(spindexer.antiJamBig())
