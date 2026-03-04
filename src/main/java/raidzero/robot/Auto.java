@@ -179,49 +179,6 @@ public class Auto {
         );
     }
 
-    // public Command getLeftMidAuto() {
-    // return build("LeftMidStart", () -> Commands.sequence(
-    // otf("LeftMidStart"),
-    // swerve.randomIntake(2),
-    // otf("LeftMidShoot"),
-    // Commands.waitSeconds(3),
-    // follow("LeftMidCollect"),
-    // swerve.randomIntake(2),
-    // otf("LeftMidShoot"),
-    // Commands.waitSeconds(3),
-    // otf("LeftMidClimb")
-    // ));
-    // }
-
-    // public Command getLeftDepotAuto() {
-    // return build("LeftMidStart", () -> Commands.sequence(
-    // otf("LeftMidStart"),
-    // swerve.randomIntake(2),
-    // otf("LeftMidShoot"),
-    // Commands.waitSeconds(3),
-    // follow("LeftMidCollect"),
-    // swerve.randomIntake(2),
-    // otf("MidToDepot"),
-    // follow("DepotCross"),
-    // follow("DepotClimb")
-    // ));
-    // }
-
-    // public Command getRightMidAuto() {
-    // return build("RightMidStart", () -> Commands.sequence(
-    // otf("RightMidStart"),
-    // swerve.randomIntake(2),
-    // otf("RightMidShoot"),
-    // Commands.waitSeconds(3),
-    // follow("RightMidCollect"),
-    // swerve.randomIntake(2),
-    // otf("RightMidShoot"),
-    // Commands.waitSeconds(3),
-    // follow("RightMidCollect"),
-    // swerve.randomIntake(2),
-    // otf("RightMidClimb")
-    // ));
-    // }
 
     public Command getRightOutpostAuto() {
         return build(
