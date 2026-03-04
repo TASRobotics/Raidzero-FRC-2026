@@ -146,8 +146,7 @@ public class Superstructure {
 
         hood.setDefaultCommand(hood.aim().onlyIf(swerveApprTrench.negate().and(driver.rightBumper().negate())));
         turret.setDefaultCommand(new Aim());
-
-        shooter.setDefaultCommand(shooter.stop());
+        shooter.setDefaultCommand(shooter.shoot());
         feeder.setDefaultCommand(feeder.stop());
         spindexer.setDefaultCommand(spindexer.stop());
         extender.setDefaultCommand(extender.stop());
