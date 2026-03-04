@@ -195,7 +195,7 @@ public class Auto {
 
                 Commands.deadline(
                     Commands.waitSeconds(5),
-                    extender.autoAgitate()
+                    extender.autoAgitate().repeatedly()
                 ),
 
                 Commands.deadline(
@@ -217,7 +217,7 @@ public class Auto {
 
                 Commands.deadline(
                     Commands.waitSeconds(5),
-                    extender.autoAgitate()
+                    extender.autoAgitate().repeatedly()
                 ),
 
                 Commands.deadline(
