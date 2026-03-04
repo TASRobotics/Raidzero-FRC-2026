@@ -60,7 +60,7 @@ public class Superstructure {
     public static boolean autoSpindex = false;
     public static final Trigger autoSpindexTrigger = new Trigger(() -> autoSpindex);
 
-    private static final Auto autos = new Auto(swerve, intake, extender, spindexer, feeder);
+    private static final Auto autos = new Auto(swerve, intake, extender, spindexer, feeder, shooter);
 
     private static SendableChooser<Command> autoChooser;
 
@@ -192,6 +192,7 @@ public class Superstructure {
     public static void bindTriggers() {
         swerveApprTrench.and(driver.rightBumper().negate())
             .whileTrue(hood.aim(Degrees.of(10)).alongWith(shooter.stop()));
+
         turret.isPirouetteing().whileTrue(shooter.stop());
 
         autoSpindexTrigger.and(feeder.ballDetected().negate()).whileTrue(
