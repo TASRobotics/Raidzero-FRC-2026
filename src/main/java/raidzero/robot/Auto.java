@@ -257,7 +257,10 @@ public class Auto {
                     )
                 ),
 
-                Commands.waitSeconds(3),
+                Commands.deadline(
+                    Commands.waitSeconds(5),
+                    extender.autoAgitate().repeatedly()
+                ),
 
                 Commands.deadline(
                     follow("OutpostToMid"),
@@ -269,4 +272,67 @@ public class Auto {
             )
         );
     }
+
+    public Command getRight2Cycle() {
+        return build(
+            "RightMidStart", () -> Commands.sequence(
+                Commands.deadline(
+                    follow("RightMidStart"),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        intake.go()
+                    ),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        extender.extend()
+                    )
+                ),
+                follow("RightMidTrenchOut"),
+
+                Commands.deadline(
+                    follow("RightMidShoot"),
+                    Commands.sequence(
+                        Commands.waitSeconds(1.75),
+                        intake.stop()
+                    )
+                ),
+
+                Commands.deadline(
+                    Commands.waitSeconds(5),
+                    extender.autoAgitate().repeatedly()
+                ),
+
+                Commands.deadline(
+                    follow("RightMidCollect"),
+                    Commands.sequence(
+                        extender.extend().withTimeout(0.7),
+                        intake.go()
+                    )
+                ),
+
+                follow("RightMidCollectTrenchOut"),
+                Commands.deadline(
+                    follow("RightMidShoot"),
+                    Commands.sequence(
+                        Commands.waitSeconds(1.75),
+                        intake.stop()
+                    )
+                ),
+
+                Commands.deadline(
+                    Commands.waitSeconds(5),
+                    extender.autoAgitate().repeatedly()
+                ),
+
+                Commands.deadline(
+                    follow("RightShootToMid"),
+                    Commands.sequence(
+                        extender.extend().withTimeout(0.7),
+                        intake.go()
+                    )
+                )
+            )
+        );
+    }
+
 }

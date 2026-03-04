@@ -285,6 +285,7 @@ public class Superstructure {
         autoChooser.addOption("Depot single", autos.getDepot1Cycle());
         autoChooser.addOption("Left Double", autos.getLeft2Cycle());
         autoChooser.addOption("Right Oupost", autos.getRightOutpostAuto());
+        autoChooser.addOption("Right Double", autos.getRight2Cycle());
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
