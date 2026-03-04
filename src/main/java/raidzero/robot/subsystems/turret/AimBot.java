@@ -12,7 +12,7 @@ import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
  */
 public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
 
-    public static final double CODE_LOOP_LATENCY = 0.01;
+    public static final double CODE_LOOP_LATENCY = 0.02;
 
     /**
      * Adjusts the turret aim to the static goal location without kinetic lead
@@ -104,7 +104,7 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
 
         double currentDistanceTOF = Kinetics.TOF_TABLE.get(turretToGoalDist);
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 7; i++) {
             double virtualGoalx = staticGoal.getX()
                     - currentDistanceTOF * whipSpeeds.vxMetersPerSecond;
             double virtualGoaly = staticGoal.getY()
