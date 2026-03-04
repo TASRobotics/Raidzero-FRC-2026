@@ -245,21 +245,21 @@ public class Auto {
                 Commands.deadline(
                     follow("RightMidToOutpost"),
                     Commands.sequence(
-                        Commands.waitSeconds(1),
+                        Commands.waitSeconds(3),
+                        Commands.runOnce(() -> Superstructure.autoSpindex = true),
                         intake.stop()
-                    ),
-                    feeder.go()
+                    )
                 )
             )
         );
     }
 
-    public Command shoot(){
+    public Command shoot() {
         return Commands.parallel(
             // 1. The Feeder: Runs for 0.5s alone, then continues forever
             Commands.sequence(
-                feeder.go().withTimeout(0.5), 
-                feeder.go() 
+                feeder.go().withTimeout(0.5),
+                feeder.go()
             ),
 
             // 2. The Spindexer: Starts the sensor logic immediately
