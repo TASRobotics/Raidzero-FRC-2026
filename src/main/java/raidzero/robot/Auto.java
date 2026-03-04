@@ -138,7 +138,7 @@ public class Auto {
                 }),
                 autoLogic.get()
             );
-        }, Set.of(swerve, intake, extender, spindexer, feeder));
+        }, Set.of(swerve, intake, extender)); // spindexer, feeder
     }
 
     /**
@@ -179,7 +179,6 @@ public class Auto {
         );
     }
 
-
     public Command getRightOutpostAuto() {
         return build(
             "RightMidStart", () -> Commands.sequence(
@@ -202,9 +201,22 @@ public class Auto {
                 Commands.deadline(
                     follow("RightMidToOutpost"),
                     Commands.sequence(
-                        Commands.waitSeconds(3),
+                        Commands.waitSeconds(1.75),
                         Commands.runOnce(() -> Superstructure.autoSpindex = true),
+                        // TODO: Shoot earlier
                         intake.stop()
+                    )
+                ),
+
+                Commands.waitSeconds(3),
+
+                Commands.deadline(
+                    follow("OutpostToMid"),
+                    Commands.sequence(
+                        Commands.waitSeconds(2),
+                        Commands.runOnce(() -> Superstructure.autoSpindex = false),
+                        intake.go()
+                        // TODO: Extender
                     )
                 )
             )
