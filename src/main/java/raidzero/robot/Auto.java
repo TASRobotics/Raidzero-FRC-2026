@@ -172,9 +172,51 @@ public class Auto {
     public Command getLeft2Cycle() {
         return build(
             "LeftMidStart", () -> Commands.sequence(
-                follow("LeftMidStart"),
-                Commands.waitSeconds(0.5),
-                otf("LeftMidClimb")
+                Commands.deadline(
+                    follow("LeftMidStart"),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        intake.go()
+                    ),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        extender.extend()
+                    )
+                ),
+                follow("LeftMidTrenchOut"),
+
+                Commands.deadline(
+                    follow("LeftMidShoot"),
+                    Commands.sequence(
+                        Commands.waitSeconds(1.75),
+                        intake.stop()
+                    )
+                ),
+                Commands.waitSeconds(5),
+
+                Commands.deadline(
+                    follow("LeftMidCollect"),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        intake.go()
+                    )
+                ),
+                follow("LeftMidCollectTrenchOut"),
+                Commands.deadline(
+                    follow("LeftMidShoot"),
+                    Commands.sequence(
+                        Commands.waitSeconds(1.75),
+                        intake.stop()
+                    )
+                ),
+                Commands.waitSeconds(5),
+                Commands.deadline(
+                    follow("LeftShootToMid"),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        intake.go()
+                    )
+                )
             )
         );
     }
