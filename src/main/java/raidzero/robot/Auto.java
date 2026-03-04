@@ -192,7 +192,11 @@ public class Auto {
                         intake.stop()
                     )
                 ),
-                Commands.waitSeconds(5),
+
+                Commands.deadline(
+                    Commands.waitSeconds(5),
+                    extender.autoAgitate()
+                ),
 
                 Commands.deadline(
                     follow("LeftMidCollect"),
@@ -201,6 +205,7 @@ public class Auto {
                         intake.go()
                     )
                 ),
+
                 follow("LeftMidCollectTrenchOut"),
                 Commands.deadline(
                     follow("LeftMidShoot"),
@@ -209,7 +214,12 @@ public class Auto {
                         intake.stop()
                     )
                 ),
-                Commands.waitSeconds(5),
+
+                Commands.deadline(
+                    Commands.waitSeconds(5),
+                    extender.autoAgitate()
+                ),
+
                 Commands.deadline(
                     follow("LeftShootToMid"),
                     Commands.sequence(

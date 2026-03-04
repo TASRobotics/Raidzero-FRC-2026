@@ -46,6 +46,20 @@ public class Extender extends R0Subsystem<ExtenderIO> {
             .andThen(run(() -> io.retract()));
     }
 
+    public Command autoAgitate() {
+        return run(() -> io.agitateL1())
+            .withTimeout(0.2)
+            .andThen(
+                run(() -> io.agitateL2())
+                    .withTimeout(0.2)
+            )
+            .andThen(
+                run(() -> io.agitateL3())
+                    .withTimeout(0.3)
+            )
+            .andThen(run(() -> io.extend()));
+    }
+
     /**
      * Stops the extender motors
      *
