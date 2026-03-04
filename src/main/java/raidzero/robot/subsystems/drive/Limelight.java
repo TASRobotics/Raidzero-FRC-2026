@@ -3,16 +3,13 @@ package raidzero.robot.subsystems.drive;
 import static edu.wpi.first.units.Units.Degrees;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import raidzero.lib.LimelightState;
 import raidzero.robot.subsystems.turret.Hood;
-import raidzero.robot.subsystems.turret.HoodIO;
 
 public class Limelight {
     private boolean ignoreAllLimes = false;
@@ -29,7 +26,6 @@ public class Limelight {
     private ArrayList<Double> headingReadings;
     private boolean seededPigeon;
 
-    private Notifier notifier;
     private Timer seedInterval;
     private Timer seedTimer;
 
@@ -47,7 +43,6 @@ public class Limelight {
         frontState = new LimelightState(
             "limelight-front",
             LimelightState.PIPELINE.TAG,
-            () -> swerve.getState().Pose,
             () -> swerve.getPigeon2().getRotation2d().getDegrees(),
             () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             swerve::addVisionMeasurement
@@ -55,7 +50,6 @@ public class Limelight {
         rightState = new LimelightState(
             "limelight-right",
             LimelightState.PIPELINE.TAG,
-            () -> swerve.getState().Pose,
             () -> swerve.getPigeon2().getRotation2d().getDegrees(),
             () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             swerve::addVisionMeasurement
@@ -63,7 +57,6 @@ public class Limelight {
         rearState = new LimelightState(
             "limelight-rear",
             LimelightState.PIPELINE.TAG,
-            () -> swerve.getState().Pose,
             () -> swerve.getPigeon2().getRotation2d().getDegrees(),
             () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             swerve::addVisionMeasurement
@@ -71,7 +64,6 @@ public class Limelight {
         leftState = new LimelightState(
             "limelight-left",
             LimelightState.PIPELINE.TAG,
-            () -> swerve.getState().Pose,
             () -> swerve.getPigeon2().getRotation2d().getDegrees(),
             () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             swerve::addVisionMeasurement
@@ -111,14 +103,6 @@ public class Limelight {
         }
 
         limelights.get(limelightName).setPipeline(pipeline);
-    }
-
-    /**
-     * Starts the Limelight odometry thread
-     */
-    private void startThread() {
-        notifier = new Notifier(this::loop);
-        notifier.startPeriodic(0.02);
     }
 
     /**

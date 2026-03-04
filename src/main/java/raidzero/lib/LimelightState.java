@@ -8,7 +8,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Supplier;
 import raidzero.robot.subsystems.drive.TunerConstants;
 
@@ -26,7 +25,6 @@ public class LimelightState {
 
     private final Supplier<Double> robotYawSupplier;
     private final Supplier<Double> robotYawRateSupplier;
-    private final Supplier<Pose2d> robotPoseSupplier;
     private final VisionMeasurementConsumer addVisionMeasurementConsumer;
     private Supplier<Double> hoodAngleSupplier;
 
@@ -37,12 +35,11 @@ public class LimelightState {
      *
      * @param limelightName The name of the Limelight
      * @param pipeline The initial pipeline to set for the Limelight
-     * @param robotPoseSupplier A {@link Supplier} that provides the robot's pose for
      * @param robotYawSupplier A {@link Supplier} that provides the robot's yaw
      * @param robotYawRateSupplier A {@link Supplier} that provides the robot's yaw rate
      * @param addVisionMeasurementConsumer A {@link VisionMeasurementConsumer} callback that adds vision measurements into the swerve pose estimator
      */
-    public LimelightState(String limelightName, PIPELINE pipeline, Supplier<Pose2d> robotPoseSupplier, Supplier<Double> robotYawSupplier, Supplier<Double> robotYawRateSupplier, VisionMeasurementConsumer addVisionMeasurementConsumer) {
+    public LimelightState(String limelightName, PIPELINE pipeline, Supplier<Double> robotYawSupplier, Supplier<Double> robotYawRateSupplier, VisionMeasurementConsumer addVisionMeasurementConsumer) {
         this.limelightName = limelightName;
         setPipeline(pipeline);
         this.ntPublisher = NetworkTableInstance.getDefault()
@@ -50,7 +47,6 @@ public class LimelightState {
             .publish();
 
         this.ignore = false;
-        this.robotPoseSupplier = robotPoseSupplier;
         this.robotYawSupplier = robotYawSupplier;
         this.robotYawRateSupplier = robotYawRateSupplier;
         this.addVisionMeasurementConsumer = addVisionMeasurementConsumer;
