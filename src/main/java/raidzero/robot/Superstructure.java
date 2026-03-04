@@ -59,7 +59,8 @@ public class Superstructure {
     private static CommandXboxController operator = new CommandXboxController(1);
 
     // public static boolean autoSpindex = false;
-    // public static final Trigger autoSpindexTrigger = new Trigger(() -> autoSpindex);
+    // public static final Trigger autoSpindexTrigger = new Trigger(() ->
+    // autoSpindex);
 
     private static final Auto autos = new Auto(swerve, intake, extender, spindexer, feeder);
 
@@ -121,21 +122,37 @@ public class Superstructure {
         return inX && inY;
     });
 
-    private static Trigger canShootAuton = new Trigger(() -> {
+    // private static Trigger canShootAuton = new Trigger(() -> {
+    // Pose2d pose = swerve.getState().Pose;
+
+    // boolean inX = pose.getX() < 3.7 || pose.getX() > 11.9;
+
+    // return inX && DriverStation.isAutonomousEnabled()
+    // && ((shooter.atTargetVelocity().getAsBoolean() &&
+    // spindexer.getVelocity().abs(RotationsPerSecond) > 1.0)
+    // || (!shooter.atTargetVelocity().getAsBoolean()
+    // && spindexer.getVelocity().abs(RotationsPerSecond) < 1.0));
+    // });
+
+    // private static Trigger shouldSpindexAuton = new Trigger(() -> {
+    // Pose2d pose = swerve.getState().Pose;
+
+    // boolean inX = pose.getX() < 3.5 || pose.getX() > 12.1;
+
+    // return DriverStation.isAutonomousEnabled() && inX &&
+    // shooter.atTargetVelocity().getAsBoolean();
+    // });
+
+    private static Trigger inAutonShootingZone = new Trigger(() -> {
         Pose2d pose = swerve.getState().Pose;
-
+        // Simple zone check only
         boolean inX = pose.getX() < 3.7 || pose.getX() > 11.9;
-
         return inX && DriverStation.isAutonomousEnabled();
     });
 
-    private static Trigger shouldSpindexAuton = new Trigger(() -> {
-        Pose2d pose = swerve.getState().Pose;
+    private static Trigger spindexerIsMoving = new Trigger(() -> spindexer.getVelocity().abs(RotationsPerSecond) > 1.0);
 
-        boolean inX = pose.getX() < 3.5 || pose.getX() > 12.1;
-
-        return DriverStation.isAutonomousEnabled() && inX && shooter.atTargetVelocity().getAsBoolean();
-    });
+    private static Trigger canIndexAuton = inAutonShootingZone.and(shooter.atTargetVelocity());
 
     /**
      * RUns the initialization routines for subsystems
@@ -220,13 +237,23 @@ public class Superstructure {
         // feeder.go().alongWith(spindexer.go())
         // );
 
-        canShootAuton.whileTrue(shooter.shoot());
+        // canShootAuton.whileTrue(shooter.shoot());
 
-        shouldSpindexAuton.and(feeder.ballDetected().negate()).whileTrue(
+        // shouldSpindexAuton.and(feeder.ballDetected().negate()).whileTrue(
+        // feeder.go().alongWith(spindexer.antiJamBig()));
+
+        // shouldSpindexAuton.and(feeder.ballDetected()).whileTrue(
+        // feeder.go().alongWith(spindexer.go()));
+
+        inAutonShootingZone.whileTrue(
+            shooter.shoot().until(() -> !inAutonShootingZone.getAsBoolean() && !spindexerIsMoving.getAsBoolean())
+        );
+
+        canIndexAuton.and(feeder.ballDetected().negate()).whileTrue(
             feeder.go().alongWith(spindexer.antiJamBig())
         );
 
-        shouldSpindexAuton.and(feeder.ballDetected()).whileTrue(
+        canIndexAuton.and(feeder.ballDetected()).whileTrue(
             feeder.go().alongWith(spindexer.go())
         );
 
