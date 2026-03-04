@@ -60,7 +60,7 @@ public class Superstructure {
     public static boolean autoSpindex = false;
     public static final Trigger autoSpindexTrigger = new Trigger(() -> autoSpindex);
 
-    private static final Auto autos = new Auto(swerve, intake, extender, spindexer, feeder, shooter);
+    private static final Auto autos = new Auto(swerve, intake, extender, spindexer, feeder);
 
     private static SendableChooser<Command> autoChooser;
 
