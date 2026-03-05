@@ -201,7 +201,7 @@ public class Auto {
                 Commands.deadline(
                     follow("LeftMidCollect"),
                     Commands.sequence(
-                        Commands.waitSeconds(0.5),
+                        extender.extend().withTimeout(0.7),
                         intake.go()
                     )
                 ),
@@ -223,7 +223,6 @@ public class Auto {
                 Commands.deadline(
                     follow("LeftShootToMid"),
                     Commands.sequence(
-                        Commands.waitSeconds(0.5),
                         intake.go()
                     )
                 )
