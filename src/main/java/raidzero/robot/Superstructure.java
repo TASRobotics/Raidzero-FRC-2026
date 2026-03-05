@@ -130,7 +130,11 @@ public class Superstructure {
     });
 
     private static Trigger shouldSpindexAuton = new Trigger(() -> {
-        return shooter.atTargetVelocity().getAsBoolean() && DriverStation.isAutonomousEnabled();
+        Pose2d pose = swerve.getState().Pose;
+
+        boolean inX = pose.getX() < 3.5 || pose.getX() > 12.1;
+
+        return DriverStation.isAutonomousEnabled() && inX && shooter.atTargetVelocity().getAsBoolean();
     });
 
     /**
