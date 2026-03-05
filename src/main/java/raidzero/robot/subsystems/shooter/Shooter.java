@@ -35,7 +35,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
             AngularVelocity target = RotationsPerSecond
                 .of(Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
 
-            return io.getVelocity().minus(target).abs(RotationsPerSecond) < 8.0;
+            return io.getVelocity().minus(target).abs(RotationsPerSecond) < 10.0;
         });
     }
 

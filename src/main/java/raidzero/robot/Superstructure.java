@@ -18,8 +18,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.Set;
 import raidzero.robot.commands.Aim;
 import raidzero.robot.commands.StaticAim;
 import raidzero.robot.subsystems.drive.Limelight;
@@ -122,37 +124,13 @@ public class Superstructure {
         return inX && inY;
     });
 
-    // private static Trigger canShootAuton = new Trigger(() -> {
-    // Pose2d pose = swerve.getState().Pose;
-
-    // boolean inX = pose.getX() < 3.7 || pose.getX() > 11.9;
-
-    // return inX && DriverStation.isAutonomousEnabled()
-    // && ((shooter.atTargetVelocity().getAsBoolean() &&
-    // spindexer.getVelocity().abs(RotationsPerSecond) > 1.0)
-    // || (!shooter.atTargetVelocity().getAsBoolean()
-    // && spindexer.getVelocity().abs(RotationsPerSecond) < 1.0));
-    // });
-
-    // private static Trigger shouldSpindexAuton = new Trigger(() -> {
-    // Pose2d pose = swerve.getState().Pose;
-
-    // boolean inX = pose.getX() < 3.5 || pose.getX() > 12.1;
-
-    // return DriverStation.isAutonomousEnabled() && inX &&
-    // shooter.atTargetVelocity().getAsBoolean();
-    // });
-
     public static Trigger inAutonShootingZone = new Trigger(() -> {
         Pose2d pose = swerve.getState().Pose;
-        // Simple zone check only
-        boolean inX = pose.getX() < 3.7 || pose.getX() > 11.9;
-        return inX && DriverStation.isAutonomousEnabled();
+        boolean inAllianceZone = pose.getX() < 3.7 || pose.getX() > 11.9;
+        return inAllianceZone && DriverStation.isAutonomousEnabled();
     });
 
     public static Trigger spindexerIsMoving = new Trigger(() -> spindexer.getVelocity().abs(RotationsPerSecond) > 1.0);
-
-    public static Trigger canIndexAuton = inAutonShootingZone.and(shooter.atTargetVelocity());
 
     /**
      * RUns the initialization routines for subsystems
@@ -194,11 +172,15 @@ public class Superstructure {
     public static void applyButtonBindings() {
         // todo: check for speed before spindexing
         operator.leftTrigger().and(feeder.ballDetected().negate()).whileTrue(
-            feeder.go().alongWith(spindexer.antiJamBig())
+            Commands.waitUntil(shooter.atTargetVelocity()).andThen(
+                feeder.go().alongWith(spindexer.antiJamBig())
+            )
         );
 
         operator.leftTrigger().and(feeder.ballDetected()).whileTrue(
-            feeder.go().alongWith(spindexer.go())
+            Commands.waitUntil(shooter.atTargetVelocity()).andThen(
+                feeder.go().alongWith(spindexer.go())
+            )
         );
 
         // driver.rightTrigger().whileTrue(shooter.manualShoot());
@@ -249,12 +231,16 @@ public class Superstructure {
             shooter.shoot().until(() -> !inAutonShootingZone.getAsBoolean() && !spindexerIsMoving.getAsBoolean())
         );
 
-        canIndexAuton.and(feeder.ballDetected().negate()).whileTrue(
-            feeder.go().alongWith(spindexer.antiJamBig())
+        inAutonShootingZone.and(feeder.ballDetected()).whileTrue(
+            Commands.waitUntil(shooter.atTargetVelocity()).andThen(
+                feeder.go().alongWith(spindexer.go())
+            )
         );
 
-        canIndexAuton.and(feeder.ballDetected()).whileTrue(
-            feeder.go().alongWith(spindexer.go())
+        inAutonShootingZone.and(feeder.ballDetected().negate()).whileTrue(
+            Commands.waitUntil(shooter.atTargetVelocity()).andThen(
+                feeder.go().alongWith(spindexer.antiJamBig())
+            )
         );
 
         // hoardingArea1.whileTrue(new
@@ -265,15 +251,15 @@ public class Superstructure {
         // StaticAim(Rotations.of(0.5)).alongWith(hood.aim(Degrees.of(40))));
         // hoardingArea2.onFalse(shooter.stop());
 
-        feeder.ballDetected().negate().whileTrue(
-            feeder.go().alongWith(spindexer.antiJamBig())
-                .onlyIf(() -> DriverStation.isTeleopEnabled())
-        );
+        // feeder.ballDetected().negate().whileTrue(
+        // feeder.go().alongWith(spindexer.antiJamBig())
+        // // .onlyIf(() -> DriverStation.isTeleopEnabled())
+        // ).and(() -> DriverStation.isTeleopEnabled());
 
-        feeder.ballDetected().whileTrue(
-            feeder.go().alongWith(spindexer.go())
-                .onlyIf(() -> DriverStation.isTeleopEnabled())
-        );
+        // feeder.ballDetected().whileTrue(
+        // feeder.go().alongWith(spindexer.go())
+        // // .onlyIf(() -> DriverStation.isTeleopEnabled())
+        // ).and(() -> DriverStation.isTeleopEnabled());
     }
 
     /**
