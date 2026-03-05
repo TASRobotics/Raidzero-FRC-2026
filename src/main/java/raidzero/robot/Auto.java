@@ -195,7 +195,10 @@ public class Auto {
 
                 Commands.deadline(
                     Commands.waitSeconds(5),
-                    extender.autoAgitate().repeatedly()
+                    Commands.sequence(
+                        Commands.waitSeconds(1.5),
+                        extender.autoAgitate().repeatedly()
+                    )
                 ),
 
                 Commands.deadline(
@@ -217,7 +220,10 @@ public class Auto {
 
                 Commands.deadline(
                     Commands.waitSeconds(5),
-                    extender.autoAgitate().repeatedly()
+                    Commands.sequence(
+                        Commands.waitSeconds(1.5),
+                        extender.autoAgitate().repeatedly()
+                    )
                 ),
 
                 Commands.deadline(
@@ -259,7 +265,10 @@ public class Auto {
 
                 Commands.deadline(
                     Commands.waitSeconds(5),
-                    extender.autoAgitate().repeatedly()
+                    Commands.sequence(
+                        Commands.waitSeconds(1.5),
+                        extender.autoAgitate().repeatedly()
+                    )
                 ),
 
                 Commands.deadline(
@@ -299,7 +308,10 @@ public class Auto {
 
                 Commands.deadline(
                     Commands.waitSeconds(5),
-                    extender.autoAgitate().repeatedly()
+                    Commands.sequence(
+                        Commands.waitSeconds(1.5),
+                        extender.autoAgitate().repeatedly()
+                    )
                 ),
 
                 Commands.deadline(
@@ -321,7 +333,10 @@ public class Auto {
 
                 Commands.deadline(
                     Commands.waitSeconds(5),
-                    extender.autoAgitate().repeatedly()
+                    Commands.sequence(
+                        Commands.waitSeconds(1.5),
+                        extender.autoAgitate().repeatedly()
+                    )
                 ),
 
                 Commands.deadline(
