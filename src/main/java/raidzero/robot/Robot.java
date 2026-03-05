@@ -6,6 +6,7 @@ package raidzero.robot;
 
 import com.ctre.phoenix6.HootAutoReplay;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import raidzero.robot.subsystems.drive.Limelight;
@@ -31,6 +32,10 @@ public class Robot extends TimedRobot {
         m_timeAndJoystickReplay.update();
         CommandScheduler.getInstance().run();
         limelight.loop();
+
+        SmartDashboard.putBoolean("inautonshooting", Superstructure.inAutonShootingZone.getAsBoolean());
+        SmartDashboard.putBoolean("spindexermoving", Superstructure.spindexerIsMoving.getAsBoolean());
+        SmartDashboard.putBoolean("canindexauton", Superstructure.canIndexAuton.getAsBoolean());
     }
 
     @Override

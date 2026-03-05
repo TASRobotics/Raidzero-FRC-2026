@@ -143,16 +143,16 @@ public class Superstructure {
     // shooter.atTargetVelocity().getAsBoolean();
     // });
 
-    private static Trigger inAutonShootingZone = new Trigger(() -> {
+    public static Trigger inAutonShootingZone = new Trigger(() -> {
         Pose2d pose = swerve.getState().Pose;
         // Simple zone check only
         boolean inX = pose.getX() < 3.7 || pose.getX() > 11.9;
         return inX && DriverStation.isAutonomousEnabled();
     });
 
-    private static Trigger spindexerIsMoving = new Trigger(() -> spindexer.getVelocity().abs(RotationsPerSecond) > 1.0);
+    public static Trigger spindexerIsMoving = new Trigger(() -> spindexer.getVelocity().abs(RotationsPerSecond) > 1.0);
 
-    private static Trigger canIndexAuton = inAutonShootingZone.and(shooter.atTargetVelocity());
+    public static Trigger canIndexAuton = inAutonShootingZone.and(shooter.atTargetVelocity());
 
     /**
      * RUns the initialization routines for subsystems
@@ -267,10 +267,12 @@ public class Superstructure {
 
         feeder.ballDetected().negate().whileTrue(
             feeder.go().alongWith(spindexer.antiJamBig())
+                .onlyIf(() -> DriverStation.isTeleopEnabled())
         );
 
         feeder.ballDetected().whileTrue(
             feeder.go().alongWith(spindexer.go())
+                .onlyIf(() -> DriverStation.isTeleopEnabled())
         );
     }
 
