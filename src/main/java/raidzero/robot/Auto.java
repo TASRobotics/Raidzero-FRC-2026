@@ -202,8 +202,6 @@ public class Auto {
                     follow("RightMidToOutpost"),
                     Commands.sequence(
                         Commands.waitSeconds(1.75),
-                        Commands.runOnce(() -> Superstructure.autoSpindex = true),
-                        // TODO: Shoot earlier
                         intake.stop()
                     )
                 ),
@@ -214,9 +212,7 @@ public class Auto {
                     follow("OutpostToMid"),
                     Commands.sequence(
                         Commands.waitSeconds(2),
-                        Commands.runOnce(() -> Superstructure.autoSpindex = false),
                         intake.go()
-                        // TODO: Extender
                     )
                 )
             )

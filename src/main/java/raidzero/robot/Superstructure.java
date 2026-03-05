@@ -43,6 +43,7 @@ public class Superstructure {
     private static Spindexer spindexer = Spindexer.system();
     private static Extender extender = Extender.system();
     private static Intake intake = Intake.system();
+    private static Limelight limelight = Limelight.system();
     private static Swerve swerve = Swerve.system();
 
     private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.5;
@@ -57,8 +58,8 @@ public class Superstructure {
     private static CommandXboxController driver = new CommandXboxController(0);
     private static CommandXboxController operator = new CommandXboxController(1);
 
-    public static boolean autoSpindex = false;
-    public static final Trigger autoSpindexTrigger = new Trigger(() -> autoSpindex);
+    // public static boolean autoSpindex = false;
+    // public static final Trigger autoSpindexTrigger = new Trigger(() -> autoSpindex);
 
     private static final Auto autos = new Auto(swerve, intake, extender, spindexer, feeder);
 
@@ -96,7 +97,7 @@ public class Superstructure {
     private static Trigger swerveApprTrench = new Trigger(() -> {
         Pose2d pose = swerve.getState().Pose;
 
-        boolean posX = ((pose.getX() > 3.2 && pose.getX() < 4.6) || (pose.getX() > 10.4 && pose.getX() < 11.9));
+        boolean posX = ((pose.getX() > 3.5 && pose.getX() < 4.6) || (pose.getX() > 10.4 && pose.getX() < 11.9));
         boolean negX = ((pose.getX() > 4.6 && pose.getX() < 6.1) || (pose.getX() > 11.9 && pose.getX() < 13.4));
 
         return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
@@ -118,6 +119,18 @@ public class Superstructure {
         boolean inY = pose.getY() > 4.6 && pose.getY() < 7.72;
 
         return inX && inY;
+    });
+
+    private static Trigger canShootAuton = new Trigger(() -> {
+        Pose2d pose = swerve.getState().Pose;
+
+        boolean inX = pose.getX() < 3.7 || pose.getX() > 11.9;
+
+        return inX && DriverStation.isAutonomousEnabled();
+    });
+
+    private static Trigger shouldSpindexAuton = new Trigger(() -> {
+        return shooter.atTargetVelocity().getAsBoolean() && DriverStation.isAutonomousEnabled();
     });
 
     /**
@@ -146,7 +159,8 @@ public class Superstructure {
 
         hood.setDefaultCommand(hood.aim().onlyIf(swerveApprTrench.negate().and(driver.rightBumper().negate())));
         turret.setDefaultCommand(new Aim());
-        shooter.setDefaultCommand(shooter.shoot());
+
+        shooter.setDefaultCommand(shooter.stop());
         feeder.setDefaultCommand(feeder.stop());
         spindexer.setDefaultCommand(spindexer.stop());
         extender.setDefaultCommand(extender.stop());
@@ -168,7 +182,7 @@ public class Superstructure {
 
         // driver.rightTrigger().whileTrue(shooter.manualShoot());
 
-        driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
+        // driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
         driver.rightBumper().whileTrue(swerve.applyRequest(() -> brake));
 
         operator.rightBumper().whileTrue(hood.aim(Degrees.of(10)));
@@ -192,14 +206,23 @@ public class Superstructure {
     public static void bindTriggers() {
         swerveApprTrench.and(driver.rightBumper().negate())
             .whileTrue(hood.aim(Degrees.of(10)).alongWith(shooter.stop()));
-
         turret.isPirouetteing().whileTrue(shooter.stop());
 
-        autoSpindexTrigger.and(feeder.ballDetected().negate()).whileTrue(
+        // autoSpindexTrigger.and(feeder.ballDetected().negate()).whileTrue(
+        // feeder.go().alongWith(spindexer.antiJamBig())
+        // );
+
+        // autoSpindexTrigger.and(feeder.ballDetected()).whileTrue(
+        // feeder.go().alongWith(spindexer.go())
+        // );
+
+        canShootAuton.whileTrue(shooter.shoot());
+
+        shouldSpindexAuton.and(feeder.ballDetected().negate()).whileTrue(
             feeder.go().alongWith(spindexer.antiJamBig())
         );
 
-        autoSpindexTrigger.and(feeder.ballDetected()).whileTrue(
+        shouldSpindexAuton.and(feeder.ballDetected()).whileTrue(
             feeder.go().alongWith(spindexer.go())
         );
 
