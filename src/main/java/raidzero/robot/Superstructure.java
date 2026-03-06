@@ -228,6 +228,7 @@ public class Superstructure {
 
         operator.options().onTrue(extender.extend());
         operatorShare.onTrue(extender.retract());
+        operator.PS().onTrue(extender.retract()).onFalse(extender.extend());
 
         operator.cross()
             .toggleOnTrue(
