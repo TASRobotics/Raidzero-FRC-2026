@@ -150,32 +150,32 @@ public class Superstructure {
      */
     public static void applyButtonBindings() {
         // todo: check for speed before spindexing
-        operator.leftTrigger().and(feeder.ballDetected().negate()).whileTrue(
+        operator.b().and(feeder.ballDetected().negate()).whileTrue(
             feeder.go().alongWith(spindexer.antiJamBig())
         );
 
-        operator.leftTrigger().and(feeder.ballDetected()).whileTrue(
+        operator.b().and(feeder.ballDetected()).whileTrue(
             feeder.go().alongWith(spindexer.go())
         );
 
         // driver.rightTrigger().whileTrue(shooter.manualShoot());
 
         // driver.start().onTrue(swerve.runOnce(swerve::seedFieldCentric));
-        driver.rightBumper().whileTrue(swerve.applyRequest(() -> brake));
+        driver.povDown().whileTrue(swerve.applyRequest(() -> brake));
 
-        operator.rightBumper().whileTrue(hood.aim(Degrees.of(10)));
-        operator.leftStick().onTrue(extender.zeroEncoderPosition());
+        operator.povDown().whileTrue(hood.aim(Degrees.of(10)));
+        // operator.leftStick().onTrue(extender.zeroEncoderPosition());
 
-        operator.rightTrigger().toggleOnTrue(shooter.shoot());
+        operator.y().whileTrue(shooter.shoot());
 
-        operator.leftBumper().toggleOnTrue(intake.go());
+        operator.rightBumper().toggleOnTrue(intake.go());
 
-        operator.b().onTrue(extender.extend());
-        operator.x().onTrue(extender.retract());
+        operator.start().onTrue(extender.extend());
+        operator.back().onTrue(extender.retract());
 
-        driver.a().whileTrue(shooter.shoot(RotationsPerSecond.of(-40.0)).alongWith(feeder.reverse()));
+        // driver.a().whileTrue(shooter.shoot(RotationsPerSecond.of(-40.0)).alongWith(feeder.reverse()));
 
-        operator.y().toggleOnTrue(new StaticAim(Rotations.of(0.5)).alongWith(hood.aim(Degrees.of(40))));
+        operator.povDown().toggleOnTrue(new StaticAim(Rotations.of(0.5)).alongWith(hood.aim(Degrees.of(40))));
     }
 
     /**
