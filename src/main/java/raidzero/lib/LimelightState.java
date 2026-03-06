@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.function.Supplier;
 import raidzero.robot.subsystems.drive.TunerConstants;
@@ -27,6 +28,10 @@ public class LimelightState {
     private final Supplier<Double> robotYawRateSupplier;
     private final VisionMeasurementConsumer addVisionMeasurementConsumer;
     private Supplier<Double> hoodAngleSupplier;
+
+    private double lastValidPose = 0.0;
+
+    private static final double RECOVERY_FACTOR = 3.0;
 
     private boolean seededRobot = false;
 
@@ -161,6 +166,8 @@ public class LimelightState {
             ignore = checkIgnore(robotPose);
 
             if (!ignore && !ignoreAll) {
+                lastValidPose = Timer.getTimestamp();
+
                 ntPublisher.set(currEstimate.pose);
 
                 addVisionMeasurementConsumer.add(
@@ -213,7 +220,11 @@ public class LimelightState {
                         .getTranslation()
                 ) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
             (seededRobot && currEstimate != null && (currEstimate.pose.getTranslation()
-                .getDistance(robotPose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.2)) ||
+                .getDistance(robotPose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.2) &&
+                (lastValidPose <= 0.0 ||
+                    currEstimate.pose.getTranslation()
+                        .getDistance(robotPose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() *
+                            (Timer.getTimestamp() - lastValidPose) * RECOVERY_FACTOR)) ||
             (currEstimate.rawFiducials.length > 0 && currEstimate.rawFiducials[0].ambiguity > 0.5 &&
                 currEstimate.rawFiducials[0].distToCamera > 4.5) ||
             currEstimate.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
