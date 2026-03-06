@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.Meters;
 
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.lib.R0Subsystem;
 import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;

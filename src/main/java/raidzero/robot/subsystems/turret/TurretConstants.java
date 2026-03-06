@@ -7,7 +7,6 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -21,8 +20,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.Time;
 import raidzero.lib.wrappers.motors.LazyCTRE.MotorTelemetry;
 
 public final class TurretConstants {
@@ -171,9 +168,9 @@ public final class TurretConstants {
 
             RPS_TABLE.put(1.909, 29.0);
             RPS_TABLE.put(2.94, 32.0);
-            RPS_TABLE.put(3.228, 32.0);
-            RPS_TABLE.put(3.558, 32.0);
-            RPS_TABLE.put(4.255, 33.5);
+            RPS_TABLE.put(3.228, 32.5);
+            RPS_TABLE.put(3.558, 33.0);
+            RPS_TABLE.put(4.255, 34.5);
             RPS_TABLE.put(5.06, 35.0);
 
             TOF_TABLE.put(1.878, 1.156);

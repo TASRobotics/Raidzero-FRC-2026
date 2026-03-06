@@ -16,8 +16,13 @@ public class Intake extends R0Subsystem<IntakeIO> {
         return run(() -> io.go(IntakeConstants.Intake.INTAKE_SPEED));
     }
 
+    public Command reverse() {
+        return run(() -> io.go(IntakeConstants.Intake.INTAKE_SPEED.times(-1.0)));
+    }
+
     /**
      * Stops the intake
+     *
      * @return a {@link Command}
      */
     public Command stop() {
@@ -25,7 +30,8 @@ public class Intake extends R0Subsystem<IntakeIO> {
     }
 
     /**
-     * Runs the intake at the anti-jam speed for a short duration to attempt to clear jams
+     * Runs the intake at the anti-jam speed for a short duration to attempt to
+     * clear jams
      *
      * @return A {@link Command} that runs the intake at the anti-jam speed
      */

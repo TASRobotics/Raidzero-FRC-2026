@@ -24,6 +24,12 @@ public class Feeder extends R0Subsystem<FeederIO> {
         return run(() -> io.go(ShooterConstants.Feeder.FEEDER_SPEED.times(-1.0)));
     }
 
+    public Trigger atTargetVelocity() {
+        return new Trigger(() -> {
+            return io.getVelocity().minus(ShooterConstants.Feeder.FEEDER_SPEED).abs(RotationsPerSecond) < 10.0;
+        });
+    }
+
     /**
      * Stops the feeder motor
      *
