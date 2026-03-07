@@ -108,6 +108,10 @@ public class Superstructure {
         return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
     });
 
+    private static Trigger inAllianceZoneAuton = new Trigger(() -> {
+        return true;
+    });
+
     private static Trigger passingArea1 = new Trigger(() -> {
         Pose2d pose = swerve.getState().Pose;
 
@@ -128,7 +132,7 @@ public class Superstructure {
 
     public static Trigger inAutonShootingZone = new Trigger(() -> {
         Pose2d pose = swerve.getState().Pose;
-        boolean inAllianceZone = pose.getX() < 3.7 || pose.getX() > 11.9;
+        boolean inAllianceZone = pose.getX() < 3.5 || pose.getX() > 12.7;
         return inAllianceZone && DriverStation.isAutonomousEnabled();
     });
 
@@ -286,7 +290,7 @@ public class Superstructure {
         swerveApprTrench.and(driver.rightBumper().negate()).and(passingArea1.and(passingArea2).negate())
             .whileTrue(hood.aim(Degrees.of(10)));
 
-        passingArea1.and(swerveApprTrench.negate())
+        passingArea1.and(swerveApprTrench.negate()).and(() -> DriverStation.isTeleopEnabled())
             .whileTrue(
                 new StaticAim(
                     Rotations.of(
@@ -297,7 +301,7 @@ public class Superstructure {
             )
             .onFalse(shooter.stop());
 
-        passingArea2.and(swerveApprTrench.negate())
+        passingArea2.and(swerveApprTrench.negate()).and(() -> DriverStation.isTeleopEnabled())
             .whileTrue(
                 new StaticAim(
                     Rotations.of(
@@ -339,6 +343,8 @@ public class Superstructure {
                 feeder.go().alongWith(spindexer.antiJamBig())
             )
         );
+
+        inAutonShootingZone.negate().whileTrue(hood.aim(Degrees.of(10)));
     }
 
     /**
