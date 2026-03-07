@@ -13,7 +13,7 @@ import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StringTopic;
 
-public final class Elastic {
+public final class ElasticLib {
     private static final StringTopic notificationTopic = NetworkTableInstance.getDefault().getStringTopic("/Elastic/RobotNotifications");
     private static final StringPublisher notificationPublisher = notificationTopic
         .publish(PubSubOption.sendAll(true), PubSubOption.keepDuplicates(true));
