@@ -49,12 +49,14 @@ public interface TurretIO extends SubsystemIO {
 
     /**
      * Gets the reading from the first Jared modulo method sensor (22 teeth)
+     *
      * @return the sensor reading in rotations
      */
     double getJMM1Reading();
 
     /**
      * Gets the reading from the second Jared modulo method sensor (29 teeth)
+     *
      * @return the sensor reading in rotations
      */
     double getJMM2Reading();
@@ -145,11 +147,12 @@ public interface TurretIO extends SubsystemIO {
             return jmm2.getAbsolutePosition().getValueAsDouble() * Yaw.JARED_TEETH_2;
         }
 
-        @Override
         public void updateTelemetry() {
-            yaw.updateTelemetry(Yaw.TELEMETRY);
+            // @Override
+            // yaw.updateTelemetry(Yaw.TELEMETRY);
         }
     }
 
     public class Sim extends Real {}
+
 }

@@ -30,14 +30,14 @@ public final class TurretConstants {
 
         public static final double SENSOR_TO_MECHANISM_RATIO = 280.0 / 10.0; // old ratio: 250.0 / 10.0;
         public static final double TURRET_RING_TEETH = 280.0;
-        public static final double JARED_TEETH_1 = 29.0; // * jared modulo method 1
+        public static final double JARED_TEETH_1 = 29.0;
         public static final double JARED_TEETH_2 = 22.0;
 
         public static final int JMM_1_ID = 6; // 29 tooth
         public static final int JMM_2_ID = 5; // 22 tooth
 
-        public static final double JMM_OFFSET_1 = -0.352539; // 29 tooth
-        public static final double JMM_OFFSET_2 = -0.117676; // 22 tooth
+        public static final double JMM_OFFSET_1 = -0.499512; // 29 tooth
+        public static final double JMM_OFFSET_2 = -0.685791; // 22 tooth
 
         public static final SensorDirectionValue JMM_1_INVERTED = SensorDirectionValue.Clockwise_Positive;
         public static final SensorDirectionValue JMM_2_INVERTED = SensorDirectionValue.Clockwise_Positive;
@@ -49,11 +49,11 @@ public final class TurretConstants {
 
         public static final double POSITION_P = 50.0;
         public static final double POSITION_I = 0.0;
-        public static final double POSITION_D = 0.1;
+        public static final double POSITION_D = 0.0;
 
-        public static final double POSITION_S = 0.21;
+        public static final double POSITION_S = 0.25;
         public static final double POSITION_G = 0.0; // * NOTE: this should be 0
-        public static final double POSITION_V = 2.8;
+        public static final double POSITION_V = 2.6;
         public static final double POSITION_A = 0.0;
 
         public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Elevator_Static; // * Note: no gravity
@@ -63,15 +63,15 @@ public final class TurretConstants {
         public static final int POSITION_SLOT = 0;
 
         public static final double EXPO_V = 3.0;
-        public static final double EXPO_A = 2.0;
+        public static final double EXPO_A = 3.0;
 
-        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(3.2); // max is 3.2
-        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(6.0); // max is 10
+        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(0.5); // max is 3.2
+        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(0.5); // max is 10
 
-        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(1.40);
+        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(1.0);
         public static final boolean ENALBE_FORWARD_SOFT_LIMIT = true;
 
-        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.63);
+        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.5);
         public static final boolean ENABLE_REVERSE_SOFT_LIMIT = true;
 
         public static MotorTelemetry TELEMETRY = new MotorTelemetry();
@@ -94,7 +94,7 @@ public final class TurretConstants {
         public static final double I = 0.0;
         public static final double D = 0.0;
 
-        public static final double S = 0.3;
+        public static final double S = 0.23;
         public static final double G = 0.2;
         public static final double V = 3.2;
         public static final double A = 0.0;
@@ -159,19 +159,25 @@ public final class TurretConstants {
         public static final Translation2d GOAL_LOCATION_RED = new Translation2d(Inches.of(287), Inches.of(158.84));
 
         static {
-            PITCH_TABLE.put(1.909, 16.0);
-            PITCH_TABLE.put(2.94, 21.0);
-            PITCH_TABLE.put(3.228, 23.0);
-            PITCH_TABLE.put(3.558, 23.0);
-            PITCH_TABLE.put(4.255, 26.0);
-            PITCH_TABLE.put(5.06, 30.0);
+            PITCH_TABLE.put(1.58, 14.0);
+            PITCH_TABLE.put(2.05, 16.0);
+            PITCH_TABLE.put(2.47, 19.0);
+            PITCH_TABLE.put(2.94, 20.0);
+            PITCH_TABLE.put(3.48, 22.0);
+            PITCH_TABLE.put(3.97, 23.0);
+            PITCH_TABLE.put(4.48, 26.0);
+            PITCH_TABLE.put(5.08, 27.0);
+            PITCH_TABLE.put(5.5, 28.0);
 
-            RPS_TABLE.put(1.909, 29.0);
+            RPS_TABLE.put(1.58, 30.0);
+            RPS_TABLE.put(2.05, 31.0);
+            RPS_TABLE.put(2.47, 31.0);
             RPS_TABLE.put(2.94, 32.0);
-            RPS_TABLE.put(3.228, 32.5);
-            RPS_TABLE.put(3.558, 33.0);
-            RPS_TABLE.put(4.255, 34.5);
-            RPS_TABLE.put(5.06, 35.0);
+            RPS_TABLE.put(3.48, 35.0);
+            RPS_TABLE.put(3.97, 35.5);
+            RPS_TABLE.put(4.48, 35.5);
+            RPS_TABLE.put(5.08, 37.5);
+            RPS_TABLE.put(5.5, 38.5);
 
             TOF_TABLE.put(1.878, 1.156);
             TOF_TABLE.put(2.427, 1.254);

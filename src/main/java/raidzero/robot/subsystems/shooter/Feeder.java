@@ -20,13 +20,25 @@ public class Feeder extends R0Subsystem<FeederIO> {
         return run(() -> io.go(ShooterConstants.Feeder.FEEDER_SPEED));
     }
 
+    /**
+     * Runs the feeder in reverse at the configured speed
+     *
+     * @return A {@link Command}
+     */
     public Command reverse() {
         return run(() -> io.go(ShooterConstants.Feeder.FEEDER_SPEED.times(-1.0)));
     }
 
+    /**
+     * Returns a {@link Trigger} that activates when the feeder is at its target
+     * velocity from the configured speed
+     *
+     * @return a {@link Trigger}
+     */
     public Trigger atTargetVelocity() {
         return new Trigger(() -> {
-            return io.getVelocity().minus(ShooterConstants.Feeder.FEEDER_SPEED).abs(RotationsPerSecond) < 10.0;
+            return io.getVelocity().minus(ShooterConstants.Feeder.FEEDER_SPEED)
+                .abs(RotationsPerSecond) < ShooterConstants.Feeder.VELOCITY_TOLERANCE.in(RotationsPerSecond);
         });
     }
 
@@ -80,7 +92,8 @@ public class Feeder extends R0Subsystem<FeederIO> {
     @Override
     public void periodic() {
         super.periodic();
-        // SmartDashboard.putNumber("Indexer Velocity", io.getVelocity().in(RotationsPerSecond));
+        // SmartDashboard.putNumber("Indexer Velocity",
+        // io.getVelocity().in(RotationsPerSecond));
         SmartDashboard.putBoolean("Ball detected", io.ballDetected());
     }
 

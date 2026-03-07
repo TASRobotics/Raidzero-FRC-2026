@@ -158,7 +158,7 @@ public class Superstructure {
             )
         );
 
-        hood.setDefaultCommand(hood.aim().onlyIf(swerveApprTrench.negate().and(driver.rightBumper().negate())));
+        hood.setDefaultCommand(hood.aim());
         turret.setDefaultCommand(new Aim());
 
         shooter.setDefaultCommand(shooter.stop());
@@ -178,26 +178,27 @@ public class Superstructure {
                     .withRotationalRate(-driver.getRightX() * MaxAngularRate)
             )
         );
+
         driver.povDown().whileTrue(
             swerve.applyRequest(
                 () -> strafeControl.withVelocityX(-0.75).withVelocityY(0)
                     .withRotationalRate(-driver.getRightX() * MaxAngularRate)
             )
         );
+
         driver.povLeft().whileTrue(
             swerve.applyRequest(
                 () -> strafeControl.withVelocityX(0).withVelocityY(0.75)
                     .withRotationalRate(-driver.getRightX() * MaxAngularRate)
             )
         );
+
         driver.povRight().whileTrue(
             swerve.applyRequest(
                 () -> strafeControl.withVelocityX(0).withVelocityY(-0.75)
                     .withRotationalRate(-driver.getRightX() * MaxAngularRate)
             )
         );
-
-        driver.povDown().whileTrue(swerve.applyRequest(() -> brake));
 
         driver.rightBumper().whileTrue(swerve.applyRequest(() -> brake));
 
@@ -228,6 +229,7 @@ public class Superstructure {
 
         operator.options().onTrue(extender.extend());
         operatorShare.onTrue(extender.retract());
+        operator.button(14).onTrue(extender.retract()).onFalse(extender.extend());
 
         operator.cross()
             .toggleOnTrue(
@@ -238,6 +240,40 @@ public class Superstructure {
                 )
                     .alongWith(hood.aim(Degrees.of(40)))
             );
+
+        operator.square().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
+
+        // driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
+        // driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
+
+        // driver.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
+        // driver.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
+
+        // driver.leftTrigger().and(feeder.ballDetected().negate()).whileTrue(
+        // Commands.waitUntil(shooter.atManualTargetVelocity()).andThen(
+        // feeder.go().alongWith(
+        // Commands.waitUntil(feeder.atTargetVelocity()).andThen(spindexer.antiJamBig())
+        // )
+        // )
+        // );
+
+        // driver.leftTrigger().and(feeder.ballDetected()).whileTrue(
+        // Commands.waitUntil(shooter.atManualTargetVelocity()).andThen(
+        // feeder.go().alongWith(
+        // Commands.waitUntil(feeder.atTargetVelocity()).andThen(
+        // spindexer.go()
+        // )
+        // )
+        // )
+        // );
+
+        // driver.rightTrigger().whileTrue(shooter.manualShoot());
+
+        // driver.rightBumper().whileTrue(intake.go());
+        // driver.x().onTrue(extender.retract());
+        // driver.b().onTrue(extender.extend());
+
+        // driver.a().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
     }
 
     /**
@@ -245,6 +281,7 @@ public class Superstructure {
      */
     public static void bindTriggers() {
         turret.isPirouetteing().whileTrue(shooter.stop());
+        // .onFalse(Commands.runOnce(() -> turret.setStartupAngle()));
 
         swerveApprTrench.and(driver.rightBumper().negate()).and(passingArea1.and(passingArea2).negate())
             .whileTrue(hood.aim(Degrees.of(10)));

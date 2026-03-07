@@ -116,7 +116,8 @@ public class Turret extends R0Subsystem<TurretIO> {
      * Sets the startup angle of the turret
      */
     public void setStartupAngle() {
-        io.setStartupYaw(JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()));
+        Angle startupYaw = JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading());
+        io.setStartupYaw(startupYaw);
     }
 
     /**
@@ -155,7 +156,8 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     /**
      * Calculates the absolute turret angle using the Jared Modulo Magic Method
-     * @param readingOnFirst the reading from the first Jared modulo method sensor
+     *
+     * @param readingOnFirst  the reading from the first Jared modulo method sensor
      * @param readingOnSecond the reading from the second Jared modulo method sensor
      * @return the calculated absolute turret angle as an {@link Angle}
      */
@@ -184,14 +186,14 @@ public class Turret extends R0Subsystem<TurretIO> {
                 return Rotations.of(turret_rotations);
             }
         }
-        // SmartDashboard.putBoolean("JMM Success", false);
+
         DriverStation.reportWarning("Looks like the SRT failed in Turret.java", false);
         return Rotations.of(0.0);
     }
 
     @Override
     public void periodic() {
-        super.periodic();
+        SmartDashboard.putNumber("Yaw", io.getYaw().in(Rotations));
 
         ChassisSpeeds rawSpeeds = swerve.getState().Speeds;
         ChassisSpeeds filteredSpeeds = new ChassisSpeeds(
@@ -213,6 +215,10 @@ public class Turret extends R0Subsystem<TurretIO> {
         // io.getHubDistance().in(Meters));
 
         SmartDashboard.putNumber("Turret Angle", io.getYaw().in(Rotations));
+        SmartDashboard.putNumber(
+            "Jmm Value",
+            this.JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()).in(Rotations)
+        );
 
         // SmartDashboard.putBoolean("Hub LOS", io.hasHubLOS());
 
@@ -233,6 +239,7 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     /**
      * Constructs a Turret instance with the given IO implementation
+     *
      * @param io the IO implementation to use
      */
     private Turret(TurretIO io) {
@@ -255,7 +262,9 @@ public class Turret extends R0Subsystem<TurretIO> {
     }
 
     /**
-     * Gets the singleton instance of the Turret subsystem, creating it if it doesn't exist
+     * Gets the singleton instance of the Turret subsystem, creating it if it
+     * doesn't exist
+     *
      * @return the singleton instance of the Turret subsystem
      */
     public static Turret system() {

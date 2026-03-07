@@ -29,9 +29,9 @@ public final class ShooterConstants {
         public static final double I = 0.0;
         public static final double D = 0.0;
 
-        public static final double S = 0.32;
+        public static final double S = 0.25;
         public static final double G = 0.0;
-        public static final double V = 0.1;
+        public static final double V = 0.105;
         public static final double A = 0.0;
 
         public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Elevator_Static; // * Note: no gravity
@@ -45,6 +45,8 @@ public final class ShooterConstants {
 
         public static final int FOLLOW_ID = 11;
         public static final MotorAlignmentValue FOLLOWER_INVERTED = MotorAlignmentValue.Opposed;
+
+        public static final AngularVelocity VELOCIOTY_TOLERANCE = RotationsPerSecond.of(5.0);
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
     }
@@ -77,6 +79,8 @@ public final class ShooterConstants {
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(0.0);
 
         public static final AngularVelocity FEEDER_SPEED = RotationsPerSecond.of(40.0);
+
+        public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(5.0);
 
         public static MotorTelemetry TELEMETRY = new MotorTelemetry();
     }

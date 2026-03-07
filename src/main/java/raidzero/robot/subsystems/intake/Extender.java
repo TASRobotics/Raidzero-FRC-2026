@@ -28,21 +28,14 @@ public class Extender extends R0Subsystem<ExtenderIO> {
     }
 
     /**
-     * Agitates the intake by briefly moving to the agitate setpoint, then retracting
+     * Agitates the intake by briefly moving to the agitate setpoint, then
+     * retracting
      *
      * @return a {@link Command}
      */
     public Command agitate() {
         return run(() -> io.agitateL1())
             .withTimeout(0.2)
-            // .andThen(
-            // run(() -> io.agitateL2())
-            // .withTimeout(0.2)
-            // )
-            // .andThen(
-            // run(() -> io.agitateL3())
-            // .withTimeout(0.3)
-            // )
             .andThen(run(() -> io.retract()));
     }
 
@@ -69,6 +62,11 @@ public class Extender extends R0Subsystem<ExtenderIO> {
         return run(() -> io.stop());
     }
 
+    /**
+     * Returns a {@link Trigger} that is active when the extender is fully extended
+     *
+     * @return a {@link Trigger} that is active when the extender is fully extended
+     */
     public Trigger isExtended() {
         return new Trigger(() -> io.isExtended());
     }

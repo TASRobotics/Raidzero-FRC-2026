@@ -5,9 +5,11 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.R0Subsystem;
+import raidzero.robot.subsystems.shooter.ShooterConstants.Flywheel;
 import raidzero.robot.subsystems.turret.Turret;
 import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
 
@@ -29,12 +31,26 @@ public class Shooter extends R0Subsystem<ShooterIO> {
         });
     }
 
+    /**
+     * Returns a {@link Trigger} that activates when the shooter is at it's target
+     * velocity from the RPS interpolating table
+     *
+     * @return a {@link Trigger}
+     */
     public Trigger atTargetVelocity() {
         return new Trigger(() -> {
             AngularVelocity target = RotationsPerSecond
                 .of(Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
 
-            return io.getVelocity().minus(target).abs(RotationsPerSecond) < 10.0;
+            return io.getVelocity().minus(target).abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE
+                .in(RotationsPerSecond);
+        });
+    }
+
+    public Trigger atManualTargetVelocity() {
+        return new Trigger(() -> {
+            return io.getVelocity().minus(this.velocityTarget).abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE
+                .in(RotationsPerSecond);
         });
     }
 
@@ -119,10 +135,13 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     @Override
     public void periodic() {
         super.periodic();
-        // SmartDashboard.putNumber("Shooter speed",
-        // io.getVelocity().in(RotationsPerSecond));
-        // SmartDashboard.putNumber("Shooter target speed",
-        // velocityTarget.in(RotationsPerSecond));
+        SmartDashboard.putNumber(
+            "Shooter speed",
+            io.getVelocity().in(RotationsPerSecond)
+        );
+        SmartDashboard.putNumber(
+            "Shooter target speed",
+            velocityTarget.in(RotationsPerSecond)
+        );
     }
-
 }
