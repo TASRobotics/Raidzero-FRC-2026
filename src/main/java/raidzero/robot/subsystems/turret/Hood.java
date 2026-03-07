@@ -51,6 +51,8 @@ public class Hood extends R0Subsystem<HoodIO> {
         return run(() -> {
             Angle target = Degrees.of(Kinetics.PITCH_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
 
+            SmartDashboard.putNumber("Target pitch", target.in(Degrees));
+
             io.moveTo(target);
         });
     }
@@ -86,7 +88,6 @@ public class Hood extends R0Subsystem<HoodIO> {
     public void periodic() {
         super.periodic();
 
-        SmartDashboard.putNumber("Target pitch", angleTarget.in(Degrees));
         SmartDashboard.putNumber("Pitch", io.getPitch().in(Degrees));
     }
 

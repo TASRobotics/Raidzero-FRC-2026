@@ -103,7 +103,7 @@ public class Superstructure {
         Pose2d pose = swerve.getState().Pose;
 
         boolean posX = ((pose.getX() > 3.5 && pose.getX() < 4.6) || (pose.getX() > 10.4 && pose.getX() < 11.9));
-        boolean negX = ((pose.getX() > 4.6 && pose.getX() < 6.1) || (pose.getX() > 11.9 && pose.getX() < 13.4));
+        boolean negX = ((pose.getX() > 4.6 && pose.getX() < 6.1) || (pose.getX() > 11.9 && pose.getX() < 12.7));
 
         return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
     });
@@ -158,7 +158,7 @@ public class Superstructure {
             )
         );
 
-        hood.setDefaultCommand(hood.aim());
+        hood.setDefaultCommand(hood.aim().onlyIf(swerveApprTrench.negate().or(driver.rightBumper())));
         turret.setDefaultCommand(new Aim());
 
         shooter.setDefaultCommand(shooter.stop());
