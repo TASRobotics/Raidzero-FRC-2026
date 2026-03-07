@@ -147,6 +147,9 @@ public interface TurretIO extends SubsystemIO {
             return jmm2.getAbsolutePosition().getValueAsDouble() * Yaw.JARED_TEETH_2;
         }
 
+        /**
+         * Updates the SmartDashboard with telemetry values for the turret
+         */
         public void updateTelemetry() {
             // @Override
             // yaw.updateTelemetry(Yaw.TELEMETRY);

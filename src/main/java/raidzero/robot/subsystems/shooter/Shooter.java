@@ -47,6 +47,12 @@ public class Shooter extends R0Subsystem<ShooterIO> {
         });
     }
 
+    /**
+     * Returns a {@link Trigger} that activates when the shooter is at the velocity set by the {@link #velocityTarget} variable, which can be changed with the
+     * {@link #incrementVelocitySetpoint(AngularVelocity)} method
+     *
+     * @return a {@link Trigger}
+     */
     public Trigger atManualTargetVelocity() {
         return new Trigger(() -> {
             return io.getVelocity().minus(this.velocityTarget).abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE

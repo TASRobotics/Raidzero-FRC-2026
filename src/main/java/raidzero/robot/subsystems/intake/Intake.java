@@ -16,6 +16,11 @@ public class Intake extends R0Subsystem<IntakeIO> {
         return run(() -> io.go(IntakeConstants.Intake.INTAKE_SPEED));
     }
 
+    /**
+     * Reverses the intake motors at the configured speed
+     *
+     * @return A {@link Command} that reverses the intake
+     */
     public Command reverse() {
         return run(() -> io.go(IntakeConstants.Intake.INTAKE_SPEED.times(-1.0)));
     }

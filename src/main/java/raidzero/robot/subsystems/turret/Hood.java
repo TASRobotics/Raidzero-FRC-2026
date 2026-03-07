@@ -42,6 +42,11 @@ public class Hood extends R0Subsystem<HoodIO> {
         return run(() -> io.moveTo(angle));
     }
 
+    /**
+    * Aims to the angle from the RPS interpolating table based on the distance to the hub
+    *
+    * @return a {@link Command} that aims to the angle from the RPS interpolating table based on the distance to the hub
+    */
     public Command aim() {
         return run(() -> {
             Angle target = Degrees.of(Kinetics.PITCH_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));

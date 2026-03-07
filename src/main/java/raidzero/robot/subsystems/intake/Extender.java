@@ -39,6 +39,13 @@ public class Extender extends R0Subsystem<ExtenderIO> {
             .andThen(run(() -> io.retract()));
     }
 
+    /**
+     * Agitates the intake during auto by briefly moving to each agitate setpoint, then
+     * extending
+     *
+     * @return a {@link Command}
+     */
+
     public Command autoAgitate() {
         return run(() -> io.agitateL1())
             .withTimeout(0.5)
