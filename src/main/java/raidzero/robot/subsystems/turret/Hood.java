@@ -1,12 +1,14 @@
 package raidzero.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
 
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.lib.R0Subsystem;
+import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
 
 public class Hood extends R0Subsystem<HoodIO> {
     private static Hood system;
@@ -22,13 +24,35 @@ public class Hood extends R0Subsystem<HoodIO> {
     }
 
     /**
+     * Gets the current hood angle
+     *
+     * @return The current hood angle as an {@link Angle}
+     */
+    public Angle getAngle() {
+        return io.getPitch();
+    }
+
+    /**
      * Aims to the specified angle
      *
      * @param angle the {@link Angle}
-     * @return a {@link Command}
+     * @return A {@link Command} that aims to the specified angle
      */
     public Command aim(Angle angle) {
         return run(() -> io.moveTo(angle));
+    }
+
+    /**
+    * Aims to the angle from the RPS interpolating table based on the distance to the hub
+    *
+    * @return a {@link Command} that aims to the angle from the RPS interpolating table based on the distance to the hub
+    */
+    public Command aim() {
+        return run(() -> {
+            Angle target = Degrees.of(Kinetics.PITCH_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
+
+            io.moveTo(target);
+        });
     }
 
     /**
@@ -51,7 +75,8 @@ public class Hood extends R0Subsystem<HoodIO> {
      * Increments the target setpoint for manual aiming
      *
      * @param angle the {@link Angle} increment
-     * @return A {@link Command} that increments the target setpoint for manual aiming
+     * @return A {@link Command} that increments the target setpoint for manual
+     *         aiming
      */
     public Command incrementPitch(Angle angle) {
         return runOnce(() -> angleTarget = angleTarget.plus(angle));

@@ -1,5 +1,7 @@
 package raidzero.robot.subsystems.intake;
 
+import static edu.wpi.first.units.Units.Rotations;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.R0Subsystem;
@@ -26,22 +28,36 @@ public class Extender extends R0Subsystem<ExtenderIO> {
     }
 
     /**
-     * Agitates the intake by briefly moving to the agitate setpoint, then retracting
+     * Agitates the intake by briefly moving to the agitate setpoint, then
+     * retracting
      *
      * @return a {@link Command}
      */
     public Command agitate() {
         return run(() -> io.agitateL1())
             .withTimeout(0.2)
-            // .andThen(
-            // run(() -> io.agitateL2())
-            // .withTimeout(0.2)
-            // )
-            // .andThen(
-            // run(() -> io.agitateL3())
-            // .withTimeout(0.3)
-            // )
             .andThen(run(() -> io.retract()));
+    }
+
+    /**
+     * Agitates the intake during auto by briefly moving to each agitate setpoint, then
+     * extending
+     *
+     * @return a {@link Command}
+     */
+
+    public Command autoAgitate() {
+        return run(() -> io.agitateL1())
+            .withTimeout(0.5)
+            .andThen(
+                run(() -> io.agitateL2())
+                    .withTimeout(0.5)
+            )
+            .andThen(
+                run(() -> io.agitateL3())
+                    .withTimeout(0.5)
+            )
+            .andThen(run(() -> io.extend()).withTimeout(0.3));
     }
 
     /**
@@ -53,6 +69,11 @@ public class Extender extends R0Subsystem<ExtenderIO> {
         return run(() -> io.stop());
     }
 
+    /**
+     * Returns a {@link Trigger} that is active when the extender is fully extended
+     *
+     * @return a {@link Trigger} that is active when the extender is fully extended
+     */
     public Trigger isExtended() {
         return new Trigger(() -> io.isExtended());
     }
@@ -80,6 +101,15 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      */
     public Command decreaseAgitate() {
         return runOnce(() -> io.decreaseAgitate());
+    }
+
+    /**
+     * Zeros the encoder position for the extender
+     *
+     * @return A {@link Command} that zeros the encoder position
+     */
+    public Command zeroEncoderPosition() {
+        return runOnce(() -> io.overrideEncoderPosition(Rotations.of(0.0)));
     }
 
     /**

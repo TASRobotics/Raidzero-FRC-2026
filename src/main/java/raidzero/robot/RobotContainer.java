@@ -5,7 +5,6 @@
 package raidzero.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 
 public class RobotContainer {
     /**
@@ -16,6 +15,7 @@ public class RobotContainer {
         Superstructure.applyDefaultCommands();
         Superstructure.applyButtonBindings();
         Superstructure.bindTriggers();
+        Superstructure.configureAutons();
     }
 
     /**
@@ -24,6 +24,6 @@ public class RobotContainer {
      * @return A {@link Command} representing the selected autonomous command
      */
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        return Superstructure.getAutonomousCommand();
     }
 }

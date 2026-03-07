@@ -1,15 +1,17 @@
 package raidzero.robot.subsystems.drive;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import raidzero.lib.LimelightState;
+import raidzero.robot.subsystems.turret.Hood;
 
-public class Limelight extends SubsystemBase {
+public class Limelight {
     private boolean ignoreAllLimes = false;
 
     private LimelightState frontState;
@@ -24,11 +26,11 @@ public class Limelight extends SubsystemBase {
     private ArrayList<Double> headingReadings;
     private boolean seededPigeon;
 
-    private Notifier notifier;
     private Timer seedInterval;
     private Timer seedTimer;
 
     private Swerve swerve = Swerve.system();
+    private Hood hood = Hood.system();
     private static Limelight instance = null;
 
     /**
@@ -40,7 +42,7 @@ public class Limelight extends SubsystemBase {
 
         frontState = new LimelightState(
             "limelight-front",
-            LimelightState.PIPELINE.OBJECT,
+            LimelightState.PIPELINE.TAG,
             () -> swerve.getPigeon2().getRotation2d().getDegrees(),
             () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             swerve::addVisionMeasurement
@@ -67,6 +69,11 @@ public class Limelight extends SubsystemBase {
             swerve::addVisionMeasurement
         );
 
+        frontState.setHoodSupplier(() -> hood.getAngle().in(Degrees));
+        rightState.setHoodSupplier(() -> hood.getAngle().in(Degrees));
+        rearState.setHoodSupplier(() -> hood.getAngle().in(Degrees));
+        leftState.setHoodSupplier(() -> hood.getAngle().in(Degrees));
+
         limelights = Map.of(
             "limelight-front", frontState,
             "limelight-right", rightState,
@@ -81,7 +88,7 @@ public class Limelight extends SubsystemBase {
         seedTimer = new Timer();
         seedTimer.start();
 
-        this.startThread();
+        // this.startThread();
     }
 
     /**
@@ -96,14 +103,6 @@ public class Limelight extends SubsystemBase {
         }
 
         limelights.get(limelightName).setPipeline(pipeline);
-    }
-
-    /**
-     * Starts the Limelight odometry thread
-     */
-    private void startThread() {
-        notifier = new Notifier(this::loop);
-        notifier.startPeriodic(0.02);
     }
 
     /**
@@ -123,7 +122,7 @@ public class Limelight extends SubsystemBase {
     /**
      * The main loop of the Limelight odometry thread
      */
-    private void loop() {
+    public void loop() {
         if (Math.abs(swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720) {
             ignoreAllLimes = true;
         } else {
@@ -131,7 +130,7 @@ public class Limelight extends SubsystemBase {
         }
 
         for (LimelightState state : limes) {
-            state.update(ignoreAllLimes, seededPigeon);
+            state.update(ignoreAllLimes, seededPigeon, swerve.getState().Pose);
         }
 
         if (!seededPigeon && seedTimer.get() < 30 && seedInterval.hasElapsed(1)) {
@@ -154,7 +153,12 @@ public class Limelight extends SubsystemBase {
             seedInterval.stop();
             seedInterval.reset();
             seedTimer.stop();
+            for (LimelightState state : limes) {
+                state.setSeededPose(true);
+            }
         }
+
+        SmartDashboard.putBoolean("SeededRobot", seededPigeon);
     }
 
     /**

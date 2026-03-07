@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.Amps;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyRange;
 import raidzero.lib.wrappers.motors.LazyRangeBuilder;
