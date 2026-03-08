@@ -49,7 +49,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
 
     /**
      * Returns a {@link Trigger} that activates when the shooter is at its target velocity
-     * 
+     *
      * @see {@link #incrementVelocitySetpoint(AngularVelocity)}
      *
      * @return A {@link Trigger} that activates when the shooter is at its target velocity
@@ -63,7 +63,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
 
     /**
      * Runs the shooter at the velocity at its target velocity
-     * 
+     *
      * @see {@link #incrementVelocitySetpoint(AngularVelocity)}
      *
      * @return A {@link Command} that runs the shooter at the velocity at its target velocity

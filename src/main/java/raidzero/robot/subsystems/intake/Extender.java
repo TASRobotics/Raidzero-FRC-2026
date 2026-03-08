@@ -40,7 +40,7 @@ public class Extender extends R0Subsystem<ExtenderIO> {
 
     /**
      * Agitates the intake during auto by by cycling through all 3 agitation levels
-     * 
+     *
      * @apiNote This should only be used during auto
      *
      * @return A {@link Command} that agitates the intake during auto
