@@ -62,11 +62,8 @@ public class Superstructure {
     private static CommandPS5Controller operator = new CommandPS5Controller(1);
     private static final Trigger operatorShare = operator.button(9);
 
-    // public static boolean autoSpindex = false;
-    // public static final Trigger autoSpindexTrigger = new Trigger(() ->
-    // autoSpindex);
 
-    private static final Auto autos = new Auto(swerve, intake, extender, spindexer, feeder);
+    private static final Auto autos = new Auto(swerve, intake, extender);
 
     private static SendableChooser<Command> autoChooser;
 
@@ -106,10 +103,6 @@ public class Superstructure {
         boolean negX = ((pose.getX() > 4.6 && pose.getX() < 6.1) || (pose.getX() > 11.9 && pose.getX() < 12.7));
 
         return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
-    });
-
-    private static Trigger inAllianceZoneAuton = new Trigger(() -> {
-        return true;
     });
 
     private static Trigger passingArea1 = new Trigger(() -> {

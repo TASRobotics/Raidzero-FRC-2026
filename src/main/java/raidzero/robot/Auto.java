@@ -20,15 +20,11 @@ import raidzero.lib.Util;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.intake.Extender;
 import raidzero.robot.subsystems.intake.Intake;
-import raidzero.robot.subsystems.intake.Spindexer;
-import raidzero.robot.subsystems.shooter.Feeder;
 
 public class Auto {
     private final Swerve swerve;
     private final Intake intake;
     private final Extender extender;
-    private final Spindexer spindexer;
-    private final Feeder feeder;
     private final Map<String, PathPlannerPath> pathCache = new HashMap<>();
 
     private PathConstraints currentConstraints = SLOW_CONSTRAINTS;
@@ -50,12 +46,10 @@ public class Auto {
      *
      * @param swerve A {@link Swerve} instance
      */
-    public Auto(Swerve swerve, Intake intake, Extender extender, Spindexer spindexer, Feeder feeder) {
+    public Auto(Swerve swerve, Intake intake, Extender extender) {
         this.swerve = swerve;
         this.intake = intake;
         this.extender = extender;
-        this.spindexer = spindexer;
-        this.feeder = feeder;
         autoloadPaths();
     }
 
