@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.robot.commands.Aim;
 import raidzero.robot.commands.StaticAim;
+import raidzero.robot.subsystems.drive.Limelight;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.drive.TunerConstants;
 import raidzero.robot.subsystems.intake.Extender;
@@ -37,14 +38,15 @@ import raidzero.robot.subsystems.turret.Turret;
 public class Superstructure {
     public static CANBus canDoAttitude = new CANBus("canDoAttitude");
 
-    private static Shooter shooter = Shooter.system();
-    private static Turret turret = Turret.system();
-    private static Hood hood = Hood.system();
-    private static Feeder feeder = Feeder.system();
-    private static Spindexer spindexer = Spindexer.system();
-    private static Extender extender = Extender.system();
-    private static Intake intake = Intake.system();
-    private static Swerve swerve = Swerve.system();
+    private static final Shooter shooter = Shooter.system();
+    private static final Turret turret = Turret.system();
+    private static final Hood hood = Hood.system();
+    private static final Feeder feeder = Feeder.system();
+    private static final Spindexer spindexer = Spindexer.system();
+    private static final Extender extender = Extender.system();
+    private static final Intake intake = Intake.system();
+    private static final Swerve swerve = Swerve.system();
+    private static final Limelight limelight = Limelight.system();
 
     private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.75;
     private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.75;
@@ -239,6 +241,10 @@ public class Superstructure {
 
         operator.square().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
 
+        operator.L3().and(operator.R3())
+            .onTrue(Commands.runOnce(() -> limelight.resetSeed()))
+            .onFalse(Commands.runOnce(() -> limelight.setManualSeed(true)));
+
         // driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
         // driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
 
@@ -337,6 +343,15 @@ public class Superstructure {
         );
 
         inAutonShootingZone.negate().whileTrue(hood.aim(Degrees.of(10)));
+    }
+
+    /**
+     * Gets the Limelight subsystem
+     * 
+     * @return The {@link Limelight} subsystem instance
+     */
+    public static Limelight getLimelight() {
+        return limelight;
     }
 
     /**

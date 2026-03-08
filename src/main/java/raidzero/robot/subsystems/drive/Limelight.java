@@ -8,6 +8,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import raidzero.lib.Elastic;
+import raidzero.lib.Elastic.Notification;
+import raidzero.lib.Elastic.NotificationLevel;
 import raidzero.lib.LimelightState;
 import raidzero.robot.subsystems.turret.Hood;
 
@@ -25,6 +28,7 @@ public class Limelight {
 
     private ArrayList<Double> headingReadings;
     private boolean seededPigeon;
+    private boolean manualSeed;
 
     private Timer seedInterval;
     private Timer seedTimer;
@@ -39,6 +43,7 @@ public class Limelight {
     private Limelight() {
         headingReadings = new ArrayList<Double>();
         seededPigeon = false;
+        manualSeed = false;
 
         frontState = new LimelightState(
             "limelight-front",
@@ -87,8 +92,6 @@ public class Limelight {
         seedInterval.start();
         seedTimer = new Timer();
         seedTimer.start();
-
-        // this.startThread();
     }
 
     /**
@@ -120,6 +123,38 @@ public class Limelight {
     }
 
     /**
+     * Manually resets the seeding process
+     */
+    public void resetSeed() {
+        Elastic.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "RESET CALLED"));
+
+        seedInterval.stop();
+        seedTimer.stop();
+        seedInterval.reset();
+        seedTimer.reset();
+
+        seededPigeon = false;
+        manualSeed = false;
+        headingReadings.clear();
+
+        seedInterval.start();
+        seedTimer.start();
+
+        for (LimelightState state : limes) {
+            state.setSeededPose(false);
+        }
+    }
+
+    /**
+     * Sets whether to manually seed the pigeon
+     * 
+     * @param manualSeed Whether to manually seed the pigeon
+     */
+    public void setManualSeed(boolean manualSeed) {
+        this.manualSeed = manualSeed;
+    }
+
+    /**
      * The main loop of the Limelight odometry thread
      */
     public void loop() {
@@ -133,7 +168,7 @@ public class Limelight {
             state.update(ignoreAllLimes, seededPigeon, swerve.getState().Pose);
         }
 
-        if (!seededPigeon && seedTimer.get() < 30 && seedInterval.hasElapsed(1)) {
+        if (!seededPigeon && seedTimer.get() < 10 && seedInterval.hasElapsed(0.25)) {
             Rotation2d rotation;
 
             for (LimelightState state : limes) {
@@ -147,9 +182,10 @@ public class Limelight {
             seedInterval.restart();
         }
 
-        if (!seededPigeon && seedTimer.get() > 30 && !headingReadings.isEmpty()) {
+        if (!seededPigeon && (manualSeed || seedTimer.get() > 10)) {
             swerve.getPigeon2().setYaw(headingReadings.stream().mapToDouble(Double::doubleValue).average().orElse(0.0));
             seededPigeon = true;
+            manualSeed = false;
             seedInterval.stop();
             seedInterval.reset();
             seedTimer.stop();
@@ -159,6 +195,10 @@ public class Limelight {
         }
 
         SmartDashboard.putBoolean("SeededRobot", seededPigeon);
+        SmartDashboard.putBoolean("ManualSeed", manualSeed);
+        SmartDashboard.putNumber("HeadingReadingsSize", headingReadings.size());
+        SmartDashboard.putNumber("seedinterval", seedInterval.get());
+        SmartDashboard.putNumber("seedtimer", seedTimer.get());
     }
 
     /**
