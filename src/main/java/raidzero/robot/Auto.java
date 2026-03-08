@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +55,7 @@ public class Auto {
     }
 
     /**
-     * Scans the deploy/choreo directory and loads all .traj files into RAM.
+     * Scans the deploy/choreo directory and loads all .traj files into memory
      */
     private void autoloadPaths() {
         File choreoDir = new File(Filesystem.getDeployDirectory(), "choreo");
@@ -76,7 +77,7 @@ public class Auto {
     }
 
     /**
-     * Safely retrieves a path from the cache.
+     * Gets a loaded path by name
      */
     public PathPlannerPath get(String name) {
         if (!pathCache.containsKey(name)) {
@@ -87,15 +88,17 @@ public class Auto {
     }
 
     /**
-     * Updates the constraints used for all subsequent OTF (Pathfinding) calls.
+     * Updates the constraints for pathfinding commands
      */
     public Command setConstraints(PathConstraints newConstraints) {
         return Commands.runOnce(() -> this.currentConstraints = newConstraints);
     }
 
     /**
-     * Abstracted pathfinding helper.
-     * Uses defer to ensure it uses the constraints active at the time of execution.
+     * Pathfinds to the starting pose of the given path, then follows it
+     *
+     * @param pathName The name of the path
+     * @return A {@link DeferredCommand} that pathfinds to the start of the path, then follows it
      */
     public Command otf(String pathName) {
         return Commands.defer(
@@ -111,14 +114,21 @@ public class Auto {
     }
 
     /**
-     * Standard follow command (no pathfinding).
+     * Follows the given path using Pathplanner's {@link AutoBuilder#followPath}
+     *
+     * @param pathName The name of the path to follow
+     * @return A {@link Command} that follows the given path
      */
     public Command follow(String pathName) {
         return AutoBuilder.followPath(get(pathName));
     }
 
     /**
-     * Master wrapper for Auto Routines.
+     * Builds an autonomous routine by first pathfinding to the starting pose of the given path, then executing the provided logic
+     *
+     * @param startPathName The name of the first path in the routine
+     * @param autoLogic A {@link Command} {@link Supplier} that provides the main logic of the routine
+     * @return A {@link DeferredCommand} that executes the routine
      */
     private Command build(String startPathName, Supplier<Command> autoLogic) {
         return Commands.defer(() -> {
@@ -132,15 +142,14 @@ public class Auto {
                 }),
                 autoLogic.get()
             );
-        }, Set.of(swerve, intake, extender)); // spindexer, feeder
+        }, Set.of(swerve, intake, extender));
     }
 
     /**
      * Flips the given pose across the field if the current alliance is Red
      *
      * @param bluePose The pose with respect to the blue alliance
-     * @return The pose transformed for the current alliance (flipped if Red,
-     *         unchanged if Blue)
+     * @return A flipped {@link Pose2d} if the alliance is Red, otherwise the original pose
      */
     private Pose2d getAlliancePose(Pose2d bluePose) {
         return Util.isRedAlliance() ? FlippingUtil.flipFieldPose(bluePose) : bluePose;
@@ -151,7 +160,7 @@ public class Auto {
     /**
      * A test auto
      *
-     * @return A {@link Command} for the depot 1 cycle auto
+     * @return A {@link Command} for the depot 1 cycle test auto
      */
     public Command getDepot1Cycle() {
         return build(
@@ -163,6 +172,11 @@ public class Auto {
         );
     }
 
+    /**
+     * Auto that starts on the left trench and performs two cycles
+     *
+     * @return A {@link Command} for the left trench 2 cycle auto
+     */
     public Command getLeft2Cycle() {
         return build(
             "LeftMidStart", () -> Commands.sequence(
@@ -236,6 +250,11 @@ public class Auto {
         );
     }
 
+    /**
+     * Auto that starts on the right trench and performs one cycle with the outpost
+     *
+     * @return A {@link Command} for the right trench 1 cycle outpost auto
+     */
     public Command getRightOutpostAuto() {
         return build(
             "RightMidStart", () -> Commands.sequence(
@@ -285,6 +304,11 @@ public class Auto {
         );
     }
 
+    /**
+     * Auto that starts on the right trench and performs two cycles
+     *
+     * @return A {@link Command} for the right trench 2 cycle auto
+     */
     public Command getRight2Cycle() {
         return build(
             "RightMidStartFast", () -> Commands.sequence(
@@ -357,5 +381,4 @@ public class Auto {
             )
         );
     }
-
 }

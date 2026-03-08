@@ -62,7 +62,6 @@ public class Superstructure {
     private static CommandPS5Controller operator = new CommandPS5Controller(1);
     private static final Trigger operatorShare = operator.button(9);
 
-
     private static final Auto autos = new Auto(swerve, intake, extender);
 
     private static SendableChooser<Command> autoChooser;

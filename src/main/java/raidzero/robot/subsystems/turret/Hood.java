@@ -17,7 +17,7 @@ public class Hood extends R0Subsystem<HoodIO> {
     /**
      * Aims to the angle target
      *
-     * @return a {@link Command}
+     * @return A {@link Command} that aims to the angle target
      */
     public Command manualAim() {
         return run(() -> io.moveTo(angleTarget));
@@ -45,7 +45,7 @@ public class Hood extends R0Subsystem<HoodIO> {
     /**
     * Aims to the angle from the RPS interpolating table based on the distance to the hub
     *
-    * @return a {@link Command} that aims to the angle from the RPS interpolating table based on the distance to the hub
+    * @return A {@link Command} that aims to the angle from the RPS interpolating table based on the distance to the hub
     */
     public Command aim() {
         return run(() -> {
@@ -60,7 +60,7 @@ public class Hood extends R0Subsystem<HoodIO> {
     /**
      * Stops the hood motor
      *
-     * @return a {@link Command} that stops the hood motor
+     * @return A {@link Command} that stops the hood motor
      */
     public Command stop() {
         return run(() -> io.stop());

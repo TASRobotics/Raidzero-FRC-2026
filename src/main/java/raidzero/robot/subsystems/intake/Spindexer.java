@@ -10,7 +10,7 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
     /**
      * Spins the spindexer at the index speed
      *
-     * @return a {@link Command} that spins the spindexer at the index speed
+     * @return A {@link Command} that spins the spindexer at the index speed
      */
     public Command go() {
         return run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED));
