@@ -8,9 +8,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import raidzero.lib.Elastic;
-import raidzero.lib.Elastic.Notification;
-import raidzero.lib.Elastic.NotificationLevel;
+import raidzero.lib.ElasticLib;
+import raidzero.lib.ElasticLib.Notification;
+import raidzero.lib.ElasticLib.NotificationLevel;
 import raidzero.lib.LimelightState;
 import raidzero.robot.subsystems.turret.Hood;
 
@@ -126,7 +126,7 @@ public class Limelight {
      * Manually resets the seeding process
      */
     public void resetSeed() {
-        Elastic.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "RESET CALLED"));
+        ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "RESET CALLED"));
 
         seedInterval.stop();
         seedTimer.stop();
