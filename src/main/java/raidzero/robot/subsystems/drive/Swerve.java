@@ -7,13 +7,20 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -23,8 +30,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.function.Supplier;
+import raidzero.lib.Util;
 import raidzero.robot.subsystems.drive.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -50,6 +59,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+
+    private final SwerveRequest.ApplyRobotSpeeds pathplannerSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
     private final Field2d field = new Field2d();
     private StructPublisher<Pose2d> botpose = NetworkTableInstance.getDefault().getStructTopic("botPoseNT", Pose2d.struct).publish();
@@ -134,6 +145,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             startSimThread();
         }
 
+        configureAutoBuilder();
         SmartDashboard.putData("Field", field);
     }
 
@@ -156,6 +168,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             startSimThread();
         }
 
+        configureAutoBuilder();
         SmartDashboard.putData("Field", field);
     }
 
@@ -184,6 +197,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             startSimThread();
         }
 
+        configureAutoBuilder();
         SmartDashboard.putData("Field", field);
     }
 
@@ -295,6 +309,82 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     @Override
     public Optional<Pose2d> samplePoseAt(double timestampSeconds) {
         return super.samplePoseAt(Utils.fpgaToCurrentTime(timestampSeconds));
+    }
+
+    /**
+     * Stops the swerve
+     *
+     * @return A {@link Command} to stop the swerve
+     */
+    public Command stop() {
+        return runOnce(
+            () -> this.setControl(
+                new SwerveRequest.RobotCentric().withVelocityX(0.0).withVelocityY(0.0).withRotationalRate(0.0)
+            )
+        );
+    }
+
+    /**
+     * Returns a command that will pathfind to the specified pose using PathPlanner
+     *
+     * @param pose The target pose
+     * @param goalEndVelocity The target end velocity as a {@link LinearVelocity}
+     * @return A {@link Command} to pathfind to the specified pose
+     */
+    public Command goToPoseAuto(Pose2d pose, LinearVelocity goalEndVelocity) {
+        return defer(() -> {
+            Pose2d targetPose = pose;
+
+            if (Util.isRedAlliance()) {
+                double fieldLength = 17.548;
+                double fieldWidth = 8.052;
+
+                targetPose = new Pose2d(
+                    fieldLength - pose.getX(),
+                    fieldWidth - pose.getY(),
+                    pose.getRotation().plus(Rotation2d.kPi)
+                );
+            }
+
+            return AutoBuilder.pathfindToPose(
+                targetPose,
+                // TODO: Change PathPlanner constraints from 1.0 / 1.0 to 3.0 / 3.0
+                new PathConstraints(
+                    1, // 3.5
+                    1, // 4.0
+                    Units.degreesToRadians(540),
+                    Units.degreesToRadians(720)
+                ),
+                goalEndVelocity
+            );
+        });
+    }
+
+    /**
+     * Configures the AutoBuilder for the Swerve subsystem
+     */
+    private void configureAutoBuilder() {
+        try {
+            AutoBuilder.configure(
+                () -> this.getState().Pose,
+                this::resetPose,
+                () -> this.getState().Speeds,
+                (speeds, feedforwards) -> setControl(
+                    pathplannerSpeeds.withSpeeds(speeds)
+                        .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
+                        .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())
+                ),
+                new PPHolonomicDriveController(
+                    new PIDConstants(2, 0, 0.1), // 5.05, 0, 0.145 --> 0.4 - 2.1 cm off,solid velo prof
+                    new PIDConstants(3.5, 0, 0.1)
+                ),
+                RobotConfig.fromGUISettings(),
+                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+                this
+            );
+        } catch (Exception e) {
+            DriverStation.reportError("Failed to load PathPlanner config and configure Autobuilder", e.getStackTrace());
+        }
     }
 
     /**

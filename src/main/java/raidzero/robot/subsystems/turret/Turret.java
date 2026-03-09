@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.R0Subsystem;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
@@ -44,13 +45,43 @@ public class Turret extends R0Subsystem<TurretIO> {
     private AimBot staticAimBot = null;
     private AimBot kineticAimBot = null;
 
+    private boolean isPirouetteing = false;
+
     /**
      * Moves the robot to the given setpoint
      *
      * @param setpoint The setpoint to move to
      */
     public void moveTo(Angle setpoint) {
-        io.moveTo(setpoint);
+        io.moveTo(this.findBestWrap(setpoint));
+    }
+
+    private Angle findBestWrap(Angle desiredAngle) {
+        double desiredRotations = desiredAngle.in(Rotations);
+        double currentRotations = io.getYaw().in(Rotations);
+
+        double revLimit = Yaw.REVERSE_SOFT_LIMIT.in(Rotations);
+        double fwdLimit = Yaw.FORWARD_SOFT_LIMIT.in(Rotations);
+        double bestSetpoint = currentRotations;
+        double bestDistance = Double.MAX_VALUE;
+
+        for (int i = -2; i <= 2; i++) {
+            double candidate = desiredRotations + i;
+            if (candidate >= revLimit && candidate <= fwdLimit) {
+                double dist = Math.abs(candidate - currentRotations);
+                if (dist < bestDistance) {
+                    bestDistance = dist;
+                    bestSetpoint = candidate;
+                }
+            }
+        }
+        isPirouetteing = bestDistance > 0.5;
+
+        return Rotations.of(bestSetpoint);
+    }
+
+    public Trigger isPirouetteing() {
+        return new Trigger(() -> this.isPirouetteing);
     }
 
     /**
@@ -85,7 +116,8 @@ public class Turret extends R0Subsystem<TurretIO> {
      * Sets the startup angle of the turret
      */
     public void setStartupAngle() {
-        io.setStartupYaw(JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()));
+        Angle startupYaw = JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading());
+        io.setStartupYaw(startupYaw);
     }
 
     /**
@@ -124,7 +156,8 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     /**
      * Calculates the absolute turret angle using the Jared Modulo Magic Method
-     * @param readingOnFirst the reading from the first Jared modulo method sensor
+     *
+     * @param readingOnFirst  the reading from the first Jared modulo method sensor
      * @param readingOnSecond the reading from the second Jared modulo method sensor
      * @return the calculated absolute turret angle as an {@link Angle}
      */
@@ -138,12 +171,12 @@ public class Turret extends R0Subsystem<TurretIO> {
         }
         for (int i = 0; i < (int) Yaw.JARED_TEETH_2; i++) {
             if (Math.abs(possibleReadings[i] - readingOnSecond) < Yaw.TOLERANCE_SRT) {
-                SmartDashboard.putBoolean("JMM Success", true);
+                // SmartDashboard.putBoolean("JMM Success", true);
 
                 double raw_angle = i * Yaw.JARED_TEETH_1 + readingOnFirst;
 
                 double turret_rotations = raw_angle / Yaw.TURRET_RING_TEETH;
-                SmartDashboard.putNumber("JMM Raw Angle", turret_rotations);
+                // SmartDashboard.putNumber("JMM Raw Angle", turret_rotations);
 
                 if (turret_rotations > Yaw.FORWARD_SOFT_LIMIT.in(Rotations)) {
                     return Rotations
@@ -153,14 +186,14 @@ public class Turret extends R0Subsystem<TurretIO> {
                 return Rotations.of(turret_rotations);
             }
         }
-        SmartDashboard.putBoolean("JMM Success", false);
+
         DriverStation.reportWarning("Looks like the SRT failed in Turret.java", false);
         return Rotations.of(0.0);
     }
 
     @Override
     public void periodic() {
-        super.periodic();
+        SmartDashboard.putNumber("Yaw", io.getYaw().in(Rotations));
 
         ChassisSpeeds rawSpeeds = swerve.getState().Speeds;
         ChassisSpeeds filteredSpeeds = new ChassisSpeeds(
@@ -182,6 +215,10 @@ public class Turret extends R0Subsystem<TurretIO> {
         // io.getHubDistance().in(Meters));
 
         SmartDashboard.putNumber("Turret Angle", io.getYaw().in(Rotations));
+        SmartDashboard.putNumber(
+            "Jmm Value",
+            this.JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()).in(Rotations)
+        );
 
         // SmartDashboard.putBoolean("Hub LOS", io.hasHubLOS());
 
@@ -202,6 +239,7 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     /**
      * Constructs a Turret instance with the given IO implementation
+     *
      * @param io the IO implementation to use
      */
     private Turret(TurretIO io) {
@@ -224,7 +262,9 @@ public class Turret extends R0Subsystem<TurretIO> {
     }
 
     /**
-     * Gets the singleton instance of the Turret subsystem, creating it if it doesn't exist
+     * Gets the singleton instance of the Turret subsystem, creating it if it
+     * doesn't exist
+     *
      * @return the singleton instance of the Turret subsystem
      */
     public static Turret system() {

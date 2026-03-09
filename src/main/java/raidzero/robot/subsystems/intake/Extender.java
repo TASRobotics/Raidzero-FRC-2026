@@ -1,5 +1,7 @@
 package raidzero.robot.subsystems.intake;
 
+import static edu.wpi.first.units.Units.Rotations;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.R0Subsystem;
@@ -10,7 +12,7 @@ public class Extender extends R0Subsystem<ExtenderIO> {
     /**
      * Extends the intake outwards
      *
-     * @return a {@link Command}
+     * @return A {@link Command} that extends the intake
      */
     public Command extend() {
         return run(() -> io.extend());
@@ -19,29 +21,42 @@ public class Extender extends R0Subsystem<ExtenderIO> {
     /**
      * Retracts the intake inwards
      *
-     * @return a {@link Command}
+     * @return A {@link Command} that retracts the intake
      */
     public Command retract() {
         return run(() -> io.retract());
     }
 
     /**
-     * Agitates the intake by briefly moving to the agitate setpoint, then retracting
+     * Agitates the intake at level 1 for 0.2s
      *
-     * @return a {@link Command}
+     * @return A {@link Command} that agitates the intake
      */
     public Command agitate() {
         return run(() -> io.agitateL1())
             .withTimeout(0.2)
-            // .andThen(
-            // run(() -> io.agitateL2())
-            // .withTimeout(0.2)
-            // )
-            // .andThen(
-            // run(() -> io.agitateL3())
-            // .withTimeout(0.3)
-            // )
             .andThen(run(() -> io.retract()));
+    }
+
+    /**
+     * Agitates the intake during auto by by cycling through all 3 agitation levels
+     *
+     * @apiNote This should only be used during auto
+     *
+     * @return A {@link Command} that agitates the intake during auto
+     */
+    public Command autoAgitate() {
+        return run(() -> io.agitateL1())
+            .withTimeout(0.5)
+            .andThen(
+                run(() -> io.agitateL2())
+                    .withTimeout(0.5)
+            )
+            .andThen(
+                run(() -> io.agitateL3())
+                    .withTimeout(0.5)
+            )
+            .andThen(run(() -> io.extend()).withTimeout(0.3));
     }
 
     /**
@@ -53,6 +68,11 @@ public class Extender extends R0Subsystem<ExtenderIO> {
         return run(() -> io.stop());
     }
 
+    /**
+     * Returns a {@link Trigger} that is active when the extender is fully extended
+     *
+     * @return a {@link Trigger} that is active when the extender is fully extended
+     */
     public Trigger isExtended() {
         return new Trigger(() -> io.isExtended());
     }
@@ -80,6 +100,15 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      */
     public Command decreaseAgitate() {
         return runOnce(() -> io.decreaseAgitate());
+    }
+
+    /**
+     * Zeros the encoder position for the extender
+     *
+     * @return A {@link Command} that zeros the encoder position
+     */
+    public Command zeroEncoderPosition() {
+        return runOnce(() -> io.overrideEncoderPosition(Rotations.of(0.0)));
     }
 
     /**
