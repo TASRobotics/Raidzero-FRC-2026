@@ -147,7 +147,7 @@ public class Limelight {
 
     /**
      * Sets whether to manually seed the pigeon
-     * 
+     *
      * @param manualSeed Whether to manually seed the pigeon
      */
     public void setManualSeed(boolean manualSeed) {
