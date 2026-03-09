@@ -233,10 +233,10 @@ public class Superstructure {
             .toggleOnTrue(
                 new StaticAim(
                     Rotations.of(
-                        DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : -0.5
+                        DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.5
                     )
                 )
-                    .alongWith(hood.aim(Degrees.of(40)))
+                    .alongWith(hood.aim(Degrees.of(34)))
             );
 
         operator.square().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
@@ -292,10 +292,10 @@ public class Superstructure {
             .whileTrue(
                 new StaticAim(
                     Rotations.of(
-                        DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : -0.5
+                        DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
                     )
                 )
-                    .alongWith(hood.aim(Degrees.of(40)))
+                    .alongWith(hood.aim(Degrees.of(34)))
             )
             .onFalse(shooter.stop());
 
@@ -303,10 +303,10 @@ public class Superstructure {
             .whileTrue(
                 new StaticAim(
                     Rotations.of(
-                        DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : -0.5
+                        DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
                     )
                 )
-                    .alongWith(hood.aim(Degrees.of(40)))
+                    .alongWith(hood.aim(Degrees.of(34)))
             )
             .onFalse(shooter.stop());
 
@@ -347,7 +347,7 @@ public class Superstructure {
 
     /**
      * Gets the Limelight subsystem
-     * 
+     *
      * @return The {@link Limelight} subsystem instance
      */
     public static Limelight getLimelight() {

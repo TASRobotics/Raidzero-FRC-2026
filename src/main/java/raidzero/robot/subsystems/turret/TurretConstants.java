@@ -111,7 +111,7 @@ public final class TurretConstants {
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(0.29); // 48.375
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(5.0);
 
-        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(0.1135);
+        public static final Angle FORWARD_SOFT_LIMIT = Degrees.of(35.0);
         public static final boolean ENALBE_FORWARD_SOFT_LIMIT = true;
 
         public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(0.0275);
