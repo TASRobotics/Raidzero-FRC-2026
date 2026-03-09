@@ -2,7 +2,7 @@ package raidzero.lib;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import java.util.Optional
+import java.util.Optional;
 
 public class Util {
     /**
@@ -12,6 +12,7 @@ public class Util {
      */
     public static boolean isBlueAlliance() {
         return DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue;
+    }
 
     /**
      * Checks if the current alliance is Red. If the alliance is not yet determined, returns false by default.
