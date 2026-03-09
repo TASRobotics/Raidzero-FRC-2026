@@ -12,7 +12,7 @@ public class Extender extends R0Subsystem<ExtenderIO> {
     /**
      * Extends the intake outwards
      *
-     * @return a {@link Command}
+     * @return A {@link Command} that extends the intake
      */
     public Command extend() {
         return run(() -> io.extend());
@@ -21,17 +21,16 @@ public class Extender extends R0Subsystem<ExtenderIO> {
     /**
      * Retracts the intake inwards
      *
-     * @return a {@link Command}
+     * @return A {@link Command} that retracts the intake
      */
     public Command retract() {
         return run(() -> io.retract());
     }
 
     /**
-     * Agitates the intake by briefly moving to the agitate setpoint, then
-     * retracting
+     * Agitates the intake at level 1 for 0.2s
      *
-     * @return a {@link Command}
+     * @return A {@link Command} that agitates the intake
      */
     public Command agitate() {
         return run(() -> io.agitateL1())
@@ -40,12 +39,12 @@ public class Extender extends R0Subsystem<ExtenderIO> {
     }
 
     /**
-     * Agitates the intake during auto by briefly moving to each agitate setpoint, then
-     * extending
+     * Agitates the intake during auto by by cycling through all 3 agitation levels
      *
-     * @return a {@link Command}
+     * @apiNote This should only be used during auto
+     *
+     * @return A {@link Command} that agitates the intake during auto
      */
-
     public Command autoAgitate() {
         return run(() -> io.agitateL1())
             .withTimeout(0.5)

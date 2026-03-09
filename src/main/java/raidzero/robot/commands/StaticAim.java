@@ -13,7 +13,7 @@ public class StaticAim extends Command {
     Angle target;
 
     /**
-     * Creates a {@link Command} that aims the turret to a static angle
+     * Creates A {@link Command} that aims the turret to a static angle
      * @param target The target angle for the turret as an {@link Angle}
      */
     public StaticAim(Angle target) {

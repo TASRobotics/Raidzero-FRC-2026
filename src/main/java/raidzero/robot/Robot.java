@@ -15,8 +15,6 @@ public class Robot extends TimedRobot {
 
     private final RobotContainer m_robotContainer;
 
-    private final Limelight limelight = Limelight.system();
-
     /* log and replay timestamp and joystick data */
     private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
         .withTimestampReplay()
@@ -30,7 +28,7 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         m_timeAndJoystickReplay.update();
         CommandScheduler.getInstance().run();
-        limelight.loop();
+        Superstructure.getLimelight().loop();
     }
 
     @Override

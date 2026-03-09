@@ -23,7 +23,7 @@ public class Feeder extends R0Subsystem<FeederIO> {
     /**
      * Runs the feeder in reverse at the configured speed
      *
-     * @return A {@link Command}
+     * @return A {@link Command} that reverses the feeder
      */
     public Command reverse() {
         return run(() -> io.go(ShooterConstants.Feeder.FEEDER_SPEED.times(-1.0)));
@@ -45,7 +45,7 @@ public class Feeder extends R0Subsystem<FeederIO> {
     /**
      * Stops the feeder motor
      *
-     * @return a {@link Command}
+     * @return A {@link Command} that stops the feeder
      */
     public Command stop() {
         return run(() -> io.stop());

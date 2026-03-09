@@ -31,7 +31,7 @@ public class LimelightState {
 
     private double lastValidPose = 0.0;
 
-    private static final double RECOVERY_FACTOR = 3.0;
+    private static final double RECOVERY_FACTOR = 1.25;
 
     private boolean seededRobot = false;
 

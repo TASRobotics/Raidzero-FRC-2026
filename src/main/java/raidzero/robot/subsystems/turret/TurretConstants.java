@@ -111,7 +111,7 @@ public final class TurretConstants {
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(0.29); // 48.375
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(5.0);
 
-        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(0.1135);
+        public static final Angle FORWARD_SOFT_LIMIT = Degrees.of(35.0);
         public static final boolean ENALBE_FORWARD_SOFT_LIMIT = true;
 
         public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(0.0275);
@@ -156,7 +156,7 @@ public final class TurretConstants {
         public static final InterpolatingDoubleTreeMap CLIMB_RPS_TABLE = new InterpolatingDoubleTreeMap();
 
         public static final Translation2d GOAL_LOCATION_BLUE = new Translation2d(Inches.of(182.11), Inches.of(158.84));
-        public static final Translation2d GOAL_LOCATION_RED = new Translation2d(Inches.of(287), Inches.of(158.84));
+        public static final Translation2d GOAL_LOCATION_RED = new Translation2d(Inches.of(465.89), Inches.of(158.84));
 
         static {
             PITCH_TABLE.put(1.58, 14.0);
