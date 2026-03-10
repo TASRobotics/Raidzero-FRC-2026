@@ -150,8 +150,8 @@ public class Superstructure {
         swerve.setDefaultCommand(
             swerve.applyRequest(
                 () -> fieldCentricDrive
-                    .withVelocityX(-driver.getLeftY() * MaxSpeed)
-                    .withVelocityY(-driver.getLeftX() * MaxSpeed)
+                    .withVelocityX(driver.getLeftY() * MaxSpeed)
+                    .withVelocityY(driver.getLeftX() * MaxSpeed)
                     .withRotationalRate(-driver.getRightX() * MaxAngularRate)
             )
         );
@@ -220,7 +220,7 @@ public class Superstructure {
 
         operator.povDown().whileTrue(hood.aim(Degrees.of(10)));
 
-        operator.triangle().whileTrue(shooter.shoot());
+        driver.y().whileTrue(shooter.shoot());
 
         operator.R1().toggleOnTrue(intake.go());
         operator.L1().whileTrue(intake.reverse());
@@ -233,7 +233,7 @@ public class Superstructure {
             .toggleOnTrue(
                 new StaticAim(
                     Rotations.of(
-                        DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.5
+                        DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue ? 0.5 : 0.5
                     )
                 )
                     .alongWith(hood.aim(Degrees.of(34)))
@@ -292,7 +292,7 @@ public class Superstructure {
             .whileTrue(
                 new StaticAim(
                     Rotations.of(
-                        DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
+                        DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue ? 0.5 : 0.0
                     )
                 )
                     .alongWith(hood.aim(Degrees.of(34)))
@@ -303,7 +303,7 @@ public class Superstructure {
             .whileTrue(
                 new StaticAim(
                     Rotations.of(
-                        DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
+                        DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue ? 0.5 : 0.0
                     )
                 )
                     .alongWith(hood.aim(Degrees.of(34)))

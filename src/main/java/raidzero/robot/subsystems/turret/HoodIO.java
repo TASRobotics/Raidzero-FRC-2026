@@ -1,6 +1,7 @@
 package raidzero.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
 import static raidzero.robot.subsystems.turret.TurretConstants.Pitch;
 
 import edu.wpi.first.units.measure.Angle;
@@ -8,6 +9,7 @@ import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyFXS;
 import raidzero.lib.wrappers.motors.LazyFXSBuilder;
 import raidzero.robot.Superstructure;
+import raidzero.robot.subsystems.turret.TurretConstants.Pitch;
 
 public interface HoodIO extends SubsystemIO {
     /**
@@ -92,6 +94,35 @@ public interface HoodIO extends SubsystemIO {
         }
     }
 
-    public class Sim extends Real {}
+    public class Sim implements HoodIO {
+        private Angle currentPitch = Degrees.of(0);
+
+        @Override
+        public void updateTelemetry() {
+            // Shadow state - no logic needed for instant teleport
+        }
+
+        @Override
+        public void moveTo(Angle angleTarget) {
+            // Teleport the hood instantly to the requested angle
+            this.currentPitch = angleTarget;
+        }
+
+        @Override
+        public Angle getPitch() {
+            return currentPitch;
+        }
+
+        @Override
+        public void setStartupAngle() {
+            // Initialize to the constant starting position
+            this.currentPitch = Pitch.STARTING_ANGLE;
+        }
+
+        @Override
+        public void stop() {
+            // No-op for sim
+        }
+    }
 
 }

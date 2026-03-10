@@ -67,9 +67,9 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
     public LinearVelocity getRadialVelocity(ChassisSpeeds whipSpeeds) {
         Translation2d vectorToGoal = goal.getTranslation().minus(turret.getTranslation());
         Rotation2d angleToGoal = vectorToGoal.getAngle();
-        
+
         // Project the whip speeds onto the angle to the goal to get the radial velocity (Dot product)
-        double mps = (whipSpeeds.vxMetersPerSecond * angleToGoal.getCos()) + 
+        double mps = (whipSpeeds.vxMetersPerSecond * angleToGoal.getCos()) +
                     (whipSpeeds.vyMetersPerSecond * angleToGoal.getSin());
 
         return MetersPerSecond.of(mps);
@@ -128,7 +128,7 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
             double totalLookahead = currentDistanceTOF + CODE_LOOP_LATENCY;
             double virtualGoalx = staticGoal.getX() - totalLookahead * whipSpeeds.vxMetersPerSecond;
             double virtualGoaly = staticGoal.getY() - totalLookahead * whipSpeeds.vyMetersPerSecond;
-            
+
             virtualGoalTranslation = new Translation2d(virtualGoalx, virtualGoaly);
             turretToGoalDist = kineticTurret.getTranslation().getDistance(virtualGoalTranslation);
             currentDistanceTOF = Kinetics.TOF_TABLE.get(turretToGoalDist);

@@ -18,7 +18,7 @@ import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
 public class Shooter extends R0Subsystem<ShooterIO> {
     private static Shooter system;
 
-    private AngularVelocity velocityTarget = RotationsPerSecond.of(35);    
+    private AngularVelocity velocityTarget = RotationsPerSecond.of(35);
     private AngularVelocity autoVelocityTarget = RotationsPerSecond.of(0);
     private AngularVelocity activeTarget = RotationsPerSecond.of(0);
 
@@ -30,9 +30,9 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     public Command shoot() {
         return run(() -> {
             Turret turret = Turret.system();
-            
+
             double distance = turret.getHubDistance(true).in(Meters);
-            
+
             // Base RPS from table (stationary physics)
             double baseRPS = Kinetics.RPS_TABLE.get(distance);
 
@@ -46,7 +46,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
 
             this.autoVelocityTarget = RotationsPerSecond.of(baseRPS + compensationRPS);
             this.activeTarget = this.autoVelocityTarget;
-            
+
             io.setVelocity(this.activeTarget);
         });
     }
@@ -178,5 +178,6 @@ public class Shooter extends R0Subsystem<ShooterIO> {
             "Shooter target speed",
             activeTarget.in(RotationsPerSecond)
         );
+        io.updateTelemetry();
     }
 }

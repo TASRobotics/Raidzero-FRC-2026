@@ -108,9 +108,9 @@ public class Hood extends R0Subsystem<HoodIO> {
     public static Hood system() {
         if (system == null) {
             if (Utils.isSimulation())
-                system = new Hood(new HoodIO.Real());
-            else
                 system = new Hood(new HoodIO.Sim());
+            else
+                system = new Hood(new HoodIO.Real());
         }
 
         return system;
