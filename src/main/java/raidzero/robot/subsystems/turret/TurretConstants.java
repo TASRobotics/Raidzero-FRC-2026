@@ -146,9 +146,9 @@ public final class TurretConstants {
         public static final Translation2d TURRET_MOUNT_OFFSET = new Translation2d(Meters.of(.123), Meters.of(-0.138));
 
         // Convert robot m/s to Shooter RPS
-        // Scalar formula: 1 / (Wheel_Diameter_Meters * PI)
+        // Scalar formula: 1 / (Shooter_Wheel_Diameter_Meters * PI)
         // 1 / (0.1016 * 3.14) ≈ 3.13
-        public static final double VELOCITY_COMPENSATION_SCALAR = 1 / (0.05008479989 * 2 * Math.PI);
+        public static final double VELOCITY_COMPENSATION_SCALAR = 1 / (Inches.of(3.125).in(Meters) * Math.PI);
 
         // yaw corections from the april tag location in the off-angles
         public static final InterpolatingDoubleTreeMap YAW_CORRECTION_TABLE = new InterpolatingDoubleTreeMap();
