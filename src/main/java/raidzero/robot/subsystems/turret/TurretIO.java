@@ -2,7 +2,6 @@ package raidzero.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Rotations;
-import static raidzero.robot.subsystems.turret.TurretConstants.Yaw;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -157,44 +156,6 @@ public interface TurretIO extends SubsystemIO {
         }
     }
 
-    public class Sim extends Real {
-        private Angle currentYaw = Rotations.of(0);
-
-        @Override
-        public void moveTo(Angle yaw) {
-            this.currentYaw = yaw;
-        }
-
-        @Override
-        public Angle getYaw() {
-            return currentYaw;
-        }
-
-        @Override
-        public void setStartupYaw(Angle yaw) {
-            this.currentYaw = yaw;
-        }
-
-        @Override
-        public void runYawPercent(double percent) {
-            currentYaw = currentYaw.plus(Rotations.of(percent * 0.1));
-        }
-
-        @Override
-        public void stop() {
-            // No action needed for simulation
-        }
-
-        @Override
-        public double getJMM1Reading() {
-            // Returns perfect "simulated" teeth counts based on current yaw
-            return (currentYaw.in(Rotations) * Yaw.TURRET_RING_TEETH) % Yaw.JARED_TEETH_1;
-        }
-
-        @Override
-        public double getJMM2Reading() {
-            return (currentYaw.in(Rotations) * Yaw.TURRET_RING_TEETH) % Yaw.JARED_TEETH_2;
-        }
-    }
+    public class Sim extends Real {}
 
 }

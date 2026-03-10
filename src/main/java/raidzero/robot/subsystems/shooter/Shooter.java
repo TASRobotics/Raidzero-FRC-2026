@@ -178,6 +178,5 @@ public class Shooter extends R0Subsystem<ShooterIO> {
             "Shooter target speed",
             activeTarget.in(RotationsPerSecond)
         );
-        io.updateTelemetry();
     }
 }

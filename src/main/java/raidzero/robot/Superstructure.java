@@ -48,7 +48,7 @@ public class Superstructure {
     private static final Swerve swerve = Swerve.system();
     private static final Limelight limelight = Limelight.system();
 
-    private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.25;
+    private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.75;
     private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.75;
 
     private static final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
@@ -150,8 +150,8 @@ public class Superstructure {
         swerve.setDefaultCommand(
             swerve.applyRequest(
                 () -> fieldCentricDrive
-                    .withVelocityX(driver.getLeftY() * MaxSpeed)
-                    .withVelocityY(driver.getLeftX() * MaxSpeed)
+                    .withVelocityX(-driver.getLeftY() * MaxSpeed)
+                    .withVelocityY(-driver.getLeftX() * MaxSpeed)
                     .withRotationalRate(-driver.getRightX() * MaxAngularRate)
             )
         );
@@ -220,7 +220,7 @@ public class Superstructure {
 
         operator.povDown().whileTrue(hood.aim(Degrees.of(10)));
 
-        driver.y().whileTrue(shooter.shoot());
+        operator.triangle().whileTrue(shooter.shoot());
 
         operator.R1().toggleOnTrue(intake.go());
         operator.L1().whileTrue(intake.reverse());
