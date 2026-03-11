@@ -1,18 +1,21 @@
 package raidzero.robot.subsystems.turret;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.LinearVelocity;
 import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
 
 /**
- * All field centic poses
+ * All field centric poses
  */
 public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
 
-    public static final double CODE_LOOP_LATENCY = 0.03;
+    public static final double CODE_LOOP_LATENCY = 0.04;
 
     /**
      * Adjusts the turret aim to the static goal location without kinetic lead
@@ -54,6 +57,22 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
         Pose2d kineticGoalPose = calculateKineticGoal(whipSpeeds, kineticTurretPose, goal);
 
         return new AimBot(kineticRobotPose, kineticTurretPose, kineticGoalPose);
+    }
+
+    /**
+     * Calculates the total velocity of the turret mount moving toward or away from the goal.
+     * @param whipSpeeds The field-relative speeds of the turret (includes robot v + omega whip)
+     * @return LinearVelocity (Positive = closing distance, Negative = opening distance)
+     */
+    public LinearVelocity getRadialVelocity(ChassisSpeeds whipSpeeds) {
+        Translation2d vectorToGoal = goal.getTranslation().minus(turret.getTranslation());
+        Rotation2d angleToGoal = vectorToGoal.getAngle();
+        
+        // Project the whip speeds onto the angle to the goal to get the radial velocity (Dot product)
+        double mps = (whipSpeeds.vxMetersPerSecond * angleToGoal.getCos()) + 
+                    (whipSpeeds.vyMetersPerSecond * angleToGoal.getSin());
+
+        return MetersPerSecond.of(mps);
     }
 
     /**
@@ -104,15 +123,14 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
 
         double currentDistanceTOF = Kinetics.TOF_TABLE.get(turretToGoalDist);
 
-        for (int i = 0; i < 7; i++) {
-            double virtualGoalx = staticGoal.getX()
-                    - currentDistanceTOF * whipSpeeds.vxMetersPerSecond;
-            double virtualGoaly = staticGoal.getY()
-                    - currentDistanceTOF * whipSpeeds.vyMetersPerSecond;
+        for (int i = 0; i < 15; i++) {
+            // Include CODE_LOOP_LATENCY in TOF for the virtual goal projection
+            double totalLookahead = currentDistanceTOF + CODE_LOOP_LATENCY;
+            double virtualGoalx = staticGoal.getX() - totalLookahead * whipSpeeds.vxMetersPerSecond;
+            double virtualGoaly = staticGoal.getY() - totalLookahead * whipSpeeds.vyMetersPerSecond;
+            
             virtualGoalTranslation = new Translation2d(virtualGoalx, virtualGoaly);
-
-            turretToGoalDist = kineticTurret.getTranslation()
-                    .getDistance(virtualGoalTranslation);
+            turretToGoalDist = kineticTurret.getTranslation().getDistance(virtualGoalTranslation);
             currentDistanceTOF = Kinetics.TOF_TABLE.get(turretToGoalDist);
         }
 

@@ -1,10 +1,12 @@
 package raidzero.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -15,7 +17,10 @@ import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
 
 public class Shooter extends R0Subsystem<ShooterIO> {
     private static Shooter system;
-    private AngularVelocity velocityTarget = RotationsPerSecond.of(35);
+
+    private AngularVelocity velocityTarget = RotationsPerSecond.of(35);    
+    private AngularVelocity autoVelocityTarget = RotationsPerSecond.of(0);
+    private AngularVelocity activeTarget = RotationsPerSecond.of(0);
 
     /**
      * Runs the shooter at the necessary speed from the RPS interpolating table
@@ -24,10 +29,25 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      */
     public Command shoot() {
         return run(() -> {
-            AngularVelocity target = RotationsPerSecond
-                .of(Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
+            Turret turret = Turret.system();
+            
+            double distance = turret.getHubDistance(true).in(Meters);
+            
+            // Base RPS from table (stationary physics)
+            double baseRPS = Kinetics.RPS_TABLE.get(distance);
 
-            io.setVelocity(target);
+            // Radial Velocity (accounts for robot movement)
+            LinearVelocity vRadial = turret.getTurretAim(true)
+                .getRadialVelocity(turret.getFilteredSpeeds());
+
+            // Compensation: Subtract vRadial because if vRadial is moving away (negative)
+            // we need to ADD RPS to the shooter
+            double compensationRPS = -vRadial.in(MetersPerSecond) * Kinetics.VELOCITY_COMPENSATION_SCALAR;
+
+            this.autoVelocityTarget = RotationsPerSecond.of(baseRPS + compensationRPS);
+            this.activeTarget = this.autoVelocityTarget;
+            
+            io.setVelocity(this.activeTarget);
         });
     }
 
@@ -39,10 +59,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      */
     public Trigger atTargetVelocity() {
         return new Trigger(() -> {
-            AngularVelocity target = RotationsPerSecond
-                .of(Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
-
-            return io.getVelocity().minus(target).abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE
+            return io.getVelocity().minus(this.activeTarget).abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE
                 .in(RotationsPerSecond);
         });
     }
@@ -69,7 +86,10 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      * @return A {@link Command} that runs the shooter at the velocity at its target velocity
      */
     public Command manualShoot() {
-        return run(() -> io.setVelocity(velocityTarget));
+        return run(() -> {
+            this.activeTarget = velocityTarget;
+            io.setVelocity(activeTarget);
+        });
     }
 
     /**
@@ -89,8 +109,11 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      * @return A {@link Command} that runs the shooter at the specified speed
      */
     public Command shoot(AngularVelocity speed) {
-        this.velocityTarget = speed;
-        return run(() -> io.setVelocity(speed));
+        return run(() -> {
+            this.velocityTarget = speed;
+            this.activeTarget = speed;
+            io.setVelocity(speed);
+        });
     }
 
     /**
@@ -100,7 +123,10 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      * @return A {@link Command} that sets the shooter speed to the specified percentage
      */
     public Command setSpeed(double percent) {
-        return run(() -> io.setPercent(percent));
+        return run(() -> {
+            this.activeTarget = RotationsPerSecond.of(0);
+            io.setPercent(percent);
+        });
     }
 
     /**
@@ -109,7 +135,10 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      * @return A {@link Command} that stops the shooter motor
      */
     public Command stop() {
-        return run(() -> io.stop());
+        return run(() -> {
+            this.activeTarget = RotationsPerSecond.of(0);
+            io.stop();
+        });
     }
 
     /**
@@ -147,7 +176,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
         );
         SmartDashboard.putNumber(
             "Shooter target speed",
-            velocityTarget.in(RotationsPerSecond)
+            activeTarget.in(RotationsPerSecond)
         );
     }
 }

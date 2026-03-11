@@ -42,6 +42,8 @@ public class Turret extends R0Subsystem<TurretIO> {
     private final LinearFilter vyFilter = LinearFilter.movingAverage(5);
     private final LinearFilter omegaFilter = LinearFilter.movingAverage(5);
 
+    private ChassisSpeeds filteredSpeeds = new ChassisSpeeds();
+
     private AimBot staticAimBot = null;
     private AimBot kineticAimBot = null;
 
@@ -136,6 +138,14 @@ public class Turret extends R0Subsystem<TurretIO> {
     }
 
     /**
+     * Gets the current chassis speeds of the robot after the linear filters
+     * @return the current filtered chassis speeds of the robot as a {@link ChassisSpeeds}
+     */
+    public ChassisSpeeds getFilteredSpeeds() {
+        return filteredSpeeds;
+    }
+
+    /**
      * Gets the AimBot instance for static/kinetic aiming
      *
      * @param kineticLead wether or not to use kinetic leading for shoot-on-the-move
@@ -196,7 +206,7 @@ public class Turret extends R0Subsystem<TurretIO> {
         SmartDashboard.putNumber("Yaw", io.getYaw().in(Rotations));
 
         ChassisSpeeds rawSpeeds = swerve.getState().Speeds;
-        ChassisSpeeds filteredSpeeds = new ChassisSpeeds(
+        filteredSpeeds = new ChassisSpeeds(
             vxFilter.calculate(rawSpeeds.vxMetersPerSecond),
             vyFilter.calculate(rawSpeeds.vyMetersPerSecond),
             omegaFilter.calculate(rawSpeeds.omegaRadiansPerSecond)
