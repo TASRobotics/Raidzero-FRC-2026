@@ -158,10 +158,10 @@ public class Superstructure {
             )
         );
 
-        // hood.setDefaultCommand(hood.aim().onlyIf(swerveApprTrench.negate().or(driver.rightBumper())));
-        hood.setDefaultCommand(hood.stop());
-        turret.setDefaultCommand(turret.stop());
-        // turret.setDefaultCommand(new Aim());
+        hood.setDefaultCommand(hood.aim().onlyIf(swerveApprTrench.negate().or(driver.rightBumper())));
+        // hood.setDefaultCommand(hood.stop());
+        // turret.setDefaultCommand(turret.stop());
+        turret.setDefaultCommand(new Aim());
 
         shooter.setDefaultCommand(shooter.stop());
         feeder.setDefaultCommand(feeder.stop());
