@@ -36,8 +36,8 @@ public final class TurretConstants {
         public static final int JMM_1_ID = 6; // 29 tooth
         public static final int JMM_2_ID = 5; // 22 tooth
 
-        public static final double JMM_OFFSET_1 = -0.499512; // 29 tooth
-        public static final double JMM_OFFSET_2 = -0.685791; // 22 tooth
+        public static final double JMM_OFFSET_1 = -0.765137; // 29 tooth
+        public static final double JMM_OFFSET_2 = -0.808105; // 22 tooth
 
         public static final SensorDirectionValue JMM_1_INVERTED = SensorDirectionValue.Clockwise_Positive;
         public static final SensorDirectionValue JMM_2_INVERTED = SensorDirectionValue.Clockwise_Positive;
@@ -68,10 +68,10 @@ public final class TurretConstants {
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(0.5); // max is 3.2
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(0.5); // max is 10
 
-        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(1.0);
+        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(1.28);
         public static final boolean ENALBE_FORWARD_SOFT_LIMIT = true;
 
-        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.5);
+        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.53);
         public static final boolean ENABLE_REVERSE_SOFT_LIMIT = true;
 
         public static MotorTelemetry TELEMETRY = new MotorTelemetry();
@@ -111,13 +111,14 @@ public final class TurretConstants {
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(0.29); // 48.375
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(5.0);
 
-        public static final Angle FORWARD_SOFT_LIMIT = Degrees.of(35.0);
+        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(0.098);
         public static final boolean ENALBE_FORWARD_SOFT_LIMIT = true;
 
         public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(0.0275);
         public static final boolean ENABLE_REVERSE_SOFT_LIMIT = true;
 
         public static final Angle STARTING_ANGLE = Degrees.of(10.0);
+        public static final Angle PASSING_ANGLE = Degrees.of(34.5);
 
         public static MotorTelemetry TELEMETRY = new MotorTelemetry();
     }
