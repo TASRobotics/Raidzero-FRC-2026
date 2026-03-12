@@ -286,11 +286,11 @@ public class Superstructure {
      * Binds subsystem triggers
      */
     public static void bindTriggers() {
-        turret.isPirouetteing().whileTrue(shooter.stop());
+        turret.isPirouetteing().whileTrue(spindexer.stop().alongWith(feeder.stop().andThen(shooter.stop())));
         // .onFalse(Commands.runOnce(() -> turret.setStartupAngle()));
 
         swerveApprTrench.and(driver.rightBumper().negate()).and(passingArea1.and(passingArea2).negate())
-            .whileTrue(hood.aim(Degrees.of(10)));
+            .whileTrue(hood.aim(Degrees.of(10)).alongWith(spindexer.stop().alongWith(feeder.stop())));
 
         passingArea1.and(swerveApprTrench.negate()).and(() -> DriverStation.isTeleopEnabled())
             .whileTrue(
