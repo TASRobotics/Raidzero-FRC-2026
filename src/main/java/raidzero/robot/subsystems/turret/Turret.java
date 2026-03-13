@@ -176,7 +176,8 @@ public class Turret extends R0Subsystem<TurretIO> {
                 double raw_angle = i * Yaw.JARED_TEETH_1 + readingOnFirst;
 
                 double turret_rotations = raw_angle / Yaw.TURRET_RING_TEETH;
-                // SmartDashboard.putNumber("JMM Raw Angle", turret_rotations);
+
+                SmartDashboard.putNumber("JMM Raw Angle", turret_rotations);
 
                 if (turret_rotations > Yaw.FORWARD_SOFT_LIMIT.in(Rotations)) {
                     return Rotations
@@ -193,7 +194,7 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Yaw", io.getYaw().in(Rotations));
+        // SmartDashboard.putNumber("Yaw", io.getYaw().in(Rotations));
 
         ChassisSpeeds rawSpeeds = swerve.getState().Speeds;
         ChassisSpeeds filteredSpeeds = new ChassisSpeeds(
@@ -214,7 +215,7 @@ public class Turret extends R0Subsystem<TurretIO> {
         // SmartDashboard.putNumber("LL Turret Distance",
         // io.getHubDistance().in(Meters));
 
-        SmartDashboard.putNumber("Turret Angle", io.getYaw().in(Rotations));
+        // SmartDashboard.putNumber("Turret Angle", io.getYaw().in(Rotations));
         SmartDashboard.putNumber(
             "Jmm Value",
             this.JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()).in(Rotations)
