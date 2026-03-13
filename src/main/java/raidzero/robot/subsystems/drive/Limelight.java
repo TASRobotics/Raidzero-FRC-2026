@@ -94,6 +94,10 @@ public class Limelight {
         seedTimer.start();
     }
 
+    public void toggleLimelights() {
+        ignoreAllLimes = !ignoreAllLimes;
+    }
+
     /**
      * Sets the pipeline of the limelight
      *
@@ -199,6 +203,7 @@ public class Limelight {
         SmartDashboard.putNumber("HeadingReadingsSize", headingReadings.size());
         SmartDashboard.putNumber("seedinterval", seedInterval.get());
         SmartDashboard.putNumber("seedtimer", seedTimer.get());
+        SmartDashboard.putBoolean("Ignore Limes", ignoreAllLimes);
     }
 
     /**

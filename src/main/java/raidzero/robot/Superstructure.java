@@ -13,6 +13,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,6 +23,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import raidzero.lib.ElasticLib;
+import raidzero.lib.ElasticLib.Notification;
+import raidzero.lib.ElasticLib.NotificationLevel;
+import raidzero.lib.Util;
 import raidzero.robot.commands.Aim;
 import raidzero.robot.commands.StaticAim;
 import raidzero.robot.subsystems.drive.Limelight;
@@ -34,7 +39,6 @@ import raidzero.robot.subsystems.shooter.Feeder;
 import raidzero.robot.subsystems.shooter.Shooter;
 import raidzero.robot.subsystems.turret.Hood;
 import raidzero.robot.subsystems.turret.Turret;
-import raidzero.robot.subsystems.turret.TurretConstants;
 import raidzero.robot.subsystems.turret.TurretConstants.Pitch;
 
 public class Superstructure {
@@ -42,13 +46,18 @@ public class Superstructure {
 
     private static final Shooter shooter = Shooter.system();
     private static final Turret turret = Turret.system();
-    private static final Hood hood = Hood.system();
+    public static final Hood hood = Hood.system();
     private static final Feeder feeder = Feeder.system();
     private static final Spindexer spindexer = Spindexer.system();
     private static final Extender extender = Extender.system();
     private static final Intake intake = Intake.system();
     private static final Swerve swerve = Swerve.system();
     private static final Limelight limelight = Limelight.system();
+
+    private static boolean isPassing = false;
+    private static Trigger isPassingTrigger = new Trigger(() -> {
+        return isPassing;
+    });
 
     private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.75;
     private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.75;
@@ -99,6 +108,7 @@ public class Superstructure {
         return !inactiveNow;
     });
 
+    // TODO: Scale zone based on ChassisSpeeds (x vel)
     private static Trigger swerveApprTrench = new Trigger(() -> {
         Pose2d pose = swerve.getState().Pose;
 
@@ -106,6 +116,18 @@ public class Superstructure {
         boolean negX = ((pose.getX() > 4.6 && pose.getX() < 6.1) || (pose.getX() > 11.9 && pose.getX() < 12.7));
 
         return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
+    });
+
+    private static Trigger apprPos = new Trigger(() -> {
+        Pose2d pose = swerve.getState().Pose;
+
+        return ((pose.getX() > 3.5 && pose.getX() < 4.6) || (pose.getX() > 10.4 && pose.getX() < 11.9));
+    });
+
+    private static Trigger apprNeg = new Trigger(() -> {
+        Pose2d pose = swerve.getState().Pose;
+
+        return ((pose.getX() > 4.6 && pose.getX() < 6.1) || (pose.getX() > 11.9 && pose.getX() < 12.7));
     });
 
     private static Trigger passingArea1 = new Trigger(() -> {
@@ -134,6 +156,20 @@ public class Superstructure {
 
     public static Trigger spindexerIsMoving = new Trigger(() -> spindexer.getVelocity().abs(RotationsPerSecond) > 1.0);
 
+    // 1:55 1:30 1:05 :40
+    public static Trigger timestampOne = new Trigger(() -> {
+        return DriverStation.getMatchTime() <= 116;
+    });
+    public static Trigger timestampTwo = new Trigger(() -> {
+        return DriverStation.getMatchTime() <= 91;
+    });
+    public static Trigger timestampThree = new Trigger(() -> {
+        return DriverStation.getMatchTime() <= 66;
+    });
+    public static Trigger timestampFour = new Trigger(() -> {
+        return DriverStation.getMatchTime() <= 41;
+    });
+
     /**
      * RUns the initialization routines for subsystems
      */
@@ -159,14 +195,14 @@ public class Superstructure {
         );
 
         hood.setDefaultCommand(hood.aim().onlyIf(swerveApprTrench.negate().or(driver.rightBumper())));
-        // hood.setDefaultCommand(hood.stop());
+        // hood.setDefaultCommand(hood.stop());.
         // turret.setDefaultCommand(turret.stop());
         turret.setDefaultCommand(new Aim());
 
         shooter.setDefaultCommand(shooter.stop());
         feeder.setDefaultCommand(feeder.stop());
         spindexer.setDefaultCommand(spindexer.stop());
-        extender.setDefaultCommand(extender.stop());
+        extender.setDefaultCommand(extender.extend());
         intake.setDefaultCommand(intake.stop());
     }
 
@@ -203,6 +239,14 @@ public class Superstructure {
         );
 
         driver.rightBumper().whileTrue(swerve.applyRequest(() -> brake));
+        driver.b().whileTrue(hood.aim(Degrees.of(10)));
+
+        driver.x().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
+
+        driver.leftTrigger().and(driver.rightTrigger()).onTrue(Commands.runOnce(() -> {
+            // swerve.seedFieldCentric(); //TODO: FIX THIS
+            ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - DR"));
+        }));
 
         operator.circle().and(feeder.ballDetected().negate()).whileTrue(
             Commands.waitUntil(shooter.atTargetVelocity()).andThen(
@@ -210,6 +254,9 @@ public class Superstructure {
                     Commands.waitUntil(feeder.atTargetVelocity()).andThen(spindexer.antiJamBig())
                 )
             )
+        );
+        operator.circle().and(feeder.ballDetected().negate()).whileTrue(
+            hood.aim()// .onlyIf(isPassingTrigger.negate())
         );
 
         operator.circle().and(feeder.ballDetected()).whileTrue(
@@ -221,29 +268,78 @@ public class Superstructure {
                 )
             )
         );
+        operator.circle().and(feeder.ballDetected()).whileTrue(
+            hood.aim()// .onlyIf(isPassingTrigger.negate())
+        );
 
-        operator.povDown().whileTrue(hood.aim(Degrees.of(10)));
+        // * uncomment the nd comment above for manual antijam */
+        // operator.circle().whileTrue(
+        // Commands.waitUntil(shooter.atTargetVelocity())
+        // .andThen(feeder.go().alongWith(Commands.waitUntil(feeder.atTargetVelocity()).andThen(spindexer.go())))
+        // ).onFalse(spindexer.antiJam());
+
+        operator.povDown().whileTrue(
+            hood.aim(Degrees.of(10))
+        );
+
+        operator.square().whileTrue(
+            hood.aim(Degrees.of(10))
+        );
+        // operator.povDown().whileTrue(
+        // hood.aim(Degrees.of(10)).alongWith(
+        // new StaticAim(
+        // Rotations.of(
+        // DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
+        // )
+        // )
+        // )
+        // );
+
+        // operator.square().whileTrue(
+        // hood.aim(Degrees.of(10)).alongWith(
+        // new StaticAim(
+        // Rotations.of(
+        // DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
+        // )
+        // )
+        // )
+        // );
 
         operator.triangle().whileTrue(shooter.shoot());
+        operator.triangle().onFalse(spindexer.stop().alongWith(feeder.stop()));
 
         operator.R1().toggleOnTrue(intake.go());
         operator.L1().whileTrue(intake.reverse());
 
-        operator.options().onTrue(extender.extend());
-        operatorShare.onTrue(extender.retract());
+        // operator.options().onTrue(extender.extend());
+        // operatorShare.onTrue(extender.retract());
+        // operator.options().and(operatorShare).onTrue(Commands.runOnce(() -> limelight.toggleLimelights()));
+        operator.options().and(operatorShare).onTrue(Commands.runOnce(() -> {
+            limelight.toggleLimelights(); // TODO: FIX THIS
+            ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "LIMELIGHT TOGGLE CALLED - DR"));
+        }));
         operator.button(14).onTrue(extender.retract()).onFalse(extender.extend());
 
         operator.cross()
-            .toggleOnTrue(
+            .whileTrue(
                 new StaticAim(
                     Rotations.of(
                         DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.5
                     )
                 )
                     .alongWith(hood.aim(Pitch.PASSING_ANGLE))
+                // .alongWith(Commands.runOnce(() -> {
+                // isPassing = !isPassing;
+                // }))
             );
 
-        operator.square().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
+        operator.povUp().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
+
+        operator.L2().and(operator.R2()).onTrue(Commands.runOnce(() -> {
+            // swerve.seedFieldCentric();
+            swerve.getPigeon2().setYaw(Util.isBlueAlliance() ? 0 : 180); // TODO: TEST THIS (0 for red??)
+            ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - OP"));
+        }));
 
         operator.L3().and(operator.R3())
             .onTrue(Commands.runOnce(() -> limelight.resetSeed()))
@@ -289,30 +385,60 @@ public class Superstructure {
         turret.isPirouetteing().whileTrue(spindexer.stop().alongWith(feeder.stop().andThen(shooter.stop())));
         // .onFalse(Commands.runOnce(() -> turret.setStartupAngle()));
 
-        swerveApprTrench.and(driver.rightBumper().negate()).and(passingArea1.and(passingArea2).negate())
-            .whileTrue(hood.aim(Degrees.of(10)).alongWith(spindexer.stop().alongWith(feeder.stop())));
-
-        passingArea1.and(swerveApprTrench.negate()).and(() -> DriverStation.isTeleopEnabled())
+        swerveApprTrench.and(driver.rightBumper().negate()).and(operator.cross().negate())// .and(passingArea1.and(passingArea2).negate())
             .whileTrue(
-                new StaticAim(
-                    Rotations.of(
-                        DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
-                    )
+                hood.aim(Degrees.of(10)).alongWith(
+                    spindexer.stop().alongWith(feeder.stop())
                 )
-                    .alongWith(hood.aim(Pitch.PASSING_ANGLE))
-            )
-            .onFalse(shooter.stop());
+            );
 
-        passingArea2.and(swerveApprTrench.negate()).and(() -> DriverStation.isTeleopEnabled())
-            .whileTrue(
-                new StaticAim(
-                    Rotations.of(
-                        DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
-                    )
-                )
-                    .alongWith(hood.aim(Pitch.PASSING_ANGLE))
-            )
-            .onFalse(shooter.stop());
+        // apprPos.and(driver.rightBumper().negate()).and(passingArea1.and(passingArea2).negate())
+        // .whileTrue(
+        // hood.aim(Degrees.of(10)).alongWith(
+        // spindexer.stop().alongWith(feeder.stop()).alongWith(
+        // new StaticAim(
+        // Rotations.of(
+        // DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.0 : 0.5
+        // )
+        // )
+        // )
+        // )
+        // );
+
+        // apprNeg.and(driver.rightBumper().negate()).and(passingArea1.and(passingArea2).negate())
+        // .whileTrue(
+        // hood.aim(Degrees.of(10)).alongWith(
+        // spindexer.stop().alongWith(feeder.stop()).alongWith(
+        // new StaticAim(
+        // Rotations.of(
+        // DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
+        // )
+        // )
+        // )
+        // )
+        // );
+
+        // passingArea1.and(swerveApprTrench.negate()).and(() -> DriverStation.isTeleopEnabled())
+        // .whileTrue(
+        // new StaticAim(
+        // Rotations.of(
+        // DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
+        // )
+        // )
+        // .alongWith(hood.aim(Pitch.PASSING_ANGLE))
+        // )
+        // .onFalse(shooter.stop());
+
+        // passingArea2.and(swerveApprTrench.negate()).and(() -> DriverStation.isTeleopEnabled())
+        // .whileTrue(
+        // new StaticAim(
+        // Rotations.of(
+        // DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
+        // )
+        // )
+        // .alongWith(hood.aim(Pitch.PASSING_ANGLE))
+        // )
+        // .onFalse(shooter.stop());
 
         // autoSpindexTrigger.and(feeder.ballDetected().negate()).whileTrue(
         // feeder.go().alongWith(spindexer.antiJamBig())
@@ -347,6 +473,27 @@ public class Superstructure {
         );
 
         inAutonShootingZone.negate().whileTrue(hood.aim(Degrees.of(10)));
+
+        timestampOne.onTrue(Commands.run(() -> {
+            driver.setRumble(RumbleType.kBothRumble, 1);
+        }).withTimeout(1).finallyDo(() -> {
+            driver.setRumble(RumbleType.kBothRumble, 0);
+        }));
+        timestampTwo.onTrue(Commands.run(() -> {
+            driver.setRumble(RumbleType.kBothRumble, 1);
+        }).withTimeout(1).finallyDo(() -> {
+            driver.setRumble(RumbleType.kBothRumble, 0);
+        }));
+        timestampThree.onTrue(Commands.run(() -> {
+            driver.setRumble(RumbleType.kBothRumble, 1);
+        }).withTimeout(1).finallyDo(() -> {
+            driver.setRumble(RumbleType.kBothRumble, 0);
+        }));
+        timestampFour.onTrue(Commands.run(() -> {
+            driver.setRumble(RumbleType.kBothRumble, 1);
+        }).withTimeout(1).finallyDo(() -> {
+            driver.setRumble(RumbleType.kBothRumble, 0);
+        }));
     }
 
     /**
