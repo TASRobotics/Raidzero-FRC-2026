@@ -170,15 +170,15 @@ public final class TurretConstants {
             PITCH_TABLE.put(5.08, 27.0);
             PITCH_TABLE.put(5.5, 28.0);
 
-            RPS_TABLE.put(1.58, 30.0);
-            RPS_TABLE.put(2.05, 31.0);
-            RPS_TABLE.put(2.47, 31.0);
-            RPS_TABLE.put(2.94, 32.0);
-            RPS_TABLE.put(3.48, 35.0);
-            RPS_TABLE.put(3.97, 35.5);
-            RPS_TABLE.put(4.48, 35.5);
-            RPS_TABLE.put(5.08, 37.5);
-            RPS_TABLE.put(5.5, 38.5);
+            RPS_TABLE.put(1.58, 29.0);
+            RPS_TABLE.put(2.05, 30.0);
+            RPS_TABLE.put(2.47, 30.0);
+            RPS_TABLE.put(2.94, 31.5);
+            RPS_TABLE.put(3.48, 34.25);
+            RPS_TABLE.put(3.97, 34.5);
+            RPS_TABLE.put(4.48, 34.5);
+            RPS_TABLE.put(5.08, 36.5);
+            RPS_TABLE.put(5.5, 37.5);
 
             TOF_TABLE.put(1.878, 1.156);
             TOF_TABLE.put(2.427, 1.254);
