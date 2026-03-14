@@ -202,7 +202,7 @@ public class Superstructure {
         shooter.setDefaultCommand(shooter.stop());
         feeder.setDefaultCommand(feeder.stop());
         spindexer.setDefaultCommand(spindexer.stop());
-        extender.setDefaultCommand(extender.extend());
+        extender.setDefaultCommand(extender.stop());
         intake.setDefaultCommand(intake.stop());
     }
 
@@ -244,7 +244,7 @@ public class Superstructure {
         driver.x().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
 
         driver.leftTrigger().and(driver.rightTrigger()).onTrue(Commands.runOnce(() -> {
-            // swerve.seedFieldCentric(); //TODO: FIX THIS
+            swerve.getPigeon2().setYaw(Util.isBlueAlliance() ? 0 : 180);
             ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - DR"));
         }));
 
@@ -324,7 +324,7 @@ public class Superstructure {
             .whileTrue(
                 new StaticAim(
                     Rotations.of(
-                        DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.5
+                        DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
                     )
                 )
                     .alongWith(hood.aim(Pitch.PASSING_ANGLE))
@@ -337,7 +337,7 @@ public class Superstructure {
 
         operator.L2().and(operator.R2()).onTrue(Commands.runOnce(() -> {
             // swerve.seedFieldCentric();
-            swerve.getPigeon2().setYaw(Util.isBlueAlliance() ? 0 : 180); // TODO: TEST THIS (0 for red??)
+            swerve.getPigeon2().setYaw(Util.isBlueAlliance() ? 0 : 180);
             ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - OP"));
         }));
 
