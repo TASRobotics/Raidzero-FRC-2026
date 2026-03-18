@@ -192,6 +192,15 @@ public class Turret extends R0Subsystem<TurretIO> {
         return Rotations.of(0.0);
     }
 
+    /**
+     * Gets the current turret pose
+     * 
+     * @return The current turret pose as a {@link Pose2d}
+     */
+    public Pose2d getTurretPose() {
+        return staticAimBot.turret();
+    }
+
     @Override
     public void periodic() {
         // SmartDashboard.putNumber("Yaw", io.getYaw().in(Rotations));

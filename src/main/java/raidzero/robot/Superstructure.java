@@ -109,8 +109,8 @@ public class Superstructure {
     });
 
     // TODO: Scale zone based on ChassisSpeeds (x vel)
-    private static Trigger swerveApprTrench = new Trigger(() -> {
-        Pose2d pose = swerve.getState().Pose;
+    private static Trigger apprTrench = new Trigger(() -> {
+        Pose2d pose = turret.getTurretPose();
 
         boolean posX = ((pose.getX() > 3.5 && pose.getX() < 4.6) || (pose.getX() > 10.4 && pose.getX() < 11.9));
         boolean negX = ((pose.getX() > 4.6 && pose.getX() < 6.1) || (pose.getX() > 11.9 && pose.getX() < 12.7));
@@ -385,7 +385,7 @@ public class Superstructure {
         turret.isPirouetteing().whileTrue(spindexer.stop().alongWith(feeder.stop().andThen(shooter.stop())));
         // .onFalse(Commands.runOnce(() -> turret.setStartupAngle()));
 
-        swerveApprTrench.and(driver.rightBumper().negate()).and(operator.cross().negate())// .and(passingArea1.and(passingArea2).negate())
+        apprTrench.and(driver.rightBumper().negate()).and(operator.cross().negate())// .and(passingArea1.and(passingArea2).negate())
             .whileTrue(
                 hood.aim(Degrees.of(10)).alongWith(
                     spindexer.stop().alongWith(feeder.stop())
