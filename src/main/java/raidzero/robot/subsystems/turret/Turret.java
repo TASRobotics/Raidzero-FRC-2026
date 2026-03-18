@@ -194,7 +194,7 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     /**
      * Gets the current turret pose
-     * 
+     *
      * @return The current turret pose as a {@link Pose2d}
      */
     public Pose2d getTurretPose() {

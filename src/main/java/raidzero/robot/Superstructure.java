@@ -14,13 +14,11 @@ import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.ElasticLib;
@@ -67,41 +65,12 @@ public class Superstructure {
     private static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 
     private static CommandXboxController driver = new CommandXboxController(0);
-    private static CommandPS5Controller operator = new CommandPS5Controller(1);
+    private static CommandXboxController operator = new CommandXboxController(1);
     private static final Trigger operatorShare = operator.button(9);
 
     private static final Auto autos = new Auto(swerve, intake, extender);
 
     private static SendableChooser<Command> autoChooser;
-
-    public static final Trigger hubActive = new Trigger(() -> {
-        double t = Timer.getMatchTime();
-        if (t < 0)
-            return false;
-
-        // >140 = auto, >130 = transition, <=30 = endgame
-        // Match timing (seconds remaining)
-        if (t > 140 || t > 130 || t <= 30)
-            return true;
-        // >140 = auto, >130 = transition, <=30 = endgame
-
-        int shift = (t > 105) ? 1 : (t > 80) ? 2 : (t > 55) ? 3 : 4;
-
-        String data = DriverStation.getGameSpecificMessage();
-        if (data == null || data.isEmpty())
-            return true;
-
-        boolean redStartsInactive = data.charAt(0) == 'R';
-        var allianceOpt = DriverStation.getAlliance();
-        if (allianceOpt.isEmpty())
-            return true;
-
-        boolean isRed = allianceOpt.get() == DriverStation.Alliance.Red;
-        boolean startedInactive = (isRed && redStartsInactive) || (!isRed && !redStartsInactive);
-
-        boolean inactiveNow = ((shift - 1) % 2 == 0) ? startedInactive : !startedInactive;
-        return !inactiveNow;
-    });
 
     // TODO: Scale zone based on ChassisSpeeds (x vel)
     private static Trigger apprTrench = new Trigger(() -> {
@@ -113,45 +82,13 @@ public class Superstructure {
         return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
     });
 
-    private static Trigger apprPos = new Trigger(() -> {
-        Pose2d pose = swerve.getState().Pose;
-
-        return ((pose.getX() > 3.5 && pose.getX() < 4.6) || (pose.getX() > 10.4 && pose.getX() < 11.9));
-    });
-
-    private static Trigger apprNeg = new Trigger(() -> {
-        Pose2d pose = swerve.getState().Pose;
-
-        return ((pose.getX() > 4.6 && pose.getX() < 6.1) || (pose.getX() > 11.9 && pose.getX() < 12.7));
-    });
-
-    private static Trigger passingArea1 = new Trigger(() -> {
-        Pose2d pose = swerve.getState().Pose;
-
-        boolean inX = pose.getX() > 6.3 && pose.getX() < 10.8;
-        boolean inY = pose.getY() > 0.28 && pose.getY() < 3.4;
-
-        return inX && inY;
-    });
-
-    private static Trigger passingArea2 = new Trigger(() -> {
-        Pose2d pose = swerve.getState().Pose;
-
-        boolean inX = pose.getX() > 6.3 && pose.getX() < 10.8;
-        boolean inY = pose.getY() > 4.6 && pose.getY() < 7.72;
-
-        return inX && inY;
-    });
-
     public static Trigger inAutonShootingZone = new Trigger(() -> {
         Pose2d pose = swerve.getState().Pose;
         boolean inAllianceZone = pose.getX() < 3.5 || pose.getX() > 12.7;
         return inAllianceZone && DriverStation.isAutonomousEnabled();
     });
 
-    public static Trigger spindexerIsMoving = new Trigger(() -> spindexer.getVelocity().abs(RotationsPerSecond) > 1.0);
-
-    // 1:55 1:30 1:05 :40
+    // 1:55 1:30 1:05 0:40
     public static Trigger timestampOne = new Trigger(() -> {
         return DriverStation.getMatchTime() <= 116;
     });
@@ -166,7 +103,7 @@ public class Superstructure {
     });
 
     /**
-     * RUns the initialization routines for subsystems
+     * Runs the initialization routines for subsystems
      */
     public static void runSubsystemInitRoutines() {
         turret.setStartupAngle();
@@ -178,8 +115,6 @@ public class Superstructure {
      * Applies the default commands
      */
     public static void applyDefaultCommands() {
-        // CAN_SHOOT.whileTrue(shooter.shoot());
-
         swerve.setDefaultCommand(
             swerve.applyRequest(
                 () -> fieldCentricDrive
@@ -190,8 +125,6 @@ public class Superstructure {
         );
 
         hood.setDefaultCommand(hood.aim().onlyIf(apprTrench.negate().or(driver.rightBumper())));
-        // hood.setDefaultCommand(hood.stop());.
-        // turret.setDefaultCommand(turret.stop());
         turret.setDefaultCommand(new Aim());
 
         shooter.setDefaultCommand(shooter.stop());
@@ -243,7 +176,9 @@ public class Superstructure {
             ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - DR"));
         }));
 
-        operator.circle().and(feeder.ballDetected().negate()).whileTrue(
+        operator.b().whileTrue(hood.aim());
+
+        operator.b().and(feeder.ballDetected().negate()).whileTrue(
             Commands.waitUntil(shooter.atTargetVelocity()).andThen(
                 feeder.go().alongWith(
                     Commands.waitUntil(feeder.atTargetVelocity()).andThen(spindexer.antiJamBig())
@@ -251,13 +186,7 @@ public class Superstructure {
             )
         );
 
-        operator.circle().and(feeder.ballDetected().negate()).whileTrue(
-            Commands.waitUntil(shooter.atTargetVelocity()).andThen(
-                hood.aim()
-            )
-        );
-
-        operator.circle().and(feeder.ballDetected()).whileTrue(
+        operator.b().and(feeder.ballDetected()).whileTrue(
             Commands.waitUntil(shooter.atTargetVelocity()).andThen(
                 feeder.go().alongWith(
                     Commands.waitUntil(feeder.atTargetVelocity()).andThen(
@@ -267,61 +196,29 @@ public class Superstructure {
             )
         );
 
-        operator.circle().and(feeder.ballDetected()).whileTrue(
-            Commands.waitUntil(shooter.atTargetVelocity()).andThen(
-                hood.aim()
-            )
-        );
-
-        // * uncomment the nd comment above for manual antijam */
-        // operator.circle().whileTrue(
-        // Commands.waitUntil(shooter.atTargetVelocity())
-        // .andThen(feeder.go().alongWith(Commands.waitUntil(feeder.atTargetVelocity()).andThen(spindexer.go())))
-        // ).onFalse(spindexer.antiJam());
-
         operator.povDown().whileTrue(
             hood.aim(Degrees.of(10))
         );
 
-        operator.square().whileTrue(
+        operator.x().whileTrue(
             hood.aim(Degrees.of(10))
         );
-        // operator.povDown().whileTrue(
-        // hood.aim(Degrees.of(10)).alongWith(
-        // new StaticAim(
-        // Rotations.of(
-        // DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
-        // )
-        // )
-        // )
-        // );
 
-        // operator.square().whileTrue(
-        // hood.aim(Degrees.of(10)).alongWith(
-        // new StaticAim(
-        // Rotations.of(
-        // DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
-        // )
-        // )
-        // )
-        // );
+        operator.y().whileTrue(shooter.shoot());
+        operator.y().onFalse(spindexer.stop().alongWith(feeder.stop()));
 
-        operator.triangle().whileTrue(shooter.shoot());
-        operator.triangle().onFalse(spindexer.stop().alongWith(feeder.stop()));
+        operator.rightBumper().toggleOnTrue(intake.go());
+        operator.leftBumper().whileTrue(intake.reverse());
 
-        operator.R1().toggleOnTrue(intake.go());
-        operator.L1().whileTrue(intake.reverse());
-
-        // operator.options().onTrue(extender.extend());
-        // operatorShare.onTrue(extender.retract());
-        // operator.options().and(operatorShare).onTrue(Commands.runOnce(() -> limelight.toggleLimelights()));
-        operator.options().and(operatorShare).onTrue(Commands.runOnce(() -> {
+        operator.start().and(operatorShare).onTrue(Commands.runOnce(() -> {
             limelight.toggleLimelights(); // TODO: FIX THIS
-            ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "LIMELIGHT TOGGLE CALLED - DR"));
+            ElasticLib.sendNotification(
+                new Notification(NotificationLevel.WARNING, "LL", "LIMELIGHT TOGGLE CALLED - DR")
+            );
         }));
-        operator.button(14).onTrue(extender.retract()).onFalse(extender.extend());
+        operator.back().onTrue(extender.retract()).onFalse(extender.extend());
 
-        operator.cross()
+        operator.a()
             .whileTrue(
                 new StaticAim(
                     Rotations.of(
@@ -329,54 +226,53 @@ public class Superstructure {
                     )
                 )
                     .alongWith(hood.aim(Pitch.PASSING_ANGLE))
-                // .alongWith(Commands.runOnce(() -> {
-                // isPassing = !isPassing;
-                // }))
             );
 
         operator.povUp().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
 
-        operator.L2().and(operator.R2()).onTrue(Commands.runOnce(() -> {
-            // swerve.seedFieldCentric();
+        operator.leftTrigger().and(operator.rightTrigger()).onTrue(Commands.runOnce(() -> {
             swerve.getPigeon2().setYaw(Util.isBlueAlliance() ? 0 : 180);
             ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - OP"));
         }));
 
-        operator.L3().and(operator.R3())
+        operator.leftStick().and(operator.rightStick())
             .onTrue(Commands.runOnce(() -> limelight.resetSeed()))
             .onFalse(Commands.runOnce(() -> limelight.setManualSeed(true)));
 
-        // driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
-        // driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
+    }
 
-        // driver.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
-        // driver.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
+    public static void applyDebugBindings() {
+        driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
+        driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
 
-        // driver.leftTrigger().and(feeder.ballDetected().negate()).whileTrue(
-        // Commands.waitUntil(shooter.atManualTargetVelocity()).andThen(
-        // feeder.go().alongWith(
-        // Commands.waitUntil(feeder.atTargetVelocity()).andThen(spindexer.antiJamBig())
-        // )
-        // )
-        // );
+        driver.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
+        driver.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
 
-        // driver.leftTrigger().and(feeder.ballDetected()).whileTrue(
-        // Commands.waitUntil(shooter.atManualTargetVelocity()).andThen(
-        // feeder.go().alongWith(
-        // Commands.waitUntil(feeder.atTargetVelocity()).andThen(
-        // spindexer.go()
-        // )
-        // )
-        // )
-        // );
+        driver.leftTrigger().and(feeder.ballDetected().negate()).whileTrue(
+            Commands.waitUntil(shooter.atManualTargetVelocity()).andThen(
+                feeder.go().alongWith(
+                    Commands.waitUntil(feeder.atTargetVelocity()).andThen(spindexer.antiJamBig())
+                )
+            )
+        );
 
-        // driver.rightTrigger().whileTrue(shooter.manualShoot());
+        driver.leftTrigger().and(feeder.ballDetected()).whileTrue(
+            Commands.waitUntil(shooter.atManualTargetVelocity()).andThen(
+                feeder.go().alongWith(
+                    Commands.waitUntil(feeder.atTargetVelocity()).andThen(
+                        spindexer.go()
+                    )
+                )
+            )
+        );
 
-        // driver.rightBumper().whileTrue(intake.go());
-        // driver.x().onTrue(extender.retract());
-        // driver.b().onTrue(extender.extend());
+        driver.rightTrigger().whileTrue(shooter.manualShoot());
 
-        // driver.a().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
+        driver.rightBumper().whileTrue(intake.go());
+        driver.x().onTrue(extender.retract());
+        driver.b().onTrue(extender.extend());
+
+        driver.a().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
     }
 
     /**
@@ -384,81 +280,17 @@ public class Superstructure {
      */
     public static void bindTriggers() {
         turret.isPirouetteing().whileTrue(spindexer.stop().alongWith(feeder.stop().andThen(shooter.stop())));
-        // .onFalse(Commands.runOnce(() -> turret.setStartupAngle()));
 
-        apprTrench.and(driver.rightBumper().negate()).and(operator.cross().negate())// .and(passingArea1.and(passingArea2).negate())
+        apprTrench.and(driver.rightBumper().negate()).and(operator.a().negate())
             .whileTrue(
                 hood.aim(Degrees.of(10)).alongWith(
                     spindexer.stop().alongWith(feeder.stop())
                 )
             );
 
-        // apprPos.and(driver.rightBumper().negate()).and(passingArea1.and(passingArea2).negate())
-        // .whileTrue(
-        // hood.aim(Degrees.of(10)).alongWith(
-        // spindexer.stop().alongWith(feeder.stop()).alongWith(
-        // new StaticAim(
-        // Rotations.of(
-        // DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.0 : 0.5
-        // )
-        // )
-        // )
-        // )
-        // );
-
-        // apprNeg.and(driver.rightBumper().negate()).and(passingArea1.and(passingArea2).negate())
-        // .whileTrue(
-        // hood.aim(Degrees.of(10)).alongWith(
-        // spindexer.stop().alongWith(feeder.stop()).alongWith(
-        // new StaticAim(
-        // Rotations.of(
-        // DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
-        // )
-        // )
-        // )
-        // )
-        // );
-
-        // passingArea1.and(swerveApprTrench.negate()).and(() -> DriverStation.isTeleopEnabled())
-        // .whileTrue(
-        // new StaticAim(
-        // Rotations.of(
-        // DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
-        // )
-        // )
-        // .alongWith(hood.aim(Pitch.PASSING_ANGLE))
-        // )
-        // .onFalse(shooter.stop());
-
-        // passingArea2.and(swerveApprTrench.negate()).and(() -> DriverStation.isTeleopEnabled())
-        // .whileTrue(
-        // new StaticAim(
-        // Rotations.of(
-        // DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
-        // )
-        // )
-        // .alongWith(hood.aim(Pitch.PASSING_ANGLE))
-        // )
-        // .onFalse(shooter.stop());
-
-        // autoSpindexTrigger.and(feeder.ballDetected().negate()).whileTrue(
-        // feeder.go().alongWith(spindexer.antiJamBig())
-        // );
-
-        // autoSpindexTrigger.and(feeder.ballDetected()).whileTrue(
-        // feeder.go().alongWith(spindexer.go())
-        // );
-
-        // canShootAuton.whileTrue(shooter.shoot());
-
-        // shouldSpindexAuton.and(feeder.ballDetected().negate()).whileTrue(
-        // feeder.go().alongWith(spindexer.antiJamBig()));
-
-        // shouldSpindexAuton.and(feeder.ballDetected()).whileTrue(
-        // feeder.go().alongWith(spindexer.go()));
-
         inAutonShootingZone.whileTrue(
-            shooter.shoot().until(() -> !inAutonShootingZone.getAsBoolean() && !spindexerIsMoving.getAsBoolean())
+            shooter.shoot()
+                .until(() -> !inAutonShootingZone.getAsBoolean() && !spindexer.stopped().getAsBoolean())
         );
 
         inAutonShootingZone.and(feeder.ballDetected()).whileTrue(
@@ -508,7 +340,7 @@ public class Superstructure {
 
     /**
      * Gets the Hood subsystem
-     * 
+     *
      * @return The {@link Hood} subsystem instance
      */
     public static Hood getHood() {
