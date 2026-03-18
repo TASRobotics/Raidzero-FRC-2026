@@ -22,7 +22,7 @@ public final class ShooterConstants {
         public static final double SENSOR_TO_MECHANISM_RATIO = 1.0;
         public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
-        public static final Current STATOR_CURRENT_LIMIT = Amps.of(50);
+        public static final Current STATOR_CURRENT_LIMIT = Amps.of(80); // 50
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(40);
 
         public static final double P = 0.1;
@@ -60,7 +60,7 @@ public final class ShooterConstants {
         public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
 
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(50);
-        public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(30);
+        public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(40);
 
         public static final double P = 1.0;
         public static final double I = 0.0;

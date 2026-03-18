@@ -65,11 +65,26 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     }
 
     /**
-     * Returns a {@link Trigger} that activates when the shooter is at its target velocity
+     * Returns a {@link Trigger} that activates when the shooter's velocity is less
+     * than the velocity tolerance
+     * stopped
+     *
+     * @return A {@link Trigger}
+     */
+    public Trigger stopped() {
+        return new Trigger(
+            () -> io.getVelocity().abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE.in(RotationsPerSecond)
+        );
+    }
+
+    /**
+     * Returns a {@link Trigger} that activates when the shooter is at its target
+     * velocity
      *
      * @see {@link #incrementVelocitySetpoint(AngularVelocity)}
      *
-     * @return A {@link Trigger} that activates when the shooter is at its target velocity
+     * @return A {@link Trigger} that activates when the shooter is at its target
+     *         velocity
      */
     public Trigger atManualTargetVelocity() {
         return new Trigger(() -> {
@@ -83,7 +98,8 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      *
      * @see {@link #incrementVelocitySetpoint(AngularVelocity)}
      *
-     * @return A {@link Command} that runs the shooter at the velocity at its target velocity
+     * @return A {@link Command} that runs the shooter at the velocity at its target
+     *         velocity
      */
     public Command manualShoot() {
         return run(() -> {
@@ -96,7 +112,8 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      * Increments the velocity setpoint by the specified amount
      *
      * @param speed The amount to increment the velocity setpoint by
-     * @return A {@link Command} that increments the velocity setpoint by the specified amount
+     * @return A {@link Command} that increments the velocity setpoint by the
+     *         specified amount
      */
     public Command incrementVelocitySetpoint(AngularVelocity speed) {
         return runOnce(() -> velocityTarget = velocityTarget.plus(speed));
@@ -120,7 +137,8 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      * Sets the shooter speed to the specified percentage
      *
      * @param percent The shooter speed in percent
-     * @return A {@link Command} that sets the shooter speed to the specified percentage
+     * @return A {@link Command} that sets the shooter speed to the specified
+     *         percentage
      */
     public Command setSpeed(double percent) {
         return run(() -> {

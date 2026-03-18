@@ -28,7 +28,7 @@ public final class IntakeConstants {
         public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
 
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
-        public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
+        public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(40);
 
         public static final double P = 0.1;
         public static final double I = 0.0;
@@ -64,7 +64,7 @@ public final class IntakeConstants {
         public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
 
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
-        public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
+        public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(40);
 
         public static final double P = 8.0;
         public static final double I = 0.0;
@@ -110,8 +110,8 @@ public final class IntakeConstants {
         public static final double SENSOR_TO_MECHANISM_RATIO = 9.0 / 1.0;
         public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
-        public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
-        public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
+        public static final Current STATOR_CURRENT_LIMIT = Amps.of(60);
+        public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(40);
 
         public static final double P = 1.5;
         public static final double I = 0.0;
@@ -132,6 +132,8 @@ public final class IntakeConstants {
 
         public static final AngularVelocity INDEX_SPEED = RotationsPerSecond.of(10.0);
         public static final AngularVelocity ANTIJAM_SPEED = RotationsPerSecond.of(-10);
+
+        public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(3.0);
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
     }

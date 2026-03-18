@@ -4,7 +4,10 @@
 
 package raidzero.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import com.ctre.phoenix6.HootAutoReplay;
+import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -78,13 +81,16 @@ public class Robot extends TimedRobot {
 
         alreadyEnabled = true;
         Elastic.initTeleop();
+        Superstructure.getHood().setDefaultCommand(Superstructure.getHood().aim(Degrees.of(10)));
     }
 
     @Override
     public void teleopPeriodic() {}
 
     @Override
-    public void teleopExit() {}
+    public void teleopExit() {
+        SignalLogger.stop();
+    }
 
     @Override
     public void testInit() {
