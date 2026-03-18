@@ -54,11 +54,6 @@ public class Superstructure {
     private static final Swerve swerve = Swerve.system();
     private static final Limelight limelight = Limelight.system();
 
-    private static boolean isPassing = false;
-    private static Trigger isPassingTrigger = new Trigger(() -> {
-        return isPassing;
-    });
-
     private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.75;
     private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.75;
 
@@ -194,7 +189,7 @@ public class Superstructure {
             )
         );
 
-        hood.setDefaultCommand(hood.aim().onlyIf(swerveApprTrench.negate().or(driver.rightBumper())));
+        hood.setDefaultCommand(hood.aim().onlyIf(apprTrench.negate().or(driver.rightBumper())));
         // hood.setDefaultCommand(hood.stop());.
         // turret.setDefaultCommand(turret.stop());
         turret.setDefaultCommand(new Aim());
@@ -255,8 +250,11 @@ public class Superstructure {
                 )
             )
         );
+
         operator.circle().and(feeder.ballDetected().negate()).whileTrue(
-            hood.aim()// .onlyIf(isPassingTrigger.negate())
+            Commands.waitUntil(shooter.atTargetVelocity()).andThen(
+                hood.aim()
+            )
         );
 
         operator.circle().and(feeder.ballDetected()).whileTrue(
@@ -268,8 +266,11 @@ public class Superstructure {
                 )
             )
         );
+
         operator.circle().and(feeder.ballDetected()).whileTrue(
-            hood.aim()// .onlyIf(isPassingTrigger.negate())
+            Commands.waitUntil(shooter.atTargetVelocity()).andThen(
+                hood.aim()
+            )
         );
 
         // * uncomment the nd comment above for manual antijam */
@@ -503,6 +504,15 @@ public class Superstructure {
      */
     public static Limelight getLimelight() {
         return limelight;
+    }
+
+    /**
+     * Gets the Hood subsystem
+     * 
+     * @return The {@link Hood} subsystem instance
+     */
+    public static Hood getHood() {
+        return hood;
     }
 
     /**
