@@ -94,6 +94,9 @@ public class Limelight {
         seedTimer.start();
     }
 
+    /**
+     * Toggles whether to ignore all limelight pose estimates
+     */
     public void toggleLimelights() {
         ignoreAllLimes = !ignoreAllLimes;
     }
