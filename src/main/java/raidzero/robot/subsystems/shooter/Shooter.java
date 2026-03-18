@@ -1,12 +1,10 @@
 package raidzero.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -23,28 +21,21 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     private AngularVelocity activeTarget = RotationsPerSecond.of(0);
 
     /**
-     * Runs the shooter at the necessary speed from the RPS interpolating table
+     * Runs the shooter at the RPS required for the current virtual goal distance.
+     * The virtual goal distance comes from the kinetic
+     * {@link raidzero.robot.subsystems.turret.AimBot},
+     * which already accounts for robot velocity, turret mount offset, and time of
+     * flight via the
+     * virtual goal iteration in
+     * {@link raidzero.robot.subsystems.turret.AimBot#adjustKineticLead}.
      *
-     * @return A {@link Command} that runs the shooter at the target speed
+     * @return a {@link Command} that continuously updates the flywheel setpoint
      */
     public Command shoot() {
         return run(() -> {
-            Turret turret = Turret.system();
+            double virtualDistance = Turret.system().getHubDistance(true).in(Meters);
 
-            double distance = turret.getHubDistance(true).in(Meters);
-
-            // Base RPS from table (stationary physics)
-            double baseRPS = Kinetics.RPS_TABLE.get(distance);
-
-            // Radial Velocity (accounts for robot movement)
-            LinearVelocity vRadial = turret.getTurretAim(true)
-                .getRadialVelocity(turret.getFilteredSpeeds());
-
-            // Compensation: Subtract vRadial because if vRadial is moving away (negative)
-            // we need to ADD RPS to the shooter
-            double compensationRPS = -vRadial.in(MetersPerSecond) * Kinetics.VELOCITY_COMPENSATION_SCALAR;
-
-            this.autoVelocityTarget = RotationsPerSecond.of(baseRPS + compensationRPS);
+            this.autoVelocityTarget = RotationsPerSecond.of(Kinetics.RPS_TABLE.get(virtualDistance));
             this.activeTarget = this.autoVelocityTarget;
 
             io.setVelocity(this.activeTarget);
@@ -52,54 +43,46 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     }
 
     /**
-     * Returns a {@link Trigger} that activates when the shooter is at it's target
-     * velocity from the RPS interpolating table
+     * Returns a {@link Trigger} that activates when the flywheel is within
+     * tolerance of the
+     * active target velocity (auto mode).
      *
      * @return a {@link Trigger}
      */
     public Trigger atTargetVelocity() {
-        return new Trigger(() -> {
-            return io.getVelocity().minus(this.activeTarget).abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE
-                .in(RotationsPerSecond);
-        });
+        return new Trigger(() -> io.getVelocity().minus(this.activeTarget)
+                .abs(RotationsPerSecond) < Flywheel.VELOCITY_TOLERANCE.in(RotationsPerSecond));
     }
 
     /**
-     * Returns a {@link Trigger} that activates when the shooter's velocity is less
-     * than the velocity tolerance
-     * stopped
+     * Returns a {@link Trigger} that activates when the flywheel velocity is below
+     * the
+     * tolerance threshold (effectively stopped).
      *
-     * @return A {@link Trigger}
+     * @return a {@link Trigger}
      */
     public Trigger stopped() {
         return new Trigger(
-            () -> io.getVelocity().abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE.in(RotationsPerSecond)
-        );
+                () -> io.getVelocity().abs(RotationsPerSecond) < Flywheel.VELOCITY_TOLERANCE.in(RotationsPerSecond));
     }
 
     /**
-     * Returns a {@link Trigger} that activates when the shooter is at its target
-     * velocity
+     * Returns a {@link Trigger} that activates when the flywheel is within
+     * tolerance of the manual velocity target (set via
+     * {@link #incrementVelocitySetpoint}).
      *
-     * @see {@link #incrementVelocitySetpoint(AngularVelocity)}
-     *
-     * @return A {@link Trigger} that activates when the shooter is at its target
-     *         velocity
+     * @return a {@link Trigger}
      */
     public Trigger atManualTargetVelocity() {
-        return new Trigger(() -> {
-            return io.getVelocity().minus(this.velocityTarget).abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE
-                .in(RotationsPerSecond);
-        });
+        return new Trigger(() -> io.getVelocity().minus(this.velocityTarget)
+                .abs(RotationsPerSecond) < Flywheel.VELOCITY_TOLERANCE.in(RotationsPerSecond));
     }
 
     /**
-     * Runs the shooter at the velocity at its target velocity
+     * Runs the shooter at the manually tuned velocity setpoint.
      *
-     * @see {@link #incrementVelocitySetpoint(AngularVelocity)}
-     *
-     * @return A {@link Command} that runs the shooter at the velocity at its target
-     *         velocity
+     * @see #incrementVelocitySetpoint(AngularVelocity)
+     * @return a {@link Command}
      */
     public Command manualShoot() {
         return run(() -> {
@@ -109,21 +92,22 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     }
 
     /**
-     * Increments the velocity setpoint by the specified amount
+     * Increments the manual velocity setpoint by the given amount. Intended for
+     * tuning on the fly during debug sessions.
      *
-     * @param speed The amount to increment the velocity setpoint by
-     * @return A {@link Command} that increments the velocity setpoint by the
-     *         specified amount
+     * @param speed the amount to add (can be negative)
+     * @return a {@link Command}
      */
     public Command incrementVelocitySetpoint(AngularVelocity speed) {
         return runOnce(() -> velocityTarget = velocityTarget.plus(speed));
     }
 
     /**
-     * Runs the shooter at the specified speed
+     * Runs the shooter at a specific fixed speed, overriding both the manual and
+     * auto targets.
      *
-     * @param speed The speed at which to run the shooter
-     * @return A {@link Command} that runs the shooter at the specified speed
+     * @param speed the target angular velocity
+     * @return a {@link Command}
      */
     public Command shoot(AngularVelocity speed) {
         return run(() -> {
@@ -134,11 +118,12 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     }
 
     /**
-     * Sets the shooter speed to the specified percentage
+     * Sets the shooter to the given duty-cycle percentage. Active target is zeroed
+     * so
+     * {@link #atTargetVelocity()} does not false-trigger.
      *
-     * @param percent The shooter speed in percent
-     * @return A {@link Command} that sets the shooter speed to the specified
-     *         percentage
+     * @param percent duty cycle [0, 1]
+     * @return a {@link Command}
      */
     public Command setSpeed(double percent) {
         return run(() -> {
@@ -148,9 +133,9 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     }
 
     /**
-     * Stops the shooter motor
+     * Stops the flywheel and zeros the active target.
      *
-     * @return A {@link Command} that stops the shooter motor
+     * @return a {@link Command}
      */
     public Command stop() {
         return run(() -> {
@@ -159,42 +144,29 @@ public class Shooter extends R0Subsystem<ShooterIO> {
         });
     }
 
-    /**
-     * Constructs the {@link Shooter} subsystem
-     *
-     * @param io The {@link ShooterIO} implementation to use for this subsystem
-     */
     private Shooter(ShooterIO io) {
         super(io);
     }
 
     /**
-     * Gets the {@link Shooter} subsystem instance
+     * Returns the singleton {@link Shooter} instance, creating it if necessary.
      *
-     * @return The {@link Shooter} subsystem instance
+     * @return the {@link Shooter} instance
      */
     public static Shooter system() {
         if (system == null) {
-            if (Utils.isSimulation()) {
-                system = new Shooter(new ShooterIO.Sim());
-            } else {
-                system = new Shooter(new ShooterIO.Real());
-            }
+            system = Utils.isSimulation()
+                    ? new Shooter(new ShooterIO.Sim())
+                    : new Shooter(new ShooterIO.Real());
         }
-
         return system;
     }
 
     @Override
     public void periodic() {
         super.periodic();
-        SmartDashboard.putNumber(
-            "Shooter speed",
-            io.getVelocity().in(RotationsPerSecond)
-        );
-        SmartDashboard.putNumber(
-            "Shooter target speed",
-            activeTarget.in(RotationsPerSecond)
-        );
+        SmartDashboard.putNumber("Shooter/Speed RPS", io.getVelocity().in(RotationsPerSecond));
+        SmartDashboard.putNumber("Shooter/Target RPS", activeTarget.in(RotationsPerSecond));
+        SmartDashboard.putNumber("Shooter/Auto Target RPS", autoVelocityTarget.in(RotationsPerSecond));
     }
 }

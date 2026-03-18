@@ -12,108 +12,100 @@ import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
 
 public class Hood extends R0Subsystem<HoodIO> {
     private static Hood system;
-    private Angle angleTarget = Degrees.of(10);
+    private Angle manualAngleTarget = Degrees.of(10);
 
     /**
-     * Aims to the angle target
+     * Aims the hood to the pitch from the interpolation table based on the virtual goal distance.
      *
-     * @return A {@link Command} that aims to the angle target
+     * @return a {@link Command} that continuously updates the hood angle
      */
-    public Command manualAim() {
-        return run(() -> io.moveTo(angleTarget));
-    }
-
-    /**
-     * Gets the current hood angle
-     *
-     * @return The current hood angle as an {@link Angle}
-     */
-    public Angle getAngle() {
-        return io.getPitch();
-    }
-
-    /**
-     * Aims to the specified angle
-     *
-     * @param angle the {@link Angle}
-     * @return A {@link Command} that aims to the specified angle
-     */
-    public Command aim(Angle angle) {
-        return run(() -> io.moveTo(angle));
-    }
-
-    /**
-    * Aims to the angle from the RPS interpolating table based on the distance to the hub
-    *
-    * @return A {@link Command} that aims to the angle from the RPS interpolating table based on the distance to the hub
-    */
     public Command aim() {
         return run(() -> {
-            Angle target = Degrees.of(Kinetics.PITCH_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
+            double virtualDistance = Turret.system().getHubDistance(true).in(Meters);
+            Angle target = Degrees.of(Kinetics.PITCH_TABLE.get(virtualDistance));
 
-            SmartDashboard.putNumber("Target pitch", target.in(Degrees));
+            SmartDashboard.putNumber("Hood/Target Pitch Deg", target.in(Degrees));
 
             io.moveTo(target);
         });
     }
 
     /**
-     * Stops the hood motor
+     * Aims the hood to the specified fixed angle.
      *
-     * @return A {@link Command} that stops the hood motor
+     * @param angle the target {@link Angle}
+     * @return a {@link Command} that holds the hood at the specified angle
+     */
+    public Command aim(Angle angle) {
+        return run(() -> io.moveTo(angle));
+    }
+
+    /**
+     * Aims the hood to the manually incremented angle target.
+     * Use {@link #incrementPitch} to adjust the target during debug sessions.
+     *
+     * @return a {@link Command} that holds the hood at the manual target
+     */
+    public Command manualAim() {
+        return run(() -> io.moveTo(manualAngleTarget));
+    }
+
+    /**
+     * Increments the manual angle target by the given amount.
+     *
+     * @param angle the {@link Angle} to add (can be negative)
+     * @return a {@link Command}
+     */
+    public Command incrementPitch(Angle angle) {
+        return runOnce(() -> manualAngleTarget = manualAngleTarget.plus(angle));
+    }
+
+    /**
+     * Stops the hood motor.
+     *
+     * @return a {@link Command}
      */
     public Command stop() {
         return run(() -> io.stop());
     }
 
     /**
-     * Sets the startup angle
+     * Seeds the hood encoder from the absolute sensor. Call once at startup.
      */
     public void setStartupAngle() {
         io.setStartupAngle();
     }
 
     /**
-     * Increments the target setpoint for manual aiming
+     * Returns the current hood pitch angle.
      *
-     * @param angle the {@link Angle} increment
-     * @return A {@link Command} that increments the target setpoint for manual
-     *         aiming
+     * @return current pitch as an {@link Angle}
      */
-    public Command incrementPitch(Angle angle) {
-        return runOnce(() -> angleTarget = angleTarget.plus(angle));
+    public Angle getAngle() {
+        return io.getPitch();
     }
 
     @Override
     public void periodic() {
         super.periodic();
-
-        SmartDashboard.putNumber("Pitch", io.getPitch().in(Degrees));
+        SmartDashboard.putNumber("Hood/Pitch Deg", io.getPitch().in(Degrees));
     }
 
-    /**
-     * Constructs a new {@link Hood} subsystem
-     *
-     * @param io The {@link HoodIO} implementation to use for this subsystem
-     */
     private Hood(HoodIO io) {
         super(io);
     }
 
     /**
-     * Gets the {@link Hood} subsystem instance
+     * Returns the singleton {@link Hood} instance, creating it if necessary.
      *
-     * @return The {@link Hood} subsystem instance
+     * @return the {@link Hood} instance
      */
     public static Hood system() {
         if (system == null) {
-            if (Utils.isSimulation())
-                system = new Hood(new HoodIO.Sim());
-            else
-                system = new Hood(new HoodIO.Real());
+            system = Utils.isSimulation()
+                ? new Hood(new HoodIO.Sim())
+                : new Hood(new HoodIO.Real());
         }
-
         return system;
     }
-
 }

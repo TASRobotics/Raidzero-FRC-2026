@@ -21,8 +21,10 @@ public class Aim extends Command {
 
     @Override
     public void execute() {
-        AimBot aquireAim = turret.getTurretAim(true);
-        double robotRelativeTurretSetpoint = aquireAim.goal().getRotation().minus(aquireAim.robot().getRotation())
+        AimBot kineticAim = turret.getTurretAim(true);
+
+        double robotRelativeTurretSetpoint = kineticAim.goal().getRotation()
+            .minus(kineticAim.robot().getRotation())
             .getRotations();
 
         turret.moveTo(Rotations.of(robotRelativeTurretSetpoint));

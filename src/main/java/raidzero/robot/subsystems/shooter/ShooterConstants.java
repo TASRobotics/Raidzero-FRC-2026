@@ -46,7 +46,7 @@ public final class ShooterConstants {
         public static final int FOLLOW_ID = 11;
         public static final MotorAlignmentValue FOLLOWER_INVERTED = MotorAlignmentValue.Opposed;
 
-        public static final AngularVelocity VELOCIOTY_TOLERANCE = RotationsPerSecond.of(5.0);
+        public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(5.0);
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
     }
