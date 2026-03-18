@@ -95,6 +95,13 @@ public class Limelight {
     }
 
     /**
+     * Toggles whether to ignore all limelight pose estimates
+     */
+    public void toggleLimelights() {
+        ignoreAllLimes = !ignoreAllLimes;
+    }
+
+    /**
      * Sets the pipeline of the limelight
      *
      * @param limelightName The name of the limelight
@@ -168,7 +175,7 @@ public class Limelight {
             state.update(ignoreAllLimes, seededPigeon, swerve.getState().Pose);
         }
 
-        if (!seededPigeon && seedTimer.get() < 10 && seedInterval.hasElapsed(0.25)) {
+        if (!seededPigeon && seedTimer.get() < 15 && seedInterval.hasElapsed(0.25)) {
             Rotation2d rotation;
 
             for (LimelightState state : limes) {
@@ -182,7 +189,7 @@ public class Limelight {
             seedInterval.restart();
         }
 
-        if (!seededPigeon && (manualSeed || seedTimer.get() > 10)) {
+        if (!seededPigeon && (manualSeed || seedTimer.get() > 15)) {
             swerve.getPigeon2().setYaw(headingReadings.stream().mapToDouble(Double::doubleValue).average().orElse(0.0));
             seededPigeon = true;
             manualSeed = false;
@@ -199,6 +206,7 @@ public class Limelight {
         SmartDashboard.putNumber("HeadingReadingsSize", headingReadings.size());
         SmartDashboard.putNumber("seedinterval", seedInterval.get());
         SmartDashboard.putNumber("seedtimer", seedTimer.get());
+        SmartDashboard.putBoolean("Ignore Limes", ignoreAllLimes);
     }
 
     /**

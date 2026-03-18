@@ -36,8 +36,10 @@ public final class TurretConstants {
         public static final int JMM_1_ID = 6; // 29 tooth
         public static final int JMM_2_ID = 5; // 22 tooth
 
-        public static final double JMM_OFFSET_1 = -0.499512; // 29 tooth
-        public static final double JMM_OFFSET_2 = -0.685791; // 22 tooth
+        public static final double JMM_OFFSET_1 = -0.854492; // 29 tooth
+        // public static final double JMM_OFFSET_2 = -0.726562; // 22 tooth
+        // public static final double JMM_OFFSET_2 = -0.937012; // 22 tooth
+        public static final double JMM_OFFSET_2 = -0.958496; // 22 tooth
 
         public static final SensorDirectionValue JMM_1_INVERTED = SensorDirectionValue.Clockwise_Positive;
         public static final SensorDirectionValue JMM_2_INVERTED = SensorDirectionValue.Clockwise_Positive;
@@ -65,13 +67,13 @@ public final class TurretConstants {
         public static final double EXPO_V = 3.0;
         public static final double EXPO_A = 3.0;
 
-        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(0.5); // max is 3.2
-        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(0.5); // max is 10
+        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(1.0); // max is 3.2
+        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(1.0); // max is 10
 
-        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(1.0);
+        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(1.37);
         public static final boolean ENALBE_FORWARD_SOFT_LIMIT = true;
 
-        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.5);
+        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.55);
         public static final boolean ENABLE_REVERSE_SOFT_LIMIT = true;
 
         public static MotorTelemetry TELEMETRY = new MotorTelemetry();
@@ -111,13 +113,14 @@ public final class TurretConstants {
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(0.29); // 48.375
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(5.0);
 
-        public static final Angle FORWARD_SOFT_LIMIT = Degrees.of(35.0);
+        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(0.098);
         public static final boolean ENALBE_FORWARD_SOFT_LIMIT = true;
 
         public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(0.0275);
         public static final boolean ENABLE_REVERSE_SOFT_LIMIT = true;
 
         public static final Angle STARTING_ANGLE = Degrees.of(10.0);
+        public static final Angle PASSING_ANGLE = Degrees.of(34.5);
 
         public static MotorTelemetry TELEMETRY = new MotorTelemetry();
     }
@@ -169,15 +172,15 @@ public final class TurretConstants {
             PITCH_TABLE.put(5.08, 27.0);
             PITCH_TABLE.put(5.5, 28.0);
 
-            RPS_TABLE.put(1.58, 30.0);
-            RPS_TABLE.put(2.05, 31.0);
-            RPS_TABLE.put(2.47, 31.0);
-            RPS_TABLE.put(2.94, 32.0);
-            RPS_TABLE.put(3.48, 35.0);
-            RPS_TABLE.put(3.97, 35.5);
-            RPS_TABLE.put(4.48, 35.5);
-            RPS_TABLE.put(5.08, 37.5);
-            RPS_TABLE.put(5.5, 38.5);
+            RPS_TABLE.put(1.58, 29.0);
+            RPS_TABLE.put(2.05, 30.0);
+            RPS_TABLE.put(2.47, 30.0);
+            RPS_TABLE.put(2.94, 31.5);
+            RPS_TABLE.put(3.48, 34.25);
+            RPS_TABLE.put(3.97, 34.5);
+            RPS_TABLE.put(4.48, 34.5);
+            RPS_TABLE.put(5.08, 36.5);
+            RPS_TABLE.put(5.5, 37.5);
 
             TOF_TABLE.put(1.878, 1.156);
             TOF_TABLE.put(2.427, 1.254);
