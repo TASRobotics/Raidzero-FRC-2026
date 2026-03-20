@@ -36,10 +36,8 @@ public final class TurretConstants {
         public static final int JMM_1_ID = 6; // 29 tooth
         public static final int JMM_2_ID = 5; // 22 tooth
 
-        public static final double JMM_OFFSET_1 = -0.854492; // 29 tooth
-        // public static final double JMM_OFFSET_2 = -0.726562; // 22 tooth
-        // public static final double JMM_OFFSET_2 = -0.937012; // 22 tooth
-        public static final double JMM_OFFSET_2 = -0.958496; // 22 tooth
+        public static final double JMM_OFFSET_1 = -0.020264; // 29 tooth
+        public static final double JMM_OFFSET_2 = -0.029053; // 22 tooth
 
         public static final SensorDirectionValue JMM_1_INVERTED = SensorDirectionValue.Clockwise_Positive;
         public static final SensorDirectionValue JMM_2_INVERTED = SensorDirectionValue.Clockwise_Positive;

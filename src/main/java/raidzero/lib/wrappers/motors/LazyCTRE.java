@@ -53,6 +53,8 @@ public interface LazyCTRE {
      */
     void setPIDVelocityTarget(AngularVelocity velocity, int slot);
 
+    void setVelocityTorqueCurrentTarget(AngularVelocity velocity, int slot);
+
     /**
      * Sets the motor output to a percentage of maximum output, where 1.0 represents
      * full forward output and -1.0 represents full reverse output

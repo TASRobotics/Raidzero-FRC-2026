@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.ElasticLib;
@@ -138,6 +139,15 @@ public class Superstructure {
      * Applies driver button bindings
      */
     public static void applyButtonBindings() {
+        // driver.start().onTrue(
+        // new InstantCommand(
+        // () -> SmartDashboard.putNumber(
+        // "Jmm Value",
+        // turret.getJmmValue()
+        // )
+        // )
+        // );
+
         driver.povUp().whileTrue(
             swerve.applyRequest(
                 () -> strafeControl.withVelocityX(0.75).withVelocityY(0)

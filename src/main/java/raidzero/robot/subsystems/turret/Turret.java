@@ -192,6 +192,10 @@ public class Turret extends R0Subsystem<TurretIO> {
         return Rotations.of(0.0);
     }
 
+    public double getJmmValue() {
+        return this.JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()).in(Rotations);
+    }
+
     /**
      * Gets the current turret pose
      *
@@ -225,10 +229,10 @@ public class Turret extends R0Subsystem<TurretIO> {
         // io.getHubDistance().in(Meters));
 
         // SmartDashboard.putNumber("Turret Angle", io.getYaw().in(Rotations));
-        SmartDashboard.putNumber(
-            "Jmm Value",
-            this.JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()).in(Rotations)
-        );
+        // SmartDashboard.putNumber(
+        // "Jmm Value",
+        // this.JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()).in(Rotations)
+        // );
 
         // SmartDashboard.putBoolean("Hub LOS", io.hasHubLOS());
 
