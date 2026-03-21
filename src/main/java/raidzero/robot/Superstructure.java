@@ -182,7 +182,8 @@ public class Superstructure {
         driver.x().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
 
         driver.leftTrigger().and(driver.rightTrigger()).onTrue(Commands.runOnce(() -> {
-            swerve.getPigeon2().setYaw(Util.isBlueAlliance() ? 0 : 180);
+            // swerve.getPigeon2().setYaw(Util.isBlueAlliance() ? 0 : 180);
+            swerve.seedFieldCentric();
             ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - DR"));
         }));
 
@@ -241,7 +242,8 @@ public class Superstructure {
         operator.povUp().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
 
         operator.leftTrigger().and(operator.rightTrigger()).onTrue(Commands.runOnce(() -> {
-            swerve.getPigeon2().setYaw(Util.isBlueAlliance() ? 0 : 180);
+            // swerve.getPigeon2().setYaw(Util.isBlueAlliance() ? 0 : 180);
+            swerve.seedFieldCentric();
             ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - OP"));
         }));
 

@@ -17,12 +17,17 @@ public class LimelightState {
         TAG, OBJECT,
     }
 
+    public enum IMU_MODE {
+        EXTERNAL_ONLY, EXTERNAL_SEED, INTERNAL_ONLY, INTERNAL_MT1_ASSIST, INTERNAL_EXTERNAL_ASSIST,
+    }
+
     private String limelightName;
     private LimelightHelpers.PoseEstimate currEstimate;
     private LimelightHelpers.PoseEstimate prevEstimate;
     private StructPublisher<Pose2d> ntPublisher;
     private boolean ignore;
     private PIPELINE pipeline = PIPELINE.TAG;
+    private IMU_MODE imuMode = IMU_MODE.EXTERNAL_ONLY;
 
     private final Supplier<Double> robotYawSupplier;
     private final Supplier<Double> robotYawRateSupplier;
@@ -55,6 +60,8 @@ public class LimelightState {
         this.robotYawSupplier = robotYawSupplier;
         this.robotYawRateSupplier = robotYawRateSupplier;
         this.addVisionMeasurementConsumer = addVisionMeasurementConsumer;
+        this.imuMode = IMU_MODE.EXTERNAL_SEED;
+        this.setIMUMode(imuMode);
     }
 
     public void setHoodSupplier(Supplier<Double> hoodAngleSupplier) {
@@ -63,6 +70,11 @@ public class LimelightState {
 
     public void setSeededPose(boolean seeded) {
         this.seededRobot = seeded;
+    }
+
+    public void setIMUMode(IMU_MODE imuMode) {
+        this.imuMode = imuMode;
+        LimelightHelpers.SetIMUMode(limelightName, this.imuMode.ordinal());
     }
 
     /**
