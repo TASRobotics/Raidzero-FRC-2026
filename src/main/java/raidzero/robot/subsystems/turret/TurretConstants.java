@@ -144,7 +144,7 @@ public final class TurretConstants {
     public static record TurretAim(Pose2d fieldRelativeTurretPose, Pose2d fieldRelativeGoalPose) {}
 
     public static final class Kinetics {
-        public static final Translation2d TURRET_MOUNT_OFFSET = new Translation2d(Meters.of(.123), Meters.of(-0.138));
+        public static final Translation2d TURRET_MOUNT_OFFSET = new Translation2d(Meters.of(-0.123), Meters.of(-0.138));
 
         // yaw corections from the april tag location in the off-angles
         public static final InterpolatingDoubleTreeMap YAW_CORRECTION_TABLE = new InterpolatingDoubleTreeMap();
@@ -168,17 +168,19 @@ public final class TurretConstants {
             // PITCH_TABLE.put(3.97, 23.0);
             // PITCH_TABLE.put(4.48, 26.0);
             PITCH_TABLE.put(5.08, 19.0);
-            PITCH_TABLE.put(5.5, 22.0);
-
-            RPS_TABLE.put(1.58, 32.0);
+            PITCH_TABLE.put(5.625, 24.0);
+ 
+            RPS_TABLE.put(1.58, 29.0);
             // RPS_TABLE.put(2.05, 30.0);
             // RPS_TABLE.put(2.47, 30.0);
             // RPS_TABLE.put(2.94, 31.5);
-            RPS_TABLE.put(3.48, 35.0);
+            RPS_TABLE.put(3.48, 34.0);
             // RPS_TABLE.put(3.97, 34.5);
             // RPS_TABLE.put(4.48, 34.5);
+
+
             RPS_TABLE.put(5.08, 36.5);
-            RPS_TABLE.put(5.5, 37.5);
+            RPS_TABLE.put(5.625, 38.0);
 
             TOF_TABLE.put(1.878, 1.156);
             TOF_TABLE.put(2.427, 1.254);
