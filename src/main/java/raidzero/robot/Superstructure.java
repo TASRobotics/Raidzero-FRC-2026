@@ -12,6 +12,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -25,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.ElasticLib;
 import raidzero.lib.ElasticLib.Notification;
 import raidzero.lib.ElasticLib.NotificationLevel;
+import raidzero.lib.LimelightState.IMU_MODE;
 import raidzero.lib.Util;
 import raidzero.robot.commands.Aim;
 import raidzero.robot.commands.StaticAim;
@@ -67,7 +69,6 @@ public class Superstructure {
 
     private static CommandXboxController driver = new CommandXboxController(0);
     private static CommandXboxController operator = new CommandXboxController(1);
-    private static final Trigger operatorShare = operator.button(9);
 
     private static final Auto autos = new Auto(swerve, intake, extender);
 
@@ -139,15 +140,6 @@ public class Superstructure {
      * Applies driver button bindings
      */
     public static void applyButtonBindings() {
-        // driver.start().onTrue(
-        // new InstantCommand(
-        // () -> SmartDashboard.putNumber(
-        // "Jmm Value",
-        // turret.getJmmValue()
-        // )
-        // )
-        // );
-
         driver.povUp().whileTrue(
             swerve.applyRequest(
                 () -> strafeControl.withVelocityX(0.75).withVelocityY(0)
@@ -181,13 +173,19 @@ public class Superstructure {
 
         driver.x().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
 
-        driver.leftTrigger().and(driver.rightTrigger()).onTrue(Commands.runOnce(() -> {
-            // swerve.getPigeon2().setYaw(Util.isBlueAlliance() ? 0 : 180);
-            swerve.seedFieldCentric();
+        driver.start().and(driver.back()).onTrue(Commands.runOnce(() -> {
+            limelight.setUseMt2(false);
+            limelight.setImuMode(IMU_MODE.EXTERNAL_SEED);
             ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - DR"));
+        })).onFalse(Commands.runOnce(() -> {
+            limelight.setUseMt2(true);
+            swerve.seedFieldCentric(
+                Rotation2d.fromDegrees(limelight.getAverageHeading()).plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
+            );
+            limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
         }));
 
-        operator.b().whileTrue(hood.aim());
+        operator.b().and(operator.a().negate()).whileTrue(hood.aim());
 
         operator.b().and(feeder.ballDetected().negate()).whileTrue(
             Commands.waitUntil(shooter.atTargetVelocity()).andThen(
@@ -207,10 +205,6 @@ public class Superstructure {
             )
         );
 
-        operator.povDown().whileTrue(
-            hood.aim(Degrees.of(10))
-        );
-
         operator.x().whileTrue(
             hood.aim(Degrees.of(10))
         );
@@ -221,12 +215,6 @@ public class Superstructure {
         operator.rightBumper().toggleOnTrue(intake.go());
         operator.leftBumper().whileTrue(intake.reverse());
 
-        operator.start().and(operatorShare).onTrue(Commands.runOnce(() -> {
-            limelight.toggleLimelights(); // TODO: FIX THIS
-            ElasticLib.sendNotification(
-                new Notification(NotificationLevel.WARNING, "LL", "LIMELIGHT TOGGLE CALLED - DR")
-            );
-        }));
         operator.back().onTrue(extender.retract()).onFalse(extender.extend());
 
         operator.a()
@@ -239,12 +227,16 @@ public class Superstructure {
                     .alongWith(hood.aim(Pitch.PASSING_ANGLE))
             );
 
-        operator.povUp().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
-
         operator.leftTrigger().and(operator.rightTrigger()).onTrue(Commands.runOnce(() -> {
-            // swerve.getPigeon2().setYaw(Util.isBlueAlliance() ? 0 : 180);
-            swerve.seedFieldCentric();
+            limelight.setUseMt2(false);
+            limelight.setImuMode(IMU_MODE.EXTERNAL_SEED);
             ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - OP"));
+        })).onFalse(Commands.runOnce(() -> {
+            limelight.setUseMt2(true);
+            swerve.seedFieldCentric(
+                Rotation2d.fromDegrees(limelight.getAverageHeading()).plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
+            );
+            limelight.setImuMode(IMU_MODE.EXTERNAL_ONLY);
         }));
 
         operator.leftStick().and(operator.rightStick())

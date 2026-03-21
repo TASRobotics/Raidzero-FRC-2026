@@ -34,6 +34,8 @@ public class Limelight {
     private Timer seedInterval;
     private Timer seedTimer;
 
+    private boolean useMt2 = true;
+
     private Swerve swerve = Swerve.system();
     private Hood hood = Hood.system();
     private static Limelight instance = null;
@@ -106,6 +108,10 @@ public class Limelight {
      */
     public void toggleLimelights() {
         ignoreAllLimes = !ignoreAllLimes;
+    }
+
+    public void setUseMt2(boolean useMt2) {
+        this.useMt2 = useMt2;
     }
 
     /**
@@ -190,7 +196,7 @@ public class Limelight {
         }
 
         for (LimelightState state : limes) {
-            state.update(ignoreAllLimes, !DriverStation.isDisabled(), swerve.getState().Pose);
+            state.update(ignoreAllLimes, !DriverStation.isDisabled() && useMt2, swerve.getState().Pose);
         }
 
         // if (!seededPigeon && seedTimer.get() < 15 && seedInterval.hasElapsed(0.25)) {
