@@ -243,6 +243,11 @@ public class Superstructure {
             .onTrue(Commands.runOnce(() -> limelight.resetSeed()))
             .onFalse(Commands.runOnce(() -> limelight.setManualSeed(true)));
 
+        operator.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
+        operator.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
+
+        operator.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
+        operator.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
     }
 
     public static void applyDebugBindings() {
