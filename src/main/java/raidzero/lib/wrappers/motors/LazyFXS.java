@@ -80,7 +80,7 @@ public class LazyFXS implements LazyCTRE {
 
     @Override
     public void setVelocityTorqueCurrentTarget(AngularVelocity velocity, double current, int slot) {
-        this.motor.setControl(new VelocityTorqueCurrentFOC(velocity).withSlot(slot).withFeedForward(current));
+        this.motor.setControl(new VelocityTorqueCurrentFOC(velocity).withFeedForward(current).withSlot(slot));
     }
 
     @Override

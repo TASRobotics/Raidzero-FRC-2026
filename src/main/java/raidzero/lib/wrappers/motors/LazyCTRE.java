@@ -55,7 +55,7 @@ public interface LazyCTRE {
 
     /**
      * Sets the target velocity for the motor using Velocity Current control
-     * 
+     *
      * @param velocity The desired velocity as an {@link AngularVelocity}
      * @param current The desired current in amps
      * @param slot The PID slot to use for this control mode
