@@ -99,9 +99,9 @@ public class Limelight {
 
     /**
      * Sets the IMU mode for all limelights
-     * 
+     *
      * @implNote This is only supported for Limelight 4
-     * 
+     *
      * @param imuMode The {@link LimelightState.IMU_MODE} to set for all limelights
      */
     public void setImuMode(LimelightState.IMU_MODE imuMode) {

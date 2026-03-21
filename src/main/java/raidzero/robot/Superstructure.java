@@ -361,7 +361,7 @@ public class Superstructure {
 
     /**
      * Gets the Swerve subsystem
-     * 
+     *
      * @return The {@link Swerve} subsystem instance
      */
     public static Swerve getSwerve() {
