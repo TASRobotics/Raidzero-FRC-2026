@@ -25,14 +25,16 @@ public final class ShooterConstants {
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(80); // 50
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(60);
 
-        public static final double P = 4.0;
+        public static final double P = 5.0;
         public static final double I = 0.0;
         public static final double D = 0.0;
 
         public static final double S = 0.2;
         public static final double G = 0.0;
-        public static final double V = 0.2;
+        public static final double V = 0.0;
         public static final double A = 0.0;
+
+        public static final double TORQUE_FF_A = 13.0;
 
         public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Elevator_Static; // * Note: no gravity
                                                                                                  // (yippee!)

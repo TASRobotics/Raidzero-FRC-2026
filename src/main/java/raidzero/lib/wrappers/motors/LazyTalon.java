@@ -79,8 +79,8 @@ public class LazyTalon implements LazyCTRE {
     }
 
     @Override
-    public void setVelocityTorqueCurrentTarget(AngularVelocity velocity, int slot) {
-        this.motor.setControl(new VelocityTorqueCurrentFOC(velocity).withSlot(slot));
+    public void setVelocityTorqueCurrentTarget(AngularVelocity velocity, double current, int slot) {
+        this.motor.setControl(new VelocityTorqueCurrentFOC(velocity).withSlot(slot).withFeedForward(current));
     }
 
     @Override
