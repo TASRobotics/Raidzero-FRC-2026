@@ -233,10 +233,10 @@ public class LimelightState {
                 ) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
             (seededRobot && currEstimate != null && (currEstimate.pose.getTranslation()
                 .getDistance(robotPose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.2) &&
-            (lastValidPose <= 0.0 ||
-            currEstimate.pose.getTranslation()
-            .getDistance(robotPose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() *
-            (Timer.getTimestamp() - lastValidPose) * RECOVERY_FACTOR)) ||
+                (lastValidPose <= 0.0 ||
+                    currEstimate.pose.getTranslation()
+                        .getDistance(robotPose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() *
+                            (Timer.getTimestamp() - lastValidPose) * RECOVERY_FACTOR)) ||
             (currEstimate.rawFiducials.length > 0 && currEstimate.rawFiducials[0].ambiguity > 0.5 &&
                 currEstimate.rawFiducials[0].distToCamera > 5.5) ||
             currEstimate.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
