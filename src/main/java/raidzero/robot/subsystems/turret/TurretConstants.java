@@ -156,8 +156,8 @@ public final class TurretConstants {
         public static final InterpolatingDoubleTreeMap CLIMB_PITCH_TABLE = new InterpolatingDoubleTreeMap();
         public static final InterpolatingDoubleTreeMap CLIMB_RPS_TABLE = new InterpolatingDoubleTreeMap();
 
-        public static final Translation2d GOAL_LOCATION_BLUE = new Translation2d(Inches.of(182.21), Inches.of(158.84));
-        public static final Translation2d GOAL_LOCATION_RED = new Translation2d(Inches.of(465.79), Inches.of(158.84));
+        public static final Translation2d GOAL_LOCATION_BLUE = new Translation2d(Inches.of(182.11), Inches.of(158.84));
+        public static final Translation2d GOAL_LOCATION_RED = new Translation2d(Inches.of(465.89), Inches.of(158.84));
 
         static {
             PITCH_TABLE.put(1.58, 10.0);
