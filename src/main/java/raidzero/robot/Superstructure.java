@@ -250,6 +250,9 @@ public class Superstructure {
         operator.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
     }
 
+    /**
+     * Applies debug button bindings
+     */
     public static void applyDebugBindings() {
         driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
         driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
@@ -356,6 +359,11 @@ public class Superstructure {
         return hood;
     }
 
+    /**
+     * Gets the Swerve subsystem
+     * 
+     * @return The {@link Swerve} subsystem instance
+     */
     public static Swerve getSwerve() {
         return swerve;
     }

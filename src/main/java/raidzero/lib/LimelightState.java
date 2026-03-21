@@ -64,14 +64,31 @@ public class LimelightState {
         this.setIMUMode(imuMode);
     }
 
+    /**
+     * Sets the hood angle supplier for adjusting the vision measurement standard deviations
+     * 
+     * @param hoodAngleSupplier A {@link Supplier} that provides the current hood angle in degrees as a double
+     */
     public void setHoodSupplier(Supplier<Double> hoodAngleSupplier) {
         this.hoodAngleSupplier = hoodAngleSupplier;
     }
 
+    /**
+     * Sets whether the robot is seeded
+     * 
+     * @param seeded Whether the robot is seeded
+     */
     public void setSeededPose(boolean seeded) {
         this.seededRobot = seeded;
     }
 
+    /**
+     * Sets the IMU mode for the Limelight
+     * 
+     * @implNote This is only supported for Limelight 4
+     * 
+     * @param imuMode The {@link IMU_MODE} to set
+     */
     public void setIMUMode(IMU_MODE imuMode) {
         this.imuMode = imuMode;
         LimelightHelpers.SetIMUMode(limelightName, this.imuMode.ordinal());
