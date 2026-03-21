@@ -34,10 +34,19 @@ public final class IntakeConstants {
         public static final double I = 0.0;
         public static final double D = 0.0;
 
+        public static final double P_1 = 3.0;
+        public static final double I_1 = 0.0;
+        public static final double D_1 = 0.0;
+
         public static final double S = 0.47;
         public static final double G = 0.0;
         public static final double V = 0.2;
         public static final double A = 0.0;
+
+        public static final double S_1 = 0.47;
+        public static final double G_1 = 0.0;
+        public static final double V_1 = 0.2;
+        public static final double A_1 = 13.0;
 
         public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Elevator_Static; // * Note: no gravity
                                                                                                  // (yippee!)
