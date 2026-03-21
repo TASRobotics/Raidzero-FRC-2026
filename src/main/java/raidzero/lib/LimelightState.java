@@ -185,7 +185,7 @@ public class LimelightState {
                 addVisionMeasurementConsumer.add(
                     currEstimate.pose,
                     currEstimate.timestampSeconds,
-                    VecBuilder.fill(stdevX, stdevY, stdevRot)
+                    VecBuilder.fill(stdevX, stdevY, Integer.MAX_VALUE)
                         .div(Math.max(LimelightHelpers.getTA(limelightName), 0.05))
                         .times(hoodAngleSupplier != null && hoodAngleSupplier.get() > 20 ? 1.0 : 1.75)
                 );
