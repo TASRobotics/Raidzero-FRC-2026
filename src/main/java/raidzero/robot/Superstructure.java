@@ -359,6 +359,10 @@ public class Superstructure {
         return hood;
     }
 
+    public static Swerve getSwerve() {
+        return swerve;
+    }
+
     /**
      * Configures autonomous command options
      */

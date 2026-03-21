@@ -205,7 +205,8 @@ public class LimelightState {
      * @return A {@link Rotation2d} of the current pose estimate, or null if the estimate is null or being ignored
      */
     public Rotation2d getYaw() {
-        return (ignore || currEstimate == null || currEstimate.pose == null) ? null : currEstimate.pose.getRotation();
+        LimelightHelpers.PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+        return (ignore || estimate == null || currEstimate == null || currEstimate.pose == null) ? null : estimate.pose.getRotation();
     }
 
     /**

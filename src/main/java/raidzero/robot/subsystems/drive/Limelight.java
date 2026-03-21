@@ -122,6 +122,17 @@ public class Limelight {
         limelights.get(limelightName).setPipeline(pipeline);
     }
 
+    public double getAverageHeading() {
+        return limes.stream()
+            .map(LimelightState::getYaw)
+            .filter(java.util.Objects::nonNull)
+            .map(Rotation2d::getDegrees)
+            .filter(z -> !Double.isNaN(z))
+            .mapToDouble(Double::doubleValue)
+            .average()
+            .orElse(Double.NaN);
+    }
+
     /**
      * Gets the average Z height of all limelight pose estimates that are not null or being ignored
      *
