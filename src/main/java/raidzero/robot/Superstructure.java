@@ -53,8 +53,6 @@ public class Superstructure {
     private static final Swerve swerve = Swerve.system();
     private static final Limelight limelight = Limelight.system();
 
-    public static boolean spindexForward = true;
-
     private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.75;
     private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.75;
 
@@ -190,31 +188,23 @@ public class Superstructure {
 
         operator.b().whileTrue(hood.aim());
 
-        // operator.b().and(feeder.ballDetected().negate()).whileTrue(
-        // Commands.waitUntil(shooter.atTargetVelocity()).andThen(
-        // feeder.go().alongWith(
-        // Commands.waitUntil(feeder.atTargetVelocity()).andThen(spindexer.antiJamBig())
-        // )
-        // )
-        // );
-
-        // operator.b().and(feeder.ballDetected()).whileTrue(
-        // Commands.waitUntil(shooter.atTargetVelocity()).andThen(
-        // feeder.go().alongWith(
-        // Commands.waitUntil(feeder.atTargetVelocity()).andThen(
-        // spindexer.go()
-        // )
-        // )
-        // )
-        // );
-
-        operator.b().whileTrue(
+        operator.b().and(feeder.ballDetected().negate()).whileTrue(
             Commands.waitUntil(shooter.atTargetVelocity()).andThen(
-                Commands.either(spindexer.go(), spindexer.reverse(), () -> spindexForward)
+                feeder.go().alongWith(
+                    Commands.waitUntil(feeder.atTargetVelocity()).andThen(spindexer.antiJamBig())
+                )
             )
         );
 
-        feeder.ballDetected().onFalse(Commands.runOnce(() -> spindexForward = !spindexForward));
+        operator.b().and(feeder.ballDetected()).whileTrue(
+            Commands.waitUntil(shooter.atTargetVelocity()).andThen(
+                feeder.go().alongWith(
+                    Commands.waitUntil(feeder.atTargetVelocity()).andThen(
+                        spindexer.go()
+                    )
+                )
+            )
+        );
 
         operator.povDown().whileTrue(
             hood.aim(Degrees.of(10))
