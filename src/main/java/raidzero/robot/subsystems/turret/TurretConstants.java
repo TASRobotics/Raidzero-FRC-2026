@@ -160,23 +160,23 @@ public final class TurretConstants {
         public static final Translation2d GOAL_LOCATION_RED = new Translation2d(Inches.of(465.89), Inches.of(158.84));
 
         static {
-            PITCH_TABLE.put(1.58, 14.0);
-            PITCH_TABLE.put(2.05, 16.0);
-            PITCH_TABLE.put(2.47, 19.0);
-            PITCH_TABLE.put(2.94, 20.0);
-            PITCH_TABLE.put(3.48, 22.0);
-            PITCH_TABLE.put(3.97, 23.0);
-            PITCH_TABLE.put(4.48, 26.0);
-            PITCH_TABLE.put(5.08, 27.0);
-            PITCH_TABLE.put(5.5, 28.0);
+            PITCH_TABLE.put(1.58, 10.0);
+            // PITCH_TABLE.put(2.05, 16.0);
+            // PITCH_TABLE.put(2.47, 19.0);
+            // PITCH_TABLE.put(2.94, 20.0);
+            PITCH_TABLE.put(3.48, 17.0);
+            // PITCH_TABLE.put(3.97, 23.0);
+            // PITCH_TABLE.put(4.48, 26.0);
+            PITCH_TABLE.put(5.08, 19.0);
+            PITCH_TABLE.put(5.5, 22.0);
 
-            RPS_TABLE.put(1.58, 29.0);
-            RPS_TABLE.put(2.05, 30.0);
-            RPS_TABLE.put(2.47, 30.0);
-            RPS_TABLE.put(2.94, 31.5);
-            RPS_TABLE.put(3.48, 34.25);
-            RPS_TABLE.put(3.97, 34.5);
-            RPS_TABLE.put(4.48, 34.5);
+            RPS_TABLE.put(1.58, 32.0);
+            // RPS_TABLE.put(2.05, 30.0);
+            // RPS_TABLE.put(2.47, 30.0);
+            // RPS_TABLE.put(2.94, 31.5);
+            RPS_TABLE.put(3.48, 35.0);
+            // RPS_TABLE.put(3.97, 34.5);
+            // RPS_TABLE.put(4.48, 34.5);
             RPS_TABLE.put(5.08, 36.5);
             RPS_TABLE.put(5.5, 37.5);
 
