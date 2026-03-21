@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import raidzero.lib.LimelightState.IMU_MODE;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -65,6 +66,7 @@ public class Robot extends TimedRobot {
 
         alreadyEnabled = true;
         Elastic.initAuton();
+        Superstructure.getLimelight().setImuMode(IMU_MODE.INTERNAL_ONLY);
     }
 
     @Override
@@ -82,6 +84,7 @@ public class Robot extends TimedRobot {
         alreadyEnabled = true;
         Elastic.initTeleop();
         Superstructure.getHood().setDefaultCommand(Superstructure.getHood().aim(Degrees.of(10)));
+        Superstructure.getLimelight().setImuMode(IMU_MODE.INTERNAL_ONLY);
     }
 
     @Override
