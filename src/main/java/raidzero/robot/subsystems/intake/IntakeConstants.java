@@ -108,8 +108,8 @@ public final class IntakeConstants {
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
 
-        public static final Angle STARTUP_ANGLE = Rotations.of(0.3625);
-        // public static final Angle STARTUP_ANGLE = Rotations.of(0.0);
+        // public static final Angle STARTUP_ANGLE = Rotations.of(0.3625);
+        public static final Angle STARTUP_ANGLE = Rotations.of(0.0);
     }
 
     public static final class Spindexer {
@@ -139,8 +139,8 @@ public final class IntakeConstants {
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(13.6);
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(0);
 
-        public static final AngularVelocity INDEX_SPEED = RotationsPerSecond.of(10.0);
-        public static final AngularVelocity ANTIJAM_SPEED = RotationsPerSecond.of(-10);
+        public static final AngularVelocity INDEX_SPEED = RotationsPerSecond.of(6.0);
+        public static final AngularVelocity ANTIJAM_SPEED = RotationsPerSecond.of(6.0);
 
         public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(3.0);
 

@@ -80,7 +80,7 @@ public final class ShooterConstants {
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(43.3);
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(0.0);
 
-        public static final AngularVelocity FEEDER_SPEED = RotationsPerSecond.of(40.0);
+        public static final AngularVelocity FEEDER_SPEED = RotationsPerSecond.of(35.0);
 
         public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(5.0);
 

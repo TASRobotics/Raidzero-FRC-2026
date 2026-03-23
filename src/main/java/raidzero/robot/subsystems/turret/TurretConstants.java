@@ -160,34 +160,26 @@ public final class TurretConstants {
         public static final Translation2d GOAL_LOCATION_RED = new Translation2d(Inches.of(465.89), Inches.of(158.84));
 
         static {
-            PITCH_TABLE.put(1.58, 10.0);
-            // PITCH_TABLE.put(2.05, 16.0);
-            // PITCH_TABLE.put(2.47, 19.0);
-            // PITCH_TABLE.put(2.94, 20.0);
-            PITCH_TABLE.put(3.48, 17.0);
-            // PITCH_TABLE.put(3.97, 23.0);
-            // PITCH_TABLE.put(4.48, 26.0);
-            PITCH_TABLE.put(5.08, 19.0);
-            PITCH_TABLE.put(5.625, 24.0);
+            PITCH_TABLE.put(1.5, 10.0);
+            PITCH_TABLE.put(2.6, 16.0);
+            PITCH_TABLE.put(3.5, 20.0);
+            PITCH_TABLE.put(4.5, 23.0);
+            PITCH_TABLE.put(5.3, 26.0);
 
-            RPS_TABLE.put(1.58, 29.0);
-            // RPS_TABLE.put(2.05, 30.0);
-            // RPS_TABLE.put(2.47, 30.0);
-            // RPS_TABLE.put(2.94, 31.5);
-            RPS_TABLE.put(3.48, 34.0);
-            // RPS_TABLE.put(3.97, 34.5);
-            // RPS_TABLE.put(4.48, 34.5);
+            RPS_TABLE.put(1.5, 28.5);
+            RPS_TABLE.put(2.6, 33.5);
+            RPS_TABLE.put(3.5, 36.0);
+            RPS_TABLE.put(4.5, 37.5);
+            RPS_TABLE.put(5.3, 38.0);
 
-            RPS_TABLE.put(5.08, 36.5);
-            RPS_TABLE.put(5.625, 38.0);
-
-            TOF_TABLE.put(1.878, 1.156);
-            TOF_TABLE.put(2.427, 1.254);
-            TOF_TABLE.put(2.792, 1.28);
-            TOF_TABLE.put(3.640, 1.304);
-            TOF_TABLE.put(4.117, 1.334);
-            TOF_TABLE.put(4.615, 1.37955);
-            TOF_TABLE.put(5.093, 1.4127);
+            // Updated TOF table based on recorded videos
+            // Distances: 1.5, 2.5, 3.5, 4.5, 5.5 (increments of 1)
+            // Values are average TOF (seconds) from the supplied dataset
+            TOF_TABLE.put(1.5, 1.233); // pre-nvlv-1-5-28.mp4
+            TOF_TABLE.put(2.5, 1.425); // pre-nvlv-2-5-33-5.mp4
+            TOF_TABLE.put(3.5, 1.418); // pre-nvlv-3-5-36.mp4
+            TOF_TABLE.put(4.5, 1.500); // pre-nvlv-4-5-37-5.mp4
+            TOF_TABLE.put(5.5, 1.438); // pre-nvlv-5-5-38.mp4
         }
     }
 
