@@ -199,7 +199,7 @@ public class Superstructure {
             .whileTrue(
                 new StaticAim(
                     Rotations.of(
-                        DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 0.5 : 0.0
+                        Util.isBlueAlliance() ? 0.5 : 0.0
                     )
                 )
                     .alongWith(hood.aim(Pitch.PASSING_ANGLE)).alongWith(shooter.shoot().alongWith(feeder.go()))
