@@ -381,4 +381,46 @@ public class Auto {
             )
         );
     }
+
+    /**
+     * Auto that starts on the left trench and performs two cycles
+     *
+     * @return A {@link Command} for the left trench 2 cycle auto
+     */
+    public Command getLeftFast1() {
+        return build(
+            "LeftMidStart", () -> Commands.sequence(
+                Commands.deadline(
+                    follow("LeftMidStart"),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        intake.go()
+                    ),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        extender.extend()
+                    )
+                ),
+
+                Commands.deadline(
+                    follow("LeftMidTrenchShoot"),
+                    Commands.sequence(
+                        Commands.waitSeconds(1.75),
+                        intake.stop()
+                    )
+                ),
+
+                Commands.deadline(
+                    Commands.waitSeconds(3.5),
+                    Commands.sequence(
+                        Commands.waitSeconds(1.5),
+                        Commands.parallel(
+                            extender.autoAgitate().repeatedly(),
+                            intake.go()
+                        )
+                    )
+                )
+            )
+        );
+    }
 }
