@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.ElasticLib;
@@ -182,13 +182,12 @@ public class Superstructure {
             limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
         }));
 
-        operator.b().and(operator.a().negate()).whileTrue(hood.aim());
+        operator.b().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
         operator.b().whileTrue(spindexer.go());
 
         operator.x().whileTrue(spindexer.reverse());
 
         operator.y().whileTrue(shooter.shoot().alongWith(feeder.go()));
-        operator.y().onFalse(spindexer.stop().alongWith(feeder.stop()));
 
         operator.rightBumper().toggleOnTrue(intake.go());
         operator.leftBumper().whileTrue(intake.reverse());
@@ -232,6 +231,18 @@ public class Superstructure {
      * Applies debug button bindings
      */
     public static void applyDebugBindings() {
+        driver.start().onTrue(Commands.runOnce(() -> {
+            limelight.setUseMt2(false);
+            limelight.setImuMode(IMU_MODE.EXTERNAL_SEED);
+            ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - DR"));
+        })).onFalse(Commands.runOnce(() -> {
+            limelight.setUseMt2(true);
+            swerve.seedFieldCentric(
+                Rotation2d.fromDegrees(limelight.getAverageHeading()).plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
+            );
+            limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
+        }));
+
         driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
         driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
 
@@ -285,6 +296,17 @@ public class Superstructure {
         // driver.rightStick().toggleOnTrue(hood.aim(Degrees.of(10)));
 
         driver.a().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
+
+        /** Kayne's Controlssss
+
+        driver.back().onTrue(extender.retract()).onFalse(extender.extend());
+
+        driver.b().whileTrue(spindexer.go());
+        driver.x().whileTrue(spindexer.reverse());
+
+        driver.y().whileTrue(shooter.manualShoot().alongWith(feeder.go()));
+        driver.y().whileTrue(hood.manualAim());
+        */
     }
 
     /**

@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.R0Subsystem;
+import raidzero.lib.Util;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
 import raidzero.robot.subsystems.turret.TurretConstants.Yaw;
@@ -46,6 +47,8 @@ public class Turret extends R0Subsystem<TurretIO> {
     private AimBot kineticAimBot = null;
 
     private boolean isPirouetteing = false;
+
+    private static boolean goalPoseInitailized = false;
 
     /**
      * Moves the robot to the given setpoint
@@ -208,6 +211,11 @@ public class Turret extends R0Subsystem<TurretIO> {
     @Override
     public void periodic() {
         // SmartDashboard.putNumber("Yaw", io.getYaw().in(Rotations));
+        if (!goalPoseInitailized && DriverStation.isDSAttached()) {
+            boolean isRedAlliance = Util.isRedAlliance();
+            allianceTargetFieldPose = isRedAlliance ? Kinetics.GOAL_LOCATION_RED : Kinetics.GOAL_LOCATION_BLUE;
+            goalPoseInitailized = true;
+        }
 
         ChassisSpeeds rawSpeeds = swerve.getState().Speeds;
         ChassisSpeeds filteredSpeeds = new ChassisSpeeds(
@@ -261,10 +269,6 @@ public class Turret extends R0Subsystem<TurretIO> {
 
         staticAimBot = new AimBot(new Pose2d(), new Pose2d(), new Pose2d());
         kineticAimBot = new AimBot(new Pose2d(), new Pose2d(), new Pose2d());
-
-        boolean isRedAlliance = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
-        allianceTargetFieldPose = isRedAlliance ? Kinetics.GOAL_LOCATION_RED : Kinetics.GOAL_LOCATION_BLUE;
-        allianceTargetFieldPose = isRedAlliance ? Kinetics.GOAL_LOCATION_RED : Kinetics.GOAL_LOCATION_BLUE;
 
         staticTable = nt.getTable("Turret/Static");
         kineticTable = nt.getTable("Turret/Kinetic");
