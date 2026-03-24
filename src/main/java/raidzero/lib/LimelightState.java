@@ -17,12 +17,18 @@ public class LimelightState {
         TAG, OBJECT,
     }
 
+    public enum IMU_MODE {
+        EXTERNAL_ONLY, EXTERNAL_SEED, INTERNAL_ONLY, INTERNAL_MT1_ASSIST, INTERNAL_EXTERNAL_ASSIST,
+    }
+
     private String limelightName;
+    private LimelightHelpers.LimelightResults results;
     private LimelightHelpers.PoseEstimate currEstimate;
     private LimelightHelpers.PoseEstimate prevEstimate;
     private StructPublisher<Pose2d> ntPublisher;
     private boolean ignore;
     private PIPELINE pipeline = PIPELINE.TAG;
+    private IMU_MODE imuMode = IMU_MODE.EXTERNAL_ONLY;
 
     private final Supplier<Double> robotYawSupplier;
     private final Supplier<Double> robotYawRateSupplier;
@@ -55,14 +61,38 @@ public class LimelightState {
         this.robotYawSupplier = robotYawSupplier;
         this.robotYawRateSupplier = robotYawRateSupplier;
         this.addVisionMeasurementConsumer = addVisionMeasurementConsumer;
+        this.imuMode = IMU_MODE.EXTERNAL_SEED;
+        this.setIMUMode(imuMode);
     }
 
+    /**
+     * Sets the hood angle supplier for adjusting the vision measurement standard deviations
+     *
+     * @param hoodAngleSupplier A {@link Supplier} that provides the current hood angle in degrees as a double
+     */
     public void setHoodSupplier(Supplier<Double> hoodAngleSupplier) {
         this.hoodAngleSupplier = hoodAngleSupplier;
     }
 
+    /**
+     * Sets whether the robot is seeded
+     *
+     * @param seeded Whether the robot is seeded
+     */
     public void setSeededPose(boolean seeded) {
         this.seededRobot = seeded;
+    }
+
+    /**
+     * Sets the IMU mode for the Limelight
+     *
+     * @implNote This is only supported for Limelight 4
+     *
+     * @param imuMode The {@link IMU_MODE} to set
+     */
+    public void setIMUMode(IMU_MODE imuMode) {
+        this.imuMode = imuMode;
+        LimelightHelpers.SetIMUMode(limelightName, this.imuMode.ordinal());
     }
 
     /**
@@ -162,6 +192,8 @@ public class LimelightState {
         currEstimate = useMt2 ? LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName) :
             LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
 
+        results = LimelightHelpers.getLatestResults(limelightName);
+
         if (currEstimate != null && currEstimate.pose != null) {
             ignore = checkIgnore(robotPose);
 
@@ -173,7 +205,7 @@ public class LimelightState {
                 addVisionMeasurementConsumer.add(
                     currEstimate.pose,
                     currEstimate.timestampSeconds,
-                    VecBuilder.fill(stdevX, stdevY, stdevRot)
+                    VecBuilder.fill(stdevX, stdevY, Integer.MAX_VALUE)
                         .div(Math.max(LimelightHelpers.getTA(limelightName), 0.05))
                         .times(hoodAngleSupplier != null && hoodAngleSupplier.get() > 20 ? 1.0 : 1.75)
                 );
@@ -182,6 +214,10 @@ public class LimelightState {
             prevEstimate = currEstimate;
         } else {
             ignore = false;
+        }
+
+        if (results != null && results.imuResults != null) {
+            SmartDashboard.putNumber(limelightName.split("-")[1] + "RYaw", results.imuResults.robotYaw);
         }
 
         SmartDashboard.putBoolean(limelightName.split("-")[1] + "Pose", !ignore && !ignoreAll);
@@ -193,7 +229,8 @@ public class LimelightState {
      * @return A {@link Rotation2d} of the current pose estimate, or null if the estimate is null or being ignored
      */
     public Rotation2d getYaw() {
-        return (ignore || currEstimate == null || currEstimate.pose == null) ? null : currEstimate.pose.getRotation();
+        LimelightHelpers.PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+        return (ignore || estimate == null || currEstimate == null || currEstimate.pose == null) ? null : estimate.pose.getRotation();
     }
 
     /**

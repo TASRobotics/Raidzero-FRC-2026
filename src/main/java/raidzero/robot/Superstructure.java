@@ -12,6 +12,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -19,11 +20,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.ElasticLib;
 import raidzero.lib.ElasticLib.Notification;
 import raidzero.lib.ElasticLib.NotificationLevel;
+import raidzero.lib.LimelightState.IMU_MODE;
 import raidzero.lib.Util;
 import raidzero.robot.commands.Aim;
 import raidzero.robot.commands.StaticAim;
@@ -52,21 +55,35 @@ public class Superstructure {
     private static final Swerve swerve = Swerve.system();
     private static final Limelight limelight = Limelight.system();
 
-    private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.75;
-    private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.75;
+    private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.5;
+    private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.5;
+
+    private static CommandXboxController driver = new CommandXboxController(0);
+    private static CommandXboxController operator = new CommandXboxController(1);
 
     private static final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
-        .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.05)
+        .withDeadband(MaxSpeed * 0.08).withRotationalDeadband(MaxAngularRate * 0.08)
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     private static final SwerveRequest.FieldCentric strafeControl = new SwerveRequest.FieldCentric()
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-    private static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+    // POV-based strafing: compute velocities from POV angle so diagonals and cardinals
+    // map consistently to field-centric X/Y. Use MaxSpeed scaling so feel matches
+    // stick driving. POV angles are clockwise with 0 = up (forward), so convert
+    // to radians with a negative sign to map to the standard unit circle.
+    private static final double strafeScale = 0.75;
 
-    private static CommandXboxController driver = new CommandXboxController(0);
-    private static CommandXboxController operator = new CommandXboxController(1);
-    private static final Trigger operatorShare = operator.button(9);
+    // Helper inline lambda to generate a field-centric request for a given POV angle
+    private static final java.util.function.IntFunction<SwerveRequest.FieldCentric> povStrafe = (angle) -> {
+        double rad = Math.toRadians(-angle);
+        double vx = MaxSpeed * strafeScale * Math.cos(rad);
+        double vy = MaxSpeed * strafeScale * Math.sin(rad);
+        return strafeControl.withVelocityX(vx).withVelocityY(vy)
+            .withRotationalRate(-driver.getRightX() * MaxAngularRate);
+    };
+
+    private static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 
     private static final Auto autos = new Auto(swerve, intake, extender);
 
@@ -124,7 +141,8 @@ public class Superstructure {
             )
         );
 
-        hood.setDefaultCommand(hood.aim().onlyIf(apprTrench.negate().or(driver.rightBumper())));
+        hood.setDefaultCommand(hood.aim(Degrees.of(10)));
+        // hood.setDefaultCommand(hood.manualAim());
         turret.setDefaultCommand(new Aim());
 
         shooter.setDefaultCommand(shooter.stop());
@@ -138,109 +156,81 @@ public class Superstructure {
      * Applies driver button bindings
      */
     public static void applyButtonBindings() {
-        driver.povUp().whileTrue(
-            swerve.applyRequest(
-                () -> strafeControl.withVelocityX(0.75).withVelocityY(0)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate)
-            )
-        );
+        driver.povUp().whileTrue(swerve.applyRequest(() -> povStrafe.apply(0)));
+        driver.pov(45).whileTrue(swerve.applyRequest(() -> povStrafe.apply(45)));
+        driver.povRight().whileTrue(swerve.applyRequest(() -> povStrafe.apply(90)));
+        driver.pov(135).whileTrue(swerve.applyRequest(() -> povStrafe.apply(135)));
+        driver.povDown().whileTrue(swerve.applyRequest(() -> povStrafe.apply(180)));
+        driver.pov(225).whileTrue(swerve.applyRequest(() -> povStrafe.apply(225)));
+        driver.povLeft().whileTrue(swerve.applyRequest(() -> povStrafe.apply(270)));
+        driver.pov(315).whileTrue(swerve.applyRequest(() -> povStrafe.apply(315)));
 
-        driver.povDown().whileTrue(
-            swerve.applyRequest(
-                () -> strafeControl.withVelocityX(-0.75).withVelocityY(0)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate)
-            )
-        );
-
-        driver.povLeft().whileTrue(
-            swerve.applyRequest(
-                () -> strafeControl.withVelocityX(0).withVelocityY(0.75)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate)
-            )
-        );
-
-        driver.povRight().whileTrue(
-            swerve.applyRequest(
-                () -> strafeControl.withVelocityX(0).withVelocityY(-0.75)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate)
-            )
-        );
-
-        driver.rightBumper().whileTrue(swerve.applyRequest(() -> brake));
+        driver.rightBumper().whileTrue(swerve.applyRequest(() -> brake).alongWith(hood.aim()));
         driver.b().whileTrue(hood.aim(Degrees.of(10)));
 
         driver.x().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
 
-        driver.leftTrigger().and(driver.rightTrigger()).onTrue(Commands.runOnce(() -> {
-            swerve.getPigeon2().setYaw(Util.isBlueAlliance() ? 0 : 180);
+        driver.start().and(driver.back()).onTrue(Commands.runOnce(() -> {
+            limelight.setUseMt2(false);
+            limelight.setImuMode(IMU_MODE.EXTERNAL_SEED);
             ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - DR"));
+        })).onFalse(Commands.runOnce(() -> {
+            limelight.setUseMt2(true);
+            swerve.seedFieldCentric(
+                Rotation2d.fromDegrees(limelight.getAverageHeading()).plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
+            );
+            limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
         }));
 
-        operator.b().whileTrue(hood.aim());
+        operator.b().and(operator.a().negate()).whileTrue(hood.aim());
+        operator.b().whileTrue(spindexer.go());
 
-        operator.b().and(feeder.ballDetected().negate()).whileTrue(
-            Commands.waitUntil(shooter.atTargetVelocity()).andThen(
-                feeder.go().alongWith(
-                    Commands.waitUntil(feeder.atTargetVelocity()).andThen(spindexer.antiJamBig())
-                )
-            )
-        );
+        operator.x().whileTrue(spindexer.reverse());
 
-        operator.b().and(feeder.ballDetected()).whileTrue(
-            Commands.waitUntil(shooter.atTargetVelocity()).andThen(
-                feeder.go().alongWith(
-                    Commands.waitUntil(feeder.atTargetVelocity()).andThen(
-                        spindexer.go()
-                    )
-                )
-            )
-        );
-
-        operator.povDown().whileTrue(
-            hood.aim(Degrees.of(10))
-        );
-
-        operator.x().whileTrue(
-            hood.aim(Degrees.of(10))
-        );
-
-        operator.y().whileTrue(shooter.shoot());
+        operator.y().whileTrue(shooter.shoot().alongWith(feeder.go()));
         operator.y().onFalse(spindexer.stop().alongWith(feeder.stop()));
 
         operator.rightBumper().toggleOnTrue(intake.go());
         operator.leftBumper().whileTrue(intake.reverse());
 
-        operator.start().and(operatorShare).onTrue(Commands.runOnce(() -> {
-            limelight.toggleLimelights(); // TODO: FIX THIS
-            ElasticLib.sendNotification(
-                new Notification(NotificationLevel.WARNING, "LL", "LIMELIGHT TOGGLE CALLED - DR")
-            );
-        }));
         operator.back().onTrue(extender.retract()).onFalse(extender.extend());
 
-        operator.a()
+        operator.rightTrigger()
             .whileTrue(
                 new StaticAim(
                     Rotations.of(
-                        DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue ? 0.5 : 0.5
+                        Util.isBlueAlliance() ? 0.5 : 0.0
                     )
                 )
-                    .alongWith(hood.aim(Pitch.PASSING_ANGLE))
+                    .alongWith(hood.aim(Pitch.PASSING_ANGLE)).alongWith(shooter.shoot().alongWith(feeder.go()))
             );
 
-        operator.povUp().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
-
         operator.leftTrigger().and(operator.rightTrigger()).onTrue(Commands.runOnce(() -> {
-            swerve.getPigeon2().setYaw(Util.isBlueAlliance() ? 0 : 180);
+            limelight.setUseMt2(false);
+            limelight.setImuMode(IMU_MODE.EXTERNAL_SEED);
             ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - OP"));
+        })).onFalse(Commands.runOnce(() -> {
+            limelight.setUseMt2(true);
+            swerve.seedFieldCentric(
+                Rotation2d.fromDegrees(limelight.getAverageHeading()).plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
+            );
+            limelight.setImuMode(IMU_MODE.EXTERNAL_ONLY);
         }));
 
         operator.leftStick().and(operator.rightStick())
             .onTrue(Commands.runOnce(() -> limelight.resetSeed()))
             .onFalse(Commands.runOnce(() -> limelight.setManualSeed(true)));
 
+        operator.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
+        operator.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
+
+        operator.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
+        operator.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
     }
 
+    /**
+     * Applies debug button bindings
+     */
     public static void applyDebugBindings() {
         driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
         driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
@@ -248,29 +238,51 @@ public class Superstructure {
         driver.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
         driver.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
 
-        driver.leftTrigger().and(feeder.ballDetected().negate()).whileTrue(
-            Commands.waitUntil(shooter.atManualTargetVelocity()).andThen(
-                feeder.go().alongWith(
-                    Commands.waitUntil(feeder.atTargetVelocity()).andThen(spindexer.antiJamBig())
-                )
-            )
-        );
+        // driver.leftTrigger().and(feeder.ballDetected().negate()).whileTrue(
+        // Commands.waitUntil(shooter.atManualTargetVelocity()).andThen(
+        // feeder.go().alongWith(
+        // Commands.waitUntil(feeder.atTargetVelocity()).andThen(spindexer.antiJamBig())
+        // )
+        // )
+        // );
 
-        driver.leftTrigger().and(feeder.ballDetected()).whileTrue(
-            Commands.waitUntil(shooter.atManualTargetVelocity()).andThen(
-                feeder.go().alongWith(
-                    Commands.waitUntil(feeder.atTargetVelocity()).andThen(
-                        spindexer.go()
-                    )
-                )
-            )
-        );
+        // driver.leftTrigger().and(feeder.ballDetected()).whileTrue(
+        // Commands.waitUntil(shooter.atManualTargetVelocity()).andThen(
+        // feeder.go().alongWith(
+        // Commands.waitUntil(feeder.atTargetVelocity()).andThen(
+        // spindexer.go()
+        // )
+        // )
+        // )
+        // );
 
-        driver.rightTrigger().whileTrue(shooter.manualShoot());
+        // driver.leftTrigger().whileTrue(
+        // Commands.waitUntil(feeder.atTargetVelocity())
+        // .andThen(
+        // feeder.go().alongWith(
+        // Commands.repeatingSequence(
+        // // Run spindexer forward until feeder no longer sees a ball (ball fed out)
+        // spindexer.go().until(feeder.ballDetected().negate()),
+        // // Reverse until feeder no longer sees a ball (ball cleared)
+        // spindexer.reverse().until(feeder.ballDetected().negate())
+        // // Grace period after reversing before going forward again
+        // // Commands.waitSeconds(0.15)
+        // )
+        // )
+        // )
+        // );
+
+        driver.leftTrigger().whileTrue(spindexer.go());
+        driver.leftBumper().whileTrue(spindexer.reverse());
+
+        driver.rightTrigger().whileTrue(shooter.manualShoot().alongWith(feeder.go()));
+        driver.rightTrigger().whileTrue(hood.manualAim());
 
         driver.rightBumper().whileTrue(intake.go());
         driver.x().onTrue(extender.retract());
         driver.b().onTrue(extender.extend());
+
+        // driver.rightStick().toggleOnTrue(hood.aim(Degrees.of(10)));
 
         driver.a().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
     }
@@ -281,12 +293,12 @@ public class Superstructure {
     public static void bindTriggers() {
         turret.isPirouetteing().whileTrue(spindexer.stop().alongWith(feeder.stop().andThen(shooter.stop())));
 
-        apprTrench.and(driver.rightBumper().negate()).and(operator.a().negate())
-            .whileTrue(
-                hood.aim(Degrees.of(10)).alongWith(
-                    spindexer.stop().alongWith(feeder.stop())
-                )
-            );
+        // apprTrench.and(driver.rightBumper().negate()).and(operator.a().negate())
+        // .whileTrue(
+        // hood.aim(Degrees.of(10)).alongWith(
+        // spindexer.stop().alongWith(feeder.stop())
+        // )
+        // );
 
         inAutonShootingZone.whileTrue(
             shooter.shoot()
@@ -345,6 +357,15 @@ public class Superstructure {
      */
     public static Hood getHood() {
         return hood;
+    }
+
+    /**
+     * Gets the Swerve subsystem
+     *
+     * @return The {@link Swerve} subsystem instance
+     */
+    public static Swerve getSwerve() {
+        return swerve;
     }
 
     /**

@@ -34,10 +34,19 @@ public final class IntakeConstants {
         public static final double I = 0.0;
         public static final double D = 0.0;
 
+        public static final double P_1 = 3.0;
+        public static final double I_1 = 0.0;
+        public static final double D_1 = 0.0;
+
         public static final double S = 0.47;
         public static final double G = 0.0;
         public static final double V = 0.2;
         public static final double A = 0.0;
+
+        public static final double S_1 = 0.47;
+        public static final double G_1 = 0.0;
+        public static final double V_1 = 0.2;
+        public static final double A_1 = 13.0;
 
         public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Elevator_Static; // * Note: no gravity
                                                                                                  // (yippee!)
@@ -99,8 +108,8 @@ public final class IntakeConstants {
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
 
-        public static final Angle STARTUP_ANGLE = Rotations.of(0.3625);
-        // public static final Angle STARTUP_ANGLE = Rotations.of(0.0);
+        // public static final Angle STARTUP_ANGLE = Rotations.of(0.3625);
+        public static final Angle STARTUP_ANGLE = Rotations.of(0.0);
     }
 
     public static final class Spindexer {
@@ -130,8 +139,8 @@ public final class IntakeConstants {
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(13.6);
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(0);
 
-        public static final AngularVelocity INDEX_SPEED = RotationsPerSecond.of(10.0);
-        public static final AngularVelocity ANTIJAM_SPEED = RotationsPerSecond.of(-10);
+        public static final AngularVelocity INDEX_SPEED = RotationsPerSecond.of(6.0);
+        public static final AngularVelocity ANTIJAM_SPEED = RotationsPerSecond.of(6.0);
 
         public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(3.0);
 

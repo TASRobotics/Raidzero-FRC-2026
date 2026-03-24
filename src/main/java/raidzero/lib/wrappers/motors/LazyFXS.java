@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFXS;
@@ -75,6 +76,11 @@ public class LazyFXS implements LazyCTRE {
     @Override
     public void setPIDVelocityTarget(AngularVelocity velocity, int slot) {
         this.motor.setControl(new VelocityVoltage(velocity).withEnableFOC(this.enableFOC).withSlot(slot));
+    }
+
+    @Override
+    public void setVelocityTorqueCurrentTarget(AngularVelocity velocity, double current, int slot) {
+        this.motor.setControl(new VelocityTorqueCurrentFOC(velocity).withFeedForward(current).withSlot(slot));
     }
 
     @Override

@@ -47,6 +47,12 @@ public interface IntakeIO extends SubsystemIO {
                     Intake.FF_GRAVITY_TYPE, Intake.FF_SIGN,
                     0
                 )
+                .withPIDFConfiguration(
+                    Intake.P_1, Intake.I_1, Intake.D_1,
+                    Intake.S_1, Intake.G_1, Intake.V_1, Intake.A_1,
+                    Intake.FF_GRAVITY_TYPE, Intake.FF_SIGN,
+                    1
+                )
                 .withMotionMagicConfiguration(
                     0, 0,
                     Intake.CRUISE_VELOCITY,
@@ -60,7 +66,7 @@ public interface IntakeIO extends SubsystemIO {
 
         @Override
         public void go(AngularVelocity velocity) {
-            motor.setPIDVelocityTarget(velocity, 0);
+            motor.setVelocityTorqueCurrentTarget(velocity, Intake.A_1, 1);
         }
 
         @Override
