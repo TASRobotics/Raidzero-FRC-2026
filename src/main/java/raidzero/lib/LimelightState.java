@@ -216,9 +216,10 @@ public class LimelightState {
             ignore = false;
         }
 
-        if (results != null && results.imuResults != null) {
-            SmartDashboard.putNumber(limelightName.split("-")[1] + "RYaw", results.imuResults.robotYaw);
-        }
+        SmartDashboard.putNumber(
+            limelightName.split("-")[1] + "RYaw",
+            NetworkTableInstance.getDefault().getTable(limelightName).getEntry("imu").getDoubleArray(new double[1])[0]
+        );
 
         SmartDashboard.putBoolean(limelightName.split("-")[1] + "Pose", !ignore && !ignoreAll);
     }
