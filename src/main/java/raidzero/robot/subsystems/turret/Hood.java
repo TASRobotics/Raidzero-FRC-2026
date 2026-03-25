@@ -90,8 +90,6 @@ public class Hood extends R0Subsystem<HoodIO> {
         super.periodic();
 
         SmartDashboard.putNumber("Pitch", io.getPitch().in(Degrees));
-
-        SmartDashboard.putNumber("LUT Target Pitch", angleTarget.in(Degrees));
     }
 
     private Hood(HoodIO io) {
