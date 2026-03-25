@@ -36,8 +36,8 @@ public final class TurretConstants {
         public static final int JMM_1_ID = 6; // 29 tooth
         public static final int JMM_2_ID = 5; // 22 tooth
 
-        public static final double JMM_OFFSET_1 = -0.020264; // 29 tooth
-        public static final double JMM_OFFSET_2 = -0.029053; // 22 tooth
+        public static final double JMM_OFFSET_1 = -0.574463; // 29 tooth
+        public static final double JMM_OFFSET_2 = -0.622559; // 22 tooth
 
         public static final SensorDirectionValue JMM_1_INVERTED = SensorDirectionValue.Clockwise_Positive;
         public static final SensorDirectionValue JMM_2_INVERTED = SensorDirectionValue.Clockwise_Positive;
@@ -68,10 +68,10 @@ public final class TurretConstants {
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(1.0); // max is 3.2
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(1.0); // max is 10
 
-        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(1.37);
+        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(1.16);
         public static final boolean ENALBE_FORWARD_SOFT_LIMIT = true;
 
-        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.55);
+        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.4);
         public static final boolean ENABLE_REVERSE_SOFT_LIMIT = true;
 
         public static MotorTelemetry TELEMETRY = new MotorTelemetry();
@@ -160,26 +160,36 @@ public final class TurretConstants {
         public static final Translation2d GOAL_LOCATION_RED = new Translation2d(Inches.of(465.89), Inches.of(158.84));
 
         static {
-            PITCH_TABLE.put(1.5, 10.0);
-            PITCH_TABLE.put(2.6, 16.0);
-            PITCH_TABLE.put(3.5, 20.0);
-            PITCH_TABLE.put(4.5, 23.0);
-            PITCH_TABLE.put(5.3, 26.0);
+            // Updated PITCH_TABLE from supplied data
+            PITCH_TABLE.put(1.55, 12.0);
+            PITCH_TABLE.put(2.05, 13.0);
+            PITCH_TABLE.put(2.53, 15.0);
+            PITCH_TABLE.put(2.98, 15.0);
+            PITCH_TABLE.put(3.4, 16.0);
+            PITCH_TABLE.put(3.65, 16.0);
+            PITCH_TABLE.put(4.00, 18.0);
+            PITCH_TABLE.put(4.2, 19.0);
+            PITCH_TABLE.put(4.50, 20.0);
+            PITCH_TABLE.put(5.43, 25.0);
 
-            RPS_TABLE.put(1.5, 28.5);
-            RPS_TABLE.put(2.6, 33.5);
-            RPS_TABLE.put(3.5, 36.0);
-            RPS_TABLE.put(4.5, 37.5);
-            RPS_TABLE.put(5.3, 38.0);
+            // Updated RPS_TABLE from supplied data
+            RPS_TABLE.put(1.55, 24.5);
+            RPS_TABLE.put(2.05, 26.5);
+            RPS_TABLE.put(2.53, 27.0);
+            RPS_TABLE.put(2.98, 28.0);
+            RPS_TABLE.put(3.65, 30.0);
+            RPS_TABLE.put(4.00, 29.5);
+            RPS_TABLE.put(4.2, 29.5);
+            RPS_TABLE.put(4.50, 31.0);
+            RPS_TABLE.put(5.43, 31.5);
 
-            // Updated TOF table based on recorded videos
-            // Distances: 1.5, 2.5, 3.5, 4.5, 5.5 (increments of 1)
-            // Values are average TOF (seconds) from the supplied dataset
-            TOF_TABLE.put(1.5, 1.233); // pre-nvlv-1-5-28.mp4
-            TOF_TABLE.put(2.5, 1.425); // pre-nvlv-2-5-33-5.mp4
-            TOF_TABLE.put(3.5, 1.418); // pre-nvlv-3-5-36.mp4
-            TOF_TABLE.put(4.5, 1.500); // pre-nvlv-4-5-37-5.mp4
-            TOF_TABLE.put(5.5, 1.438); // pre-nvlv-5-5-38.mp4
+            TOF_TABLE.put(1.5, 1.393);
+            TOF_TABLE.put(2.0, 1.554);
+            TOF_TABLE.put(2.5, 1.557);
+            TOF_TABLE.put(3.0, 1.56);
+            TOF_TABLE.put(3.65, 1.634);
+            TOF_TABLE.put(4.0, 1.64);
+            TOF_TABLE.put(4.5, 1.654);
         }
     }
 
