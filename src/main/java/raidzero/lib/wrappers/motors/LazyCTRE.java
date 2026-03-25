@@ -54,6 +54,15 @@ public interface LazyCTRE {
     void setPIDVelocityTarget(AngularVelocity velocity, int slot);
 
     /**
+     * Sets the target velocity for the motor using Velocity Current control
+     *
+     * @param velocity The desired velocity as an {@link AngularVelocity}
+     * @param current The desired current in amps
+     * @param slot The PID slot to use for this control mode
+     */
+    void setVelocityTorqueCurrentTarget(AngularVelocity velocity, double current, int slot);
+
+    /**
      * Sets the motor output to a percentage of maximum output, where 1.0 represents
      * full forward output and -1.0 represents full reverse output
      *

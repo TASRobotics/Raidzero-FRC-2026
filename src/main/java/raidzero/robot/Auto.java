@@ -305,6 +305,96 @@ public class Auto {
     }
 
     /**
+     * Auto that starts on the right trench and performs two cycles with the outpost
+     *
+     * @return A {@link Command} for the right trench 2 cycle outpost auto
+     */
+    public Command getRightDoubleOutpostAuto() {
+        return build(
+            "RightMidStartFast", () -> Commands.sequence(
+                // Drive the first path as the leader
+                Commands.deadline(
+                    follow("RightMidStartFast"),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        intake.go()
+                    ),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        extender.extend()
+                    )
+                ),
+
+                Commands.deadline(
+                    follow("RightMidTrenchShoot"),
+                    Commands.sequence(
+                        Commands.waitSeconds(1.75),
+                        intake.stop()
+                    )
+                ),
+
+                Commands.deadline(
+                    Commands.waitSeconds(3.5),
+                    Commands.sequence(
+                        Commands.waitSeconds(1.5),
+                        Commands.parallel(
+                            extender.autoAgitate().repeatedly(),
+                            intake.go()
+                        )
+                    )
+                ),
+
+                Commands.deadline(
+                    follow("RightMidCollect"),
+                    Commands.sequence(
+                        extender.extend().withTimeout(0.7),
+                        intake.go()
+                    )
+                ),
+
+                follow("RightMidCollectTrenchOut"),
+                Commands.deadline(
+                    follow("RightMidShoot"),
+                    Commands.sequence(
+                        Commands.waitSeconds(1.75),
+                        intake.stop()
+                    )
+                ),
+
+                follow("RightMidTrenchInFast"),
+
+                // Drive and stop intake simultaneously
+                Commands.deadline(
+                    follow("RightMidToOutpostFast"),
+                    Commands.sequence(
+                        Commands.waitSeconds(1.75),
+                        intake.stop()
+                    )
+                ),
+
+                Commands.deadline(
+                    Commands.waitSeconds(5),
+                    Commands.sequence(
+                        Commands.waitSeconds(1.5),
+                        Commands.parallel(
+                            extender.autoAgitate().repeatedly(),
+                            intake.go()
+                        )
+                    )
+                ),
+
+                Commands.deadline(
+                    follow("OutpostToMidFast"),
+                    Commands.sequence(
+                        Commands.waitSeconds(2),
+                        intake.go()
+                    )
+                )
+            )
+        );
+    }
+
+    /**
      * Auto that starts on the right trench and performs two cycles
      *
      * @return A {@link Command} for the right trench 2 cycle auto

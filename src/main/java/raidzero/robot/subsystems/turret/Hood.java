@@ -88,7 +88,10 @@ public class Hood extends R0Subsystem<HoodIO> {
     @Override
     public void periodic() {
         super.periodic();
-        SmartDashboard.putNumber("Hood/Pitch Deg", io.getPitch().in(Degrees));
+
+        SmartDashboard.putNumber("Pitch", io.getPitch().in(Degrees));
+
+        SmartDashboard.putNumber("LUT Target Pitch", angleTarget.in(Degrees));
     }
 
     private Hood(HoodIO io) {
