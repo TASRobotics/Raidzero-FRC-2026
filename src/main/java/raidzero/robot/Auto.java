@@ -334,7 +334,7 @@ public class Auto {
                 ),
 
                 Commands.deadline(
-                    Commands.waitSeconds(3.5),
+                    Commands.waitSeconds(1.5),
                     Commands.sequence(
                         Commands.waitSeconds(1.5),
                         Commands.parallel(
@@ -353,15 +353,6 @@ public class Auto {
                 ),
 
                 follow("RightMidCollectTrenchOut"),
-                Commands.deadline(
-                    follow("RightMidShoot"),
-                    Commands.sequence(
-                        Commands.waitSeconds(1.75),
-                        intake.stop()
-                    )
-                ),
-
-                follow("RightMidTrenchInFast"),
 
                 // Drive and stop intake simultaneously
                 Commands.deadline(
@@ -373,7 +364,7 @@ public class Auto {
                 ),
 
                 Commands.deadline(
-                    Commands.waitSeconds(5),
+                    Commands.waitSeconds(2.5),
                     Commands.sequence(
                         Commands.waitSeconds(1.5),
                         Commands.parallel(
