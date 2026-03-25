@@ -36,8 +36,8 @@ public final class TurretConstants {
         public static final int JMM_1_ID = 6; // 29 tooth
         public static final int JMM_2_ID = 5; // 22 tooth
 
-        public static final double JMM_OFFSET_1 = -0.020264; // 29 tooth
-        public static final double JMM_OFFSET_2 = -0.029053; // 22 tooth
+        public static final double JMM_OFFSET_1 = -0.574463; // 29 tooth
+        public static final double JMM_OFFSET_2 = -0.622559; // 22 tooth
 
         public static final SensorDirectionValue JMM_1_INVERTED = SensorDirectionValue.Clockwise_Positive;
         public static final SensorDirectionValue JMM_2_INVERTED = SensorDirectionValue.Clockwise_Positive;
@@ -68,10 +68,10 @@ public final class TurretConstants {
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(1.0); // max is 3.2
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(1.0); // max is 10
 
-        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(1.37);
+        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(1.16);
         public static final boolean ENALBE_FORWARD_SOFT_LIMIT = true;
 
-        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.55);
+        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.4);
         public static final boolean ENABLE_REVERSE_SOFT_LIMIT = true;
 
         public static MotorTelemetry TELEMETRY = new MotorTelemetry();
@@ -168,6 +168,7 @@ public final class TurretConstants {
             PITCH_TABLE.put(3.4, 16.0);
             PITCH_TABLE.put(3.65, 16.0);
             PITCH_TABLE.put(4.00, 18.0);
+            PITCH_TABLE.put(4.2, 19.0);
             PITCH_TABLE.put(4.50, 20.0);
             PITCH_TABLE.put(5.43, 25.0);
 
@@ -178,16 +179,17 @@ public final class TurretConstants {
             RPS_TABLE.put(2.98, 28.0);
             RPS_TABLE.put(3.65, 30.0);
             RPS_TABLE.put(4.00, 29.5);
+            RPS_TABLE.put(4.2, 29.5);
             RPS_TABLE.put(4.50, 31.0);
             RPS_TABLE.put(5.43, 31.5);
 
-            TOF_TABLE.put(1.5, 1.293);
-            TOF_TABLE.put(2.0, 1.454);
-            TOF_TABLE.put(2.5, 1.457);
-            TOF_TABLE.put(3.0, 1.46);
-            TOF_TABLE.put(3.65, 1.534);
-            TOF_TABLE.put(4.0, 1.49);
-            TOF_TABLE.put(4.5, 1.554);
+            TOF_TABLE.put(1.5, 1.393);
+            TOF_TABLE.put(2.0, 1.554);
+            TOF_TABLE.put(2.5, 1.557);
+            TOF_TABLE.put(3.0, 1.56);
+            TOF_TABLE.put(3.65, 1.634);
+            TOF_TABLE.put(4.0, 1.64);
+            TOF_TABLE.put(4.5, 1.654);
         }
     }
 
