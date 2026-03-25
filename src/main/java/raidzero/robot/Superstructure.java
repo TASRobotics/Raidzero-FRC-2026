@@ -413,7 +413,7 @@ public class Superstructure {
         autoChooser.addOption("Left Double", autos.getLeft2Cycle());
         autoChooser.addOption("Right Oupost", autos.getRightOutpostAuto());
         autoChooser.addOption("Right Double", autos.getRight2Cycle());
-        autoChooser.addOption("Left Single", autos.getLeftFast1());
+        autoChooser.addOption("Right Outpost Double", autos.getRightDoubleOutpostAuto());
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
