@@ -55,8 +55,8 @@ public class Superstructure {
     private static final Swerve swerve = Swerve.system();
     private static final Limelight limelight = Limelight.system();
 
-    private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.5;
-    private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.5;
+    private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.20;
+    private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.40;
 
     private static CommandXboxController driver = new CommandXboxController(0);
     private static CommandXboxController operator = new CommandXboxController(1);
@@ -165,7 +165,8 @@ public class Superstructure {
         driver.povLeft().whileTrue(swerve.applyRequest(() -> povStrafe.apply(270)));
         driver.pov(315).whileTrue(swerve.applyRequest(() -> povStrafe.apply(315)));
 
-        driver.rightBumper().whileTrue(swerve.applyRequest(() -> brake).alongWith(hood.aim()));
+        driver.rightBumper().whileTrue(swerve.applyRequest(() -> brake));
+        driver.rightBumper().whileTrue(hood.aim());
         driver.b().whileTrue(hood.aim(Degrees.of(10)));
 
         driver.x().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
@@ -184,12 +185,15 @@ public class Superstructure {
 
         operator.b().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
         operator.b().whileTrue(spindexer.go());
+        operator.b().whileTrue(intake.go());
+        operator.b().and(operator.rightBumper().negate()).whileTrue(Commands.waitSeconds(1.4).andThen(extender.autoAgitate().repeatedly()));
 
         operator.x().whileTrue(spindexer.reverse());
 
-        operator.y().whileTrue(shooter.shoot().alongWith(feeder.go()));
+        operator.y().whileTrue(shooter.shoot());
+        operator.y().whileTrue(feeder.go());
 
-        operator.rightBumper().toggleOnTrue(intake.go());
+        operator.rightBumper().whileTrue(intake.go());
         operator.leftBumper().whileTrue(intake.reverse());
 
         operator.back().onTrue(extender.retract()).onFalse(extender.extend());
@@ -284,10 +288,19 @@ public class Superstructure {
         // );
 
         driver.leftTrigger().whileTrue(spindexer.go());
-        driver.leftBumper().whileTrue(spindexer.reverse());
+        driver.leftTrigger().whileTrue(intake.go());
+        driver.leftTrigger().whileTrue(Commands.waitSeconds(1.4).andThen(extender.autoAgitate().repeatedly()));
 
-        driver.rightTrigger().whileTrue(shooter.manualShoot().alongWith(feeder.go()));
-        driver.rightTrigger().whileTrue(hood.manualAim());
+        driver.leftBumper().whileTrue(spindexer.reverse());
+        driver.leftBumper().whileTrue(intake.go());
+        driver.leftBumper().whileTrue(Commands.waitSeconds(1.4).andThen(extender.autoAgitate().repeatedly()));
+
+        // driver.rightTrigger().whileTrue(shooter.manualShoot().alongWith(feeder.go()));
+        // driver.rightTrigger().whileTrue(hood.manualAim());
+
+        driver.rightTrigger().whileTrue(shooter.shoot());
+        driver.rightTrigger().whileTrue(feeder.go());
+        driver.rightTrigger().whileTrue(hood.aim());
 
         driver.rightBumper().whileTrue(intake.go());
         driver.x().onTrue(extender.retract());
