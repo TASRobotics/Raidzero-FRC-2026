@@ -100,6 +100,24 @@ public class Superstructure {
         return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
     });
 
+    private static Trigger passingArea1 = new Trigger(() -> {
+        Pose2d pose = swerve.getState().Pose;
+
+        boolean inX = pose.getX() > 6.3 && pose.getX() < 10.8;
+        boolean inY = pose.getY() > 0.28 && pose.getY() < 3.4;
+
+        return inX && inY;
+    });
+
+    private static Trigger passingArea2 = new Trigger(() -> {
+        Pose2d pose = swerve.getState().Pose;
+
+        boolean inX = pose.getX() > 6.3 && pose.getX() < 10.8;
+        boolean inY = pose.getY() > 4.6 && pose.getY() < 7.72;
+
+        return inX && inY;
+    });
+
     public static Trigger inAutonShootingZone = new Trigger(() -> {
         Pose2d pose = swerve.getState().Pose;
         boolean inAllianceZone = pose.getX() < 3.5 || pose.getX() > 12.7;
@@ -144,7 +162,7 @@ public class Superstructure {
 
         hood.setDefaultCommand(hood.aim(Degrees.of(10)));
         // hood.setDefaultCommand(hood.manualAim());
-        // turret.setDefaultCommand(new Aim());
+        turret.setDefaultCommand(new Aim());
 
         shooter.setDefaultCommand(shooter.stop());
         feeder.setDefaultCommand(feeder.stop());
@@ -193,10 +211,13 @@ public class Superstructure {
 
         operator.b().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
         operator.b().whileTrue(spindexer.go());
-        operator.b().whileTrue(intake.go());
-        operator.b().and(operator.rightBumper().negate()).whileTrue(Commands.waitSeconds(1.4).andThen(extender.autoAgitate().repeatedly()));
+        // operator.b().whileTrue(intake.go());
+        // operator.b().and(operator.rightBumper().negate()).whileTrue(Commands.waitSeconds(1.4).andThen(extender.autoAgitate().repeatedly()));
 
+        operator.x().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
         operator.x().whileTrue(spindexer.reverse());
+        // operator.x().whileTrue(intake.go());
+        // operator.x().and(operator.rightBumper().negate()).whileTrue(Commands.waitSeconds(1.4).andThen(extender.autoAgitate().repeatedly()));
 
         operator.y().whileTrue(shooter.shoot());
         operator.y().whileTrue(feeder.go());
@@ -206,15 +227,24 @@ public class Superstructure {
 
         operator.back().onTrue(extender.retract()).onFalse(extender.extend());
 
-        operator.rightTrigger()
+        operator.rightTrigger().and(passingArea1)
             .whileTrue(
                 new StaticAim(
                     Rotations.of(
-                        Util.isBlueAlliance() ? 0.5 : 0.0
+                        Util.isBlueAlliance() ? 0.45 : 0.05
                     )
                 )
                     .alongWith(hood.aim(Pitch.PASSING_ANGLE)).alongWith(shooter.shoot().alongWith(feeder.go()))
             );
+
+        operator.rightTrigger().and(passingArea2).whileTrue(
+            new StaticAim(
+                Rotations.of(
+                    Util.isBlueAlliance() ? 0.55 : 0.95
+                )
+            )
+                .alongWith(hood.aim(Pitch.PASSING_ANGLE)).alongWith(shooter.shoot().alongWith(feeder.go()))
+        );
 
         operator.leftTrigger().and(operator.rightTrigger()).onTrue(Commands.runOnce(() -> {
             limelight.setUseMt2(false);
