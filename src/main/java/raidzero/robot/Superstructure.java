@@ -378,12 +378,16 @@ public class Superstructure {
                 .until(() -> !inAutonShootingZone.getAsBoolean() && !spindexer.stopped().getAsBoolean())
         );
 
-        inAutonShootingZone.and(feeder.ballDetected()).whileTrue(
-                feeder.go().alongWith(spindexer.go())
-        );
+        // inAutonShootingZone.and(feeder.ballDetected()).whileTrue(
+        // feeder.go().alongWith(spindexer.go())
+        // );
 
-        inAutonShootingZone.and(feeder.ballDetected().negate()).whileTrue(
-                feeder.go().alongWith(spindexer.antiJamBig())
+        // inAutonShootingZone.and(feeder.ballDetected().negate()).whileTrue(
+        // feeder.go().alongWith(spindexer.antiJamBig())
+        // );
+
+        inAutonShootingZone.whileTrue(
+            feeder.go().alongWith(spindexer.antiJamAuto())
         );
 
         inAutonShootingZone.whileTrue(hood.aim());

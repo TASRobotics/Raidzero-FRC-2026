@@ -49,11 +49,23 @@ public class Extender extends R0Subsystem<ExtenderIO> {
         return run(() -> io.agitateL1())
             .withTimeout(0.5)
             .andThen(
+                run(() -> io.extend())
+                    .withTimeout(0.5)
+            )
+            .andThen(
                 run(() -> io.agitateL2())
                     .withTimeout(0.5)
             )
             .andThen(
+                run(() -> io.agitateL1())
+                    .withTimeout(0.5)
+            )
+            .andThen(
                 run(() -> io.agitateL3())
+                    .withTimeout(0.5)
+            )
+            .andThen(
+                run(() -> io.agitateL2())
                     .withTimeout(0.5)
             )
             .andThen(run(() -> io.extend()).withTimeout(0.3));

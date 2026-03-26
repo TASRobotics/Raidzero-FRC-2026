@@ -201,9 +201,9 @@ public class Auto {
                 ),
 
                 Commands.deadline(
-                    Commands.waitSeconds(3.5),
+                    Commands.waitSeconds(4),
                     Commands.sequence(
-                        Commands.waitSeconds(1.5),
+                        Commands.waitSeconds(0.75),
                         Commands.parallel(
                             extender.autoAgitate().repeatedly(),
                             intake.stop()
@@ -229,9 +229,9 @@ public class Auto {
                 ),
 
                 Commands.deadline(
-                    Commands.waitSeconds(2.5),
+                    Commands.waitSeconds(4),
                     Commands.sequence(
-                        Commands.waitSeconds(1.5),
+                        Commands.waitSeconds(0.75),
                         Commands.parallel(
                             extender.autoAgitate().repeatedly(),
                             intake.stop()
@@ -285,7 +285,7 @@ public class Auto {
                 Commands.deadline(
                     Commands.waitSeconds(5),
                     Commands.sequence(
-                        Commands.waitSeconds(1.5),
+                        Commands.waitSeconds(0.75),
                         Commands.parallel(
                             extender.autoAgitate().repeatedly(),
                             intake.stop()
@@ -336,7 +336,7 @@ public class Auto {
                 Commands.deadline(
                     Commands.waitSeconds(3.0),
                     Commands.sequence(
-                        Commands.waitSeconds(1),
+                        Commands.waitSeconds(0.75),
                         Commands.parallel(
                             extender.autoAgitate().repeatedly(),
                             intake.stop()
@@ -364,9 +364,9 @@ public class Auto {
                 ),
 
                 Commands.deadline(
-                    Commands.waitSeconds(2.5),
+                    Commands.waitSeconds(4),
                     Commands.sequence(
-                        Commands.waitSeconds(1.5),
+                        Commands.waitSeconds(0.75),
                         Commands.parallel(
                             extender.autoAgitate().repeatedly(),
                             intake.stop()
@@ -414,9 +414,9 @@ public class Auto {
                 ),
 
                 Commands.deadline(
-                    Commands.waitSeconds(3.5),
+                    Commands.waitSeconds(4),
                     Commands.sequence(
-                        Commands.waitSeconds(1.5),
+                        Commands.waitSeconds(0.75),
                         Commands.parallel(
                             extender.autoAgitate().repeatedly(),
                             intake.stop()
@@ -442,9 +442,9 @@ public class Auto {
                 ),
 
                 Commands.deadline(
-                    Commands.waitSeconds(2.5),
+                    Commands.waitSeconds(4),
                     Commands.sequence(
-                        Commands.waitSeconds(1.5),
+                        Commands.waitSeconds(0.75),
                         Commands.parallel(
                             extender.autoAgitate().repeatedly(),
                             intake.stop()
