@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import raidzero.lib.LimelightState.IMU_MODE;
+import raidzero.lib.LimelightState.PIPELINE;
 import raidzero.lib.Util;
 
 public class Robot extends TimedRobot {
@@ -75,6 +76,8 @@ public class Robot extends TimedRobot {
             Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
                 .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
         );
+
+        Superstructure.getLimelight().setPipeline("limelight-front", PIPELINE.OBJECT);
     }
 
     @Override
@@ -98,6 +101,8 @@ public class Robot extends TimedRobot {
             Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
                 .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
         );
+
+        Superstructure.getLimelight().setPipeline("limelight-front", PIPELINE.OBJECT);
     }
 
     @Override
