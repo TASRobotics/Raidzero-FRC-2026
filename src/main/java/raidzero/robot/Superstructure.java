@@ -360,6 +360,8 @@ public class Superstructure {
             )
         );
 
+        inAutonShootingZone.whileTrue(hood.aim());
+
         inAutonShootingZone.negate().whileTrue(hood.aim(Degrees.of(10)));
 
         timestampOne.onTrue(Commands.run(() -> {
@@ -421,6 +423,7 @@ public class Superstructure {
         autoChooser.addOption("Left Double", autos.getLeft2Cycle());
         autoChooser.addOption("Right Oupost", autos.getRightOutpostAuto());
         autoChooser.addOption("Right Double", autos.getRight2Cycle());
+        autoChooser.addOption("Right Outpost Double", autos.getRightOutpostDoubleAuto());
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }

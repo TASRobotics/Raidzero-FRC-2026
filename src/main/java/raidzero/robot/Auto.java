@@ -309,7 +309,7 @@ public class Auto {
      *
      * @return A {@link Command} for the right trench 2 cycle outpost auto
      */
-    public Command getRightDoubleOutpostAuto() {
+    public Command getRightOutpostDoubleAuto() {
         return build(
             "RightMidStartFast", () -> Commands.sequence(
                 // Drive the first path as the leader
@@ -320,7 +320,7 @@ public class Auto {
                         intake.go()
                     ),
                     Commands.sequence(
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.3),
                         extender.extend()
                     )
                 ),
@@ -334,9 +334,9 @@ public class Auto {
                 ),
 
                 Commands.deadline(
-                    Commands.waitSeconds(1.5),
+                    Commands.waitSeconds(3.0),
                     Commands.sequence(
-                        Commands.waitSeconds(1.5),
+                        Commands.waitSeconds(1),
                         Commands.parallel(
                             extender.autoAgitate().repeatedly(),
                             intake.go()
@@ -352,7 +352,7 @@ public class Auto {
                     )
                 ),
 
-                follow("RightMidCollectTrenchOut"),
+                follow("RightMidCollectTrenchIn"),
 
                 // Drive and stop intake simultaneously
                 Commands.deadline(
@@ -400,7 +400,7 @@ public class Auto {
                         intake.go()
                     ),
                     Commands.sequence(
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.3),
                         extender.extend()
                     )
                 ),
