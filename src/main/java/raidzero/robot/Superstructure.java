@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -175,13 +176,20 @@ public class Superstructure {
             limelight.setUseMt2(false);
             limelight.setImuMode(IMU_MODE.EXTERNAL_SEED);
             ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - DR"));
-        })).onFalse(Commands.runOnce(() -> {
-            limelight.setUseMt2(true);
-            swerve.seedFieldCentric(
-                Rotation2d.fromDegrees(limelight.getAverageHeading()).plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
-            );
-            limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
-        }));
+        })
+            .andThen(
+                new WaitCommand(1)
+                    .alongWith(swerve.stop())
+            )
+            .andThen(Commands.runOnce(() -> {
+                limelight.setUseMt2(true);
+                swerve.seedFieldCentric(
+                    Rotation2d.fromDegrees(limelight.getAverageHeading())
+                        .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
+                );
+                limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
+            }))
+        );
 
         operator.b().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
         operator.b().whileTrue(spindexer.go());
