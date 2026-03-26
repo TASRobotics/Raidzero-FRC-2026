@@ -58,10 +58,15 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
      *         longer duration
      */
     public Command antiJamAuto() {
-        return run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
+        return run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED))
             .withTimeout(1)
             .andThen(
-                run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED)).withTimeout(2)
+                run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
+                    .withTimeout(1)
+            )
+            .andThen(
+                run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED))
+                    .withTimeout(1)
             )
             .repeatedly();
     }
