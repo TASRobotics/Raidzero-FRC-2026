@@ -22,7 +22,7 @@ public class LimelightState {
     }
 
     private String limelightName;
-    private LimelightHelpers.LimelightResults results;
+    private LimelightHelpers.IMUData imuData;
     private LimelightHelpers.PoseEstimate currEstimate;
     private LimelightHelpers.PoseEstimate prevEstimate;
     private StructPublisher<Pose2d> ntPublisher;
@@ -192,7 +192,7 @@ public class LimelightState {
         currEstimate = useMt2 ? LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName) :
             LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
 
-        results = LimelightHelpers.getLatestResults(limelightName);
+        imuData = LimelightHelpers.getIMUData(limelightName);
 
         if (currEstimate != null && currEstimate.pose != null) {
             ignore = checkIgnore(robotPose);
@@ -216,10 +216,12 @@ public class LimelightState {
             ignore = false;
         }
 
-        SmartDashboard.putNumber(
-            limelightName.split("-")[1] + "RYaw",
-            NetworkTableInstance.getDefault().getTable(limelightName).getEntry("imu").getDoubleArray(new double[1])[0]
-        );
+        if (imuData != null) {
+            SmartDashboard.putNumber(
+                limelightName.split("-")[1] + "RYaw",
+                imuData.robotYaw
+            );
+        }
 
         SmartDashboard.putBoolean(limelightName.split("-")[1] + "Pose", !ignore && !ignoreAll);
     }
