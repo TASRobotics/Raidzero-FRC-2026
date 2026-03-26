@@ -120,7 +120,13 @@ public class Superstructure {
 
     public static Trigger inAutonShootingZone = new Trigger(() -> {
         Pose2d pose = swerve.getState().Pose;
-        boolean inAllianceZone = pose.getX() < 3.5 || pose.getX() > 12.7;
+        boolean inAllianceZone = (pose.getX() < 3.5 && pose.getX() > 3) || (pose.getX() > 12.7 && pose.getX() < 13.5);
+        return inAllianceZone && DriverStation.isAutonomousEnabled();
+    });
+
+    public static Trigger inAutonReverseZone = new Trigger(() -> {
+        Pose2d pose = swerve.getState().Pose;
+        boolean inAllianceZone = (pose.getX() > 3.5 && pose.getX() < 5.1) || (pose.getX() > 12.7 && pose.getX() < 11.2);
         return inAllianceZone && DriverStation.isAutonomousEnabled();
     });
 
@@ -378,13 +384,9 @@ public class Superstructure {
                 .until(() -> !inAutonShootingZone.getAsBoolean() && !spindexer.stopped().getAsBoolean())
         );
 
-        // inAutonShootingZone.and(feeder.ballDetected()).whileTrue(
-        // feeder.go().alongWith(spindexer.go())
-        // );
-
-        // inAutonShootingZone.and(feeder.ballDetected().negate()).whileTrue(
-        // feeder.go().alongWith(spindexer.antiJamBig())
-        // );
+        inAutonReverseZone.whileTrue(
+            spindexer.reverse()
+        );
 
         inAutonShootingZone.whileTrue(
             feeder.go().alongWith(spindexer.antiJamAuto())
