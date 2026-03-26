@@ -25,7 +25,7 @@ public final class IntakeConstants {
         public static final MotorAlignmentValue FOLLOW_ALIGNMENT = MotorAlignmentValue.Opposed;
 
         public static final double SENSOR_TO_MECHANISM_RATIO = 3.0 / 1.0;
-        public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
+        public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(60);
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(40);

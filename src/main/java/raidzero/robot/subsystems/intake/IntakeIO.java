@@ -60,7 +60,7 @@ public interface IntakeIO extends SubsystemIO {
                 )
                 .withFollower(Intake.FOLLOW_ID, Superstructure.canDoAttitude, Intake.FOLLOW_ALIGNMENT)
                 .build();
-                motor.setCoast();
+            motor.setCoast();
 
             // Superstructure.orchestra.addInstrument(this.motor.getMotor());
         }
