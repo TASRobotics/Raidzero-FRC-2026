@@ -369,8 +369,13 @@ public class Auto {
                 ),
 
                 Commands.deadline(
-                    Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)).withTimeout(6),
                     Commands.sequence(
+                        Commands.waitSeconds(4),
+                        Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01))
+                            .withTimeout(6)
+                    ),
+                    Commands.sequence(
+                        Commands.waitSeconds(4),
                         Commands.parallel(
                             this.agitate().repeatedly(),
                             intake.stop()
