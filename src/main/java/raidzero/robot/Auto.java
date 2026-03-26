@@ -4,6 +4,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FlippingUtil;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -17,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+import raidzero.lib.LimelightHelpers;
 import raidzero.lib.Util;
 import raidzero.robot.subsystems.drive.Swerve;
 import raidzero.robot.subsystems.intake.Extender;
@@ -29,6 +32,8 @@ public class Auto {
     private final Map<String, PathPlannerPath> pathCache = new HashMap<>();
 
     private PathConstraints currentConstraints = SLOW_CONSTRAINTS;
+
+    private final Debouncer ballGoneDebouncer = new Debouncer(0.75, DebounceType.kRising);
 
     public static final PathConstraints DEFAULT_CONSTRAINTS = new PathConstraints(
         3.0, 2.0,
@@ -98,7 +103,8 @@ public class Auto {
      * Pathfinds to the starting pose of the given path, then follows it
      *
      * @param pathName The name of the path
-     * @return A {@link DeferredCommand} that pathfinds to the start of the path, then follows it
+     * @return A {@link DeferredCommand} that pathfinds to the start of the path,
+     *         then follows it
      */
     public Command otf(String pathName) {
         return Commands.defer(
@@ -124,10 +130,12 @@ public class Auto {
     }
 
     /**
-     * Builds an autonomous routine by first pathfinding to the starting pose of the given path, then executing the provided logic
+     * Builds an autonomous routine by first pathfinding to the starting pose of the
+     * given path, then executing the provided logic
      *
      * @param startPathName The name of the first path in the routine
-     * @param autoLogic A {@link Command} {@link Supplier} that provides the main logic of the routine
+     * @param autoLogic     A {@link Command} {@link Supplier} that provides the
+     *                      main logic of the routine
      * @return A {@link DeferredCommand} that executes the routine
      */
     private Command build(String startPathName, Supplier<Command> autoLogic) {
@@ -149,7 +157,8 @@ public class Auto {
      * Flips the given pose across the field if the current alliance is Red
      *
      * @param bluePose The pose with respect to the blue alliance
-     * @return A flipped {@link Pose2d} if the alliance is Red, otherwise the original pose
+     * @return A flipped {@link Pose2d} if the alliance is Red, otherwise the
+     *         original pose
      */
     private Pose2d getAlliancePose(Pose2d bluePose) {
         return Util.isRedAlliance() ? FlippingUtil.flipFieldPose(bluePose) : bluePose;
@@ -201,11 +210,10 @@ public class Auto {
                 ),
 
                 Commands.deadline(
-                    Commands.waitSeconds(4),
+                    Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)).withTimeout(6),
                     Commands.sequence(
-                        Commands.waitSeconds(0.75),
                         Commands.parallel(
-                            extender.autoAgitate().repeatedly(),
+                            this.agitate().repeatedly(),
                             intake.stop()
                         )
                     )
@@ -229,11 +237,10 @@ public class Auto {
                 ),
 
                 Commands.deadline(
-                    Commands.waitSeconds(4),
+                    Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.75),
                         Commands.parallel(
-                            extender.autoAgitate().repeatedly(),
+                            this.agitate().repeatedly(),
                             intake.stop()
                         )
                     )
@@ -283,11 +290,10 @@ public class Auto {
                 ),
 
                 Commands.deadline(
-                    Commands.waitSeconds(5),
+                    Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)).withTimeout(6),
                     Commands.sequence(
-                        Commands.waitSeconds(0.75),
                         Commands.parallel(
-                            extender.autoAgitate().repeatedly(),
+                            this.agitate().repeatedly(),
                             intake.stop()
                         )
                     )
@@ -334,11 +340,10 @@ public class Auto {
                 ),
 
                 Commands.deadline(
-                    Commands.waitSeconds(3.0),
+                    Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.75),
                         Commands.parallel(
-                            extender.autoAgitate().repeatedly(),
+                            this.agitate().repeatedly(),
                             intake.stop()
                         )
                     )
@@ -364,11 +369,10 @@ public class Auto {
                 ),
 
                 Commands.deadline(
-                    Commands.waitSeconds(4),
+                    Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)).withTimeout(6),
                     Commands.sequence(
-                        Commands.waitSeconds(0.75),
                         Commands.parallel(
-                            extender.autoAgitate().repeatedly(),
+                            this.agitate().repeatedly(),
                             intake.stop()
                         )
                     )
@@ -414,11 +418,10 @@ public class Auto {
                 ),
 
                 Commands.deadline(
-                    Commands.waitSeconds(4),
+                    Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)).withTimeout(6),
                     Commands.sequence(
-                        Commands.waitSeconds(0.75),
                         Commands.parallel(
-                            extender.autoAgitate().repeatedly(),
+                            this.agitate().repeatedly(),
                             intake.stop()
                         )
                     )
@@ -442,11 +445,10 @@ public class Auto {
                 ),
 
                 Commands.deadline(
-                    Commands.waitSeconds(4),
+                    Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.75),
                         Commands.parallel(
-                            extender.autoAgitate().repeatedly(),
+                            this.agitate().repeatedly(),
                             intake.stop()
                         )
                     )
@@ -461,5 +463,15 @@ public class Auto {
                 )
             )
         );
+    }
+
+    public Command agitate() {
+        return Commands.waitUntil(() -> LimelightHelpers.getTA("limelight-front") < 12)
+            .andThen(extender.agitateL1Setpoint())
+            .until(() -> LimelightHelpers.getTA("limelight-front") < 10)
+            .andThen(extender.agitateL2Setpoint())
+            .until(() -> LimelightHelpers.getTA("limelight-front") < 8)
+            .andThen(extender.agitateL3Setpoint())
+            .finallyDo(() -> extender.extend().withTimeout(2));
     }
 }
