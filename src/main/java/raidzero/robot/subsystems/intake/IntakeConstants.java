@@ -57,7 +57,7 @@ public final class IntakeConstants {
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(33.3);
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(0);
 
-        public static final AngularVelocity INTAKE_SPEED = RotationsPerSecond.of(30.0);
+        public static final AngularVelocity INTAKE_SPEED = RotationsPerSecond.of(17.5);
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
     }

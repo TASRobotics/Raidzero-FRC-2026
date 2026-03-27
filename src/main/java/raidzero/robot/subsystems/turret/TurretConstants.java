@@ -187,7 +187,7 @@ public final class TurretConstants {
             TOF_TABLE.put(2.0, 1.554);
             TOF_TABLE.put(2.5, 1.557);
             TOF_TABLE.put(3.0, 1.56);
-            TOF_TABLE.put(3.65, 1.634);
+            TOF_TABLE.put(3.65, 1.6);
             TOF_TABLE.put(4.0, 1.64);
             TOF_TABLE.put(4.5, 1.654);
         }

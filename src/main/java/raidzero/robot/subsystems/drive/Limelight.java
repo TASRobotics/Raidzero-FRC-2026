@@ -50,7 +50,7 @@ public class Limelight {
 
         frontState = new LimelightState(
             "limelight-front",
-            LimelightState.PIPELINE.TAG,
+            LimelightState.PIPELINE.OBJECT,
             () -> swerve.getState().Pose.getRotation().getDegrees(),
             () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
             swerve::addVisionMeasurement

@@ -49,14 +49,50 @@ public class Extender extends R0Subsystem<ExtenderIO> {
         return run(() -> io.agitateL1())
             .withTimeout(0.5)
             .andThen(
+                run(() -> io.extend())
+                    .withTimeout(0.5)
+            )
+            .andThen(
                 run(() -> io.agitateL2())
+                    .withTimeout(0.5)
+            )
+            .andThen(
+                run(() -> io.agitateL1())
                     .withTimeout(0.5)
             )
             .andThen(
                 run(() -> io.agitateL3())
                     .withTimeout(0.5)
             )
+            .andThen(
+                run(() -> io.agitateL2())
+                    .withTimeout(0.5)
+            )
             .andThen(run(() -> io.extend()).withTimeout(0.3));
+    }
+
+    /**
+     * Agitates the intake at level 1
+     * @return A {@link Command} that moves the extender to the level 1 agitate setpoint
+     */
+    public Command agitateL1Setpoint() {
+        return run(() -> io.agitateL1());
+    }
+
+    /**
+     * Agitates the intake at level 2
+     * @return A {@link Command} that moves the extender to the level 2 agitate setpoint
+     */
+    public Command agitateL2Setpoint() {
+        return run(() -> io.agitateL2());
+    }
+
+    /**
+     * Agitates the intake at level 3
+     * @return A {@link Command} that moves the extender to the level 3 agitate setpoint
+     */
+    public Command agitateL3Setpoint() {
+        return run(() -> io.agitateL3());
     }
 
     /**
