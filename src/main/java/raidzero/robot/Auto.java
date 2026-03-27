@@ -479,4 +479,15 @@ public class Auto {
             .andThen(extender.agitateL3Setpoint())
             .finallyDo(() -> extender.extend().withTimeout(2));
     }
+
+    public Command agitateTeleop() {
+        if (LimelightHelpers.getTA("limelight-front") < 8) {
+            return Commands.defer(() -> extender.agitateL3Setpoint().withTimeout(0.5), Set.of(extender));
+        } else if (LimelightHelpers.getTA("limelight-front") < 10) {
+            return Commands.defer(() -> extender.agitateL2Setpoint().withTimeout(0.5), Set.of(extender));
+        } else if (LimelightHelpers.getTA("limelight-front") < 12) {
+            return Commands.defer(() -> extender.agitateL1Setpoint().withTimeout(0.5), Set.of(extender));
+        }
+        return Commands.defer(() -> extender.extend(), Set.of(extender));
+    }
 }
