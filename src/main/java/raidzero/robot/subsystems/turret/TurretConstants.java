@@ -165,8 +165,8 @@ public final class TurretConstants {
             PITCH_TABLE.put(2.05, 13.0);
             PITCH_TABLE.put(2.53, 15.0);
             PITCH_TABLE.put(2.98, 15.0);
-            PITCH_TABLE.put(3.4, 16.0);
-            PITCH_TABLE.put(3.65, 16.0);
+            PITCH_TABLE.put(3.4, 16.5);
+            PITCH_TABLE.put(3.65, 17.0);
             PITCH_TABLE.put(4.00, 18.0);
             PITCH_TABLE.put(4.2, 19.0);
             PITCH_TABLE.put(4.50, 20.0);
