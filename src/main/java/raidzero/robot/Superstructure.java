@@ -69,13 +69,15 @@ public class Superstructure {
     private static final SwerveRequest.FieldCentric strafeControl = new SwerveRequest.FieldCentric()
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-    // POV-based strafing: compute velocities from POV angle so diagonals and cardinals
+    // POV-based strafing: compute velocities from POV angle so diagonals and
+    // cardinals
     // map consistently to field-centric X/Y. Use MaxSpeed scaling so feel matches
     // stick driving. POV angles are clockwise with 0 = up (forward), so convert
     // to radians with a negative sign to map to the standard unit circle.
-    private static final double strafeScale = 0.75;
+    private static final double strafeScale = 0.25;
 
-    // Helper inline lambda to generate a field-centric request for a given POV angle
+    // Helper inline lambda to generate a field-centric request for a given POV
+    // angle
     private static final java.util.function.IntFunction<SwerveRequest.FieldCentric> povStrafe = (angle) -> {
         double rad = Math.toRadians(-angle);
         double vx = MaxSpeed * strafeScale * Math.cos(rad);
@@ -215,15 +217,17 @@ public class Superstructure {
             }))
         );
 
-        operator.b().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
+        // operator.b().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
         operator.b().whileTrue(spindexer.go());
         // operator.b().whileTrue(intake.go());
         // operator.b().and(operator.rightBumper().negate()).whileTrue(Commands.waitSeconds(1.4).andThen(extender.autoAgitate().repeatedly()));
 
-        operator.x().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
+        // operator.x().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
         operator.x().whileTrue(spindexer.reverse());
         // operator.x().whileTrue(intake.go());
         // operator.x().and(operator.rightBumper().negate()).whileTrue(Commands.waitSeconds(1.4).andThen(extender.autoAgitate().repeatedly()));
+
+        operator.x().or(operator.b()).and(operator.y()).and(operator.rightTrigger().negate()).whileTrue(hood.aim());
 
         operator.y().whileTrue(shooter.shoot());
         operator.y().whileTrue(feeder.go());
@@ -240,7 +244,8 @@ public class Superstructure {
                         Util.isBlueAlliance() ? 0.45 : 0.05
                     )
                 )
-                    .alongWith(hood.aim(Pitch.PASSING_ANGLE)).alongWith(shooter.shoot().alongWith(feeder.go()))
+                    .alongWith(hood.aim(Pitch.PASSING_ANGLE))
+                    .alongWith(shooter.shoot().alongWith(feeder.go()))
             );
 
         operator.rightTrigger().and(passingArea2).whileTrue(
@@ -259,7 +264,8 @@ public class Superstructure {
         })).onFalse(Commands.runOnce(() -> {
             limelight.setUseMt2(true);
             swerve.seedFieldCentric(
-                Rotation2d.fromDegrees(limelight.getAverageHeading()).plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
+                Rotation2d.fromDegrees(limelight.getAverageHeading())
+                    .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
             );
             limelight.setImuMode(IMU_MODE.EXTERNAL_ONLY);
         }));
@@ -269,7 +275,7 @@ public class Superstructure {
             .onFalse(Commands.runOnce(() -> limelight.setManualSeed(true)));
 
         operator.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
-        operator.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
+        operator.povLeft().whileTrue(autos.agitateTeleop().repeatedly());
 
         operator.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
         operator.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
@@ -286,7 +292,8 @@ public class Superstructure {
         })).onFalse(Commands.runOnce(() -> {
             limelight.setUseMt2(true);
             swerve.seedFieldCentric(
-                Rotation2d.fromDegrees(limelight.getAverageHeading()).plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
+                Rotation2d.fromDegrees(limelight.getAverageHeading())
+                    .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
             );
             limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
         }));
@@ -354,16 +361,17 @@ public class Superstructure {
 
         driver.a().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
 
-        /** Kayne's Controlssss
-
-        driver.back().onTrue(extender.retract()).onFalse(extender.extend());
-
-        driver.b().whileTrue(spindexer.go());
-        driver.x().whileTrue(spindexer.reverse());
-
-        driver.y().whileTrue(shooter.manualShoot().alongWith(feeder.go()));
-        driver.y().whileTrue(hood.manualAim());
-        */
+        /**
+         * Kayne's Controlssss
+         *
+         * driver.back().onTrue(extender.retract()).onFalse(extender.extend());
+         *
+         * driver.b().whileTrue(spindexer.go());
+         * driver.x().whileTrue(spindexer.reverse());
+         *
+         * driver.y().whileTrue(shooter.manualShoot().alongWith(feeder.go()));
+         * driver.y().whileTrue(hood.manualAim());
+         */
     }
 
     /**
