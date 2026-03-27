@@ -78,8 +78,6 @@ public class Robot extends TimedRobot {
             Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
                 .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
         );
-
-        Superstructure.getLimelight().setPipeline("limelight-front", PIPELINE.OBJECT);
     }
 
     @Override
@@ -103,8 +101,6 @@ public class Robot extends TimedRobot {
             Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
                 .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
         );
-
-        Superstructure.getLimelight().setPipeline("limelight-front", PIPELINE.OBJECT);
     }
 
     @Override
