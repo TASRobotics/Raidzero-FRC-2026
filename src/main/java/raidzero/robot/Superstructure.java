@@ -134,16 +134,19 @@ public class Superstructure {
 
     // 1:55 1:30 1:05 0:40
     public static Trigger timestampOne = new Trigger(() -> {
-        return DriverStation.getMatchTime() <= 116;
+        return DriverStation.getMatchTime() <= 118;
     });
     public static Trigger timestampTwo = new Trigger(() -> {
-        return DriverStation.getMatchTime() <= 91;
+        return DriverStation.getMatchTime() <= 93;
     });
     public static Trigger timestampThree = new Trigger(() -> {
-        return DriverStation.getMatchTime() <= 66;
+        return DriverStation.getMatchTime() <= 68;
     });
     public static Trigger timestampFour = new Trigger(() -> {
-        return DriverStation.getMatchTime() <= 41;
+        return DriverStation.getMatchTime() <= 43;
+    });
+    public static Trigger timestampFive = new Trigger(() -> {
+        return DriverStation.getMatchTime() <= 12;
     });
 
     /**
@@ -406,24 +409,108 @@ public class Superstructure {
 
         timestampOne.onTrue(Commands.run(() -> {
             driver.setRumble(RumbleType.kBothRumble, 1);
-        }).withTimeout(1).finallyDo(() -> {
-            driver.setRumble(RumbleType.kBothRumble, 0);
-        }));
+        })
+            .withTimeout(0.25)
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 0);
+            }).withTimeout(0.25))
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 1);
+            }).withTimeout(0.25))
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 0);
+            }).withTimeout(0.25))
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 1);
+            }).withTimeout(0.25))
+            .finallyDo(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 0);
+            })
+        );
+
         timestampTwo.onTrue(Commands.run(() -> {
             driver.setRumble(RumbleType.kBothRumble, 1);
-        }).withTimeout(1).finallyDo(() -> {
-            driver.setRumble(RumbleType.kBothRumble, 0);
-        }));
+        })
+            .withTimeout(0.25)
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 0);
+            }).withTimeout(0.25))
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 1);
+            }).withTimeout(0.25))
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 0);
+            }).withTimeout(0.25))
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 1);
+            }).withTimeout(0.25))
+            .finallyDo(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 0);
+            })
+        );
+
         timestampThree.onTrue(Commands.run(() -> {
             driver.setRumble(RumbleType.kBothRumble, 1);
-        }).withTimeout(1).finallyDo(() -> {
-            driver.setRumble(RumbleType.kBothRumble, 0);
-        }));
+        })
+            .withTimeout(0.25)
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 0);
+            }).withTimeout(0.25))
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 1);
+            }).withTimeout(0.25))
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 0);
+            }).withTimeout(0.25))
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 1);
+            }).withTimeout(0.25))
+            .finallyDo(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 0);
+            })
+        );
+
         timestampFour.onTrue(Commands.run(() -> {
             driver.setRumble(RumbleType.kBothRumble, 1);
-        }).withTimeout(1).finallyDo(() -> {
-            driver.setRumble(RumbleType.kBothRumble, 0);
-        }));
+        })
+            .withTimeout(0.25)
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 0);
+            }).withTimeout(0.25))
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 1);
+            }).withTimeout(0.25))
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 0);
+            }).withTimeout(0.25))
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 1);
+            }).withTimeout(0.25))
+            .finallyDo(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 0);
+            })
+        );
+
+        timestampFive.onTrue(Commands.run(() -> {
+            driver.setRumble(RumbleType.kBothRumble, 1);
+        })
+            .withTimeout(0.25)
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 0);
+            }).withTimeout(0.25))
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 1);
+            }).withTimeout(0.25))
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 0);
+            }).withTimeout(0.25))
+            .andThen(Commands.run(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 1);
+            }).withTimeout(0.25))
+            .finallyDo(() -> {
+                driver.setRumble(RumbleType.kBothRumble, 0);
+            })
+        );
     }
 
     /**
