@@ -210,8 +210,13 @@ public class Superstructure {
         );
 
         operator.b().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
-        operator.b().whileTrue(spindexer.go());
-        // operator.b().whileTrue(intake.go());
+        // operator.b().whileTrue(spindexer.go());
+        // operator.b().whileTrue(
+        //     Commands.waitSeconds(1.0).deadlineFor(spindexer.antiJamBig())
+        //         .andThen(Commands.waitSeconds(2.0).deadlineFor(spindexer.go()))
+        //         .repeatedly()
+        // );
+        operator.b().whileTrue(intake.go());
         // operator.b().and(operator.rightBumper().negate()).whileTrue(Commands.waitSeconds(1.4).andThen(extender.autoAgitate().repeatedly()));
 
         operator.x().and(operator.rightTrigger().negate()).whileTrue(hood.aim());

@@ -140,7 +140,7 @@ public final class IntakeConstants {
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(0);
 
         public static final AngularVelocity INDEX_SPEED = RotationsPerSecond.of(6.0);
-        public static final AngularVelocity ANTIJAM_SPEED = RotationsPerSecond.of(6.0);
+        public static final AngularVelocity ANTIJAM_SPEED = RotationsPerSecond.of(-6.0);
 
         public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(3.0);
 
