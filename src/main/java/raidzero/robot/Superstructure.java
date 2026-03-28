@@ -260,7 +260,7 @@ public class Superstructure {
                 .alongWith(hood.aim(Pitch.PASSING_ANGLE)).alongWith(shooter.shoot().alongWith(feeder.go()))
         );
 
-        operator.leftTrigger().and(operator.rightTrigger()).onTrue(Commands.runOnce(() -> {
+        operator.leftStick().onTrue(Commands.runOnce(() -> {
             limelight.setUseMt2(false);
             limelight.setImuMode(IMU_MODE.EXTERNAL_SEED);
             ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - OP"));
