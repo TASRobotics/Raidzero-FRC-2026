@@ -19,6 +19,11 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
         return run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED));
     }
 
+    /**
+     * Spins the spindexer in reverse at the index speed
+     *
+     * @return A {@link Command} that spins the spindexer in reverse at the index speed
+     */
     public Command reverse() {
         return run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED.times(-1.0)));
     }

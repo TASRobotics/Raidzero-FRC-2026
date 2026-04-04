@@ -470,6 +470,11 @@ public class Auto {
         );
     }
 
+    /**
+     * Agitates the extender based on the front Limelight's target area
+     *
+     * @return A {@link Command} that agitates the extender based on the front Limelight's target area
+     */
     public Command agitate() {
         return Commands.waitUntil(() -> LimelightHelpers.getTA("limelight-front") < 12)
             .andThen(extender.agitateL1Setpoint())
@@ -480,6 +485,13 @@ public class Auto {
             .finallyDo(() -> extender.extend().withTimeout(2));
     }
 
+    /**
+     * Agitates the extender based on the front Limelight's target area
+     *
+     * @implNote This should be used during teleop
+     *
+     * @return A {@link Command} that agitates the extender based on the front Limelight's target area
+     */
     public Command agitateTeleop() {
         if (LimelightHelpers.getTA("limelight-front") < 8) {
             return Commands.defer(() -> extender.agitateL3Setpoint().withTimeout(0.5), Set.of(extender));
