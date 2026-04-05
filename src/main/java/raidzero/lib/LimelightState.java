@@ -139,7 +139,7 @@ public class LimelightState {
      * @param useMt2    Whether to use the MetaTag2 pose estimation method
      */
     public void update(boolean ignoreAll, boolean useMt2, Pose2d robotPose) {
-        update(ignoreAll, 0.5, 0.5, Units.degreesToRadians(5), useMt2, robotPose);
+        update(ignoreAll, 0.5, 0.5, Units.degreesToRadians(10), useMt2, robotPose);
     }
 
     /**
@@ -151,7 +151,7 @@ public class LimelightState {
      * @param useMt2    Whether to use the MetaTag2 pose estimation method
      */
     public void update(boolean ignoreAll, double stdevX, double stdevY, boolean useMt2, Pose2d robotPose) {
-        update(ignoreAll, stdevX, stdevY, Units.degreesToRadians(5), useMt2, robotPose);
+        update(ignoreAll, stdevX, stdevY, Units.degreesToRadians(10), useMt2, robotPose);
     }
 
     /**
@@ -205,7 +205,7 @@ public class LimelightState {
                 addVisionMeasurementConsumer.add(
                     currEstimate.pose,
                     currEstimate.timestampSeconds,
-                    VecBuilder.fill(stdevX, stdevY, Integer.MAX_VALUE)
+                    VecBuilder.fill(stdevX, stdevY, stdevRot)
                         .div(Math.max(LimelightHelpers.getTA(limelightName), 0.05))
                         .times(hoodAngleSupplier != null && hoodAngleSupplier.get() > 20 ? 1.0 : 1.75)
                 );

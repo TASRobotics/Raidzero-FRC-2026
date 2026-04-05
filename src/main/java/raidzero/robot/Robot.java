@@ -73,7 +73,7 @@ public class Robot extends TimedRobot {
 
         alreadyEnabled = true;
         Elastic.initAuton();
-        Superstructure.getLimelight().setImuMode(IMU_MODE.EXTERNAL_ONLY);
+        Superstructure.getLimelight().setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
         Superstructure.getSwerve().seedFieldCentric(
             Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
                 .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
@@ -95,7 +95,7 @@ public class Robot extends TimedRobot {
         alreadyEnabled = true;
         Elastic.initTeleop();
         Superstructure.getHood().setDefaultCommand(Superstructure.getHood().aim(Degrees.of(10)));
-        Superstructure.getLimelight().setImuMode(IMU_MODE.EXTERNAL_ONLY);
+        Superstructure.getLimelight().setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
 
         Superstructure.getSwerve().seedFieldCentric(
             Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())

@@ -270,7 +270,7 @@ public class Superstructure {
                 Rotation2d.fromDegrees(limelight.getAverageHeading())
                     .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
             );
-            limelight.setImuMode(IMU_MODE.EXTERNAL_ONLY);
+            limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
         }));
 
         operator.leftStick().and(operator.rightStick())
