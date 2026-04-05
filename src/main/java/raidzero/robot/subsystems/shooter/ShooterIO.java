@@ -64,7 +64,7 @@ public interface ShooterIO extends SubsystemIO {
 
         @Override
         public void setVelocity(AngularVelocity velocity) {
-            this.flywheel.setPIDVelocityTarget(velocity, 0);
+            this.flywheel.setVelocityTorqueCurrentTarget(velocity, Flywheel.TORQUE_FF_A, 0);
         }
 
         @Override
