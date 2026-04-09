@@ -11,6 +11,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
@@ -139,6 +141,8 @@ public class Auto {
      * @return A {@link DeferredCommand} that executes the routine
      */
     private Command build(String startPathName, Supplier<Command> autoLogic) {
+        SmartDashboard.putString("Auto Status", "Initializing");
+
         return Commands.defer(() -> {
             Pose2d blueStartPose = get(startPathName).getStartingHolonomicPose().orElse(new Pose2d());
             Pose2d initialPose = getAlliancePose(blueStartPose);
@@ -402,40 +406,34 @@ public class Auto {
     public Command getRight2Cycle() {
         return build(
             "RightMidStartFast", () -> Commands.sequence(
+                // 1st Pickup and Initial Move
+                updateAutoStatus("Drive & Pickup 1"),
                 Commands.deadline(
                     follow("RightMidStartFast"),
-                    Commands.sequence(
-                        Commands.waitSeconds(0.5),
-                        intake.go()
-                    ),
-                    Commands.sequence(
-                        Commands.waitSeconds(0.3),
-                        extender.extend()
-                    )
+                    Commands.sequence(Commands.waitSeconds(0.5), intake.go()),
+                    Commands.sequence(Commands.waitSeconds(0.3), extender.extend())
                 ),
 
+                // 1st Approach to Shoot
+                updateAutoStatus("Drive to Shot 1"),
                 Commands.deadline(
                     follow("RightMidTrenchShoot"),
-                    Commands.sequence(
-                        Commands.waitSeconds(1.75),
-                        intake.stop()
-                    )
+                    Commands.sequence(Commands.waitSeconds(1.75), intake.stop())
                 ),
 
+                // 1st Agitation Sequence
+                updateAutoStatus("Agitating 1"),
                 Commands.deadline(
-                    Commands.waitSeconds(2.5)
-                ),
-
-                Commands.deadline(
-                    Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)).withTimeout(6),
                     Commands.sequence(
-                        Commands.parallel(
-                            this.agitate().repeatedly(),
-                            intake.stop()
-                        )
-                    )
-                ),
+                        Commands.waitSeconds(2),
+                        Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.05))
+                    ),
+                    this.agitate().repeatedly(),
+                    intake.stop()
+                ).andThen(extender.extend().withTimeout(1)),
 
+                // 2nd Pickup (Hub)
+                updateAutoStatus("Hub Collect"),
                 Commands.deadline(
                     follow("RightMidCollect"),
                     Commands.sequence(
@@ -444,34 +442,44 @@ public class Auto {
                     )
                 ),
 
+                updateAutoStatus("Back to Trench"),
                 follow("RightMidCollectTrenchOut"),
+
+                // 2nd Drive to Shoot
+                updateAutoStatus("Drive to Shot 2"),
                 Commands.deadline(
                     follow("RightMidShoot"),
-                    Commands.sequence(
-                        Commands.waitSeconds(1.75),
-                        intake.stop()
-                    )
+                    Commands.sequence(Commands.waitSeconds(1.75), intake.stop())
                 ),
 
+                // 2nd Agitation Sequence
+                updateAutoStatus("Agitating 2"),
                 Commands.deadline(
-                    Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)),
                     Commands.sequence(
-                        Commands.parallel(
-                            this.agitate().repeatedly(),
-                            intake.stop()
-                        )
-                    )
-                ),
+                        Commands.waitSeconds(2),
+                        Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.05))
+                    ),
+                    this.agitate().repeatedly(),
+                    intake.stop()
+                ).andThen(extender.extend().withTimeout(1)),
 
+                // Final Move / Stow
+                updateAutoStatus("Final Move"),
                 Commands.deadline(
                     follow("RightShootToMid"),
                     Commands.sequence(
                         extender.extend().withTimeout(1),
                         intake.go()
                     )
-                )
+                ),
+                
+                Commands.runOnce(() -> SmartDashboard.putString("Auto Status", "Auto Complete"))
             )
         );
+    }
+
+    public Command updateAutoStatus(String status) {
+        return Commands.runOnce(() -> SmartDashboard.putString("Auto Status", status));
     }
 
     /**
@@ -480,13 +488,43 @@ public class Auto {
      * @return A {@link Command} that agitates the extender based on the front Limelight's target area
      */
     public Command agitate() {
-        return Commands.waitUntil(() -> LimelightHelpers.getTA("limelight-front") < 12)
-            .andThen(extender.agitateL1Setpoint())
-            .until(() -> LimelightHelpers.getTA("limelight-front") < 10)
-            .andThen(extender.agitateL2Setpoint())
-            .until(() -> LimelightHelpers.getTA("limelight-front") < 8)
-            .andThen(extender.agitateL3Setpoint())
-            .finallyDo(() -> extender.extend().withTimeout(2));
+        Timer stageTimer = new Timer();
+        
+        // Unique debouncers for each stage to ensure fresh timing windows
+        Debouncer lowDebouncer = new Debouncer(0.1, DebounceType.kFalling);
+        Debouncer midDebouncer = new Debouncer(0.1, DebounceType.kFalling);
+        Debouncer highDebouncer = new Debouncer(0.1, DebounceType.kFalling);
+
+        double timerThreshold = 0.5;
+
+        return Commands.sequence(
+            Commands.runOnce(() -> SmartDashboard.putString("Auto Status", "Agitate: Waiting")),
+            Commands.waitUntil(() -> LimelightHelpers.getTA("limelight-front") < 12),
+
+            Commands.runOnce(() -> {
+                stageTimer.restart();
+                SmartDashboard.putString("Auto Status", "Agitate: Low");
+            }),
+            extender.lowAgitate().repeatedly()
+                .until(() -> stageTimer.hasElapsed(timerThreshold) && 
+                            lowDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 10)),
+
+            Commands.runOnce(() -> {
+                stageTimer.restart();
+                SmartDashboard.putString("Auto Status", "Agitate: Mid");
+            }),
+            extender.midAgitate().repeatedly()
+                .until(() -> stageTimer.hasElapsed(timerThreshold) && 
+                            midDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 8)),
+
+            Commands.runOnce(() -> {
+                stageTimer.restart();
+                SmartDashboard.putString("Auto Status", "Agitate: High");
+            }),
+            extender.highAgitate().repeatedly()
+                .until(() -> stageTimer.hasElapsed(timerThreshold) && 
+                            highDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 5))
+        );
     }
 
     /**

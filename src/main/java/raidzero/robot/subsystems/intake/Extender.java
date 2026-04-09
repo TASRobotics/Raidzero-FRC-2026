@@ -113,6 +113,19 @@ public class Extender extends R0Subsystem<ExtenderIO> {
         return new Trigger(() -> io.isExtended());
     }
 
+    public Command lowAgitate(){
+        return this.agitateL1Setpoint().withTimeout(0.3).andThen(this.extend().withTimeout(0.3));
+
+    }
+
+    public Command midAgitate(){
+        return this.agitateL2Setpoint().withTimeout(0.3).andThen(this.agitateL1Setpoint().withTimeout(0.3));
+    }
+
+    public Command highAgitate(){
+        return this.agitateL3Setpoint().withTimeout(0.3).andThen(this.agitateL2Setpoint().withTimeout(0.3));
+    }
+
     /**
      * Sets the starting angle for the intake
      */

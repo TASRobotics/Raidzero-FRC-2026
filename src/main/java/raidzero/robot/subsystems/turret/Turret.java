@@ -37,7 +37,7 @@ public class Turret extends R0Subsystem<TurretIO> {
     private StructPublisher<Pose2d> kineticGoalSender = null;
     private StructPublisher<Pose2d> kineticTurretSender = null;
 
-    private Translation2d allianceTargetFieldPose = null;
+    private Translation2d allianceTargetFieldPose = Util.isRedAlliance() ? Kinetics.GOAL_LOCATION_RED : Kinetics.GOAL_LOCATION_BLUE;
 
     private final LinearFilter vxFilter = LinearFilter.movingAverage(5);
     private final LinearFilter vyFilter = LinearFilter.movingAverage(5);

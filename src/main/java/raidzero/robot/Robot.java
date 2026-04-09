@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import com.ctre.phoenix6.HootAutoReplay;
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -25,6 +26,8 @@ public class Robot extends TimedRobot {
     private final RobotContainer m_robotContainer;
 
     private boolean alreadyEnabled;
+
+    private double lastSentTA = -1.0;
 
     /* log and replay timestamp and joystick data */
     private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
@@ -125,5 +128,26 @@ public class Robot extends TimedRobot {
     public void testExit() {}
 
     @Override
-    public void simulationPeriodic() {}
+    public void simulationInit() {
+        NetworkTableInstance.getDefault()
+            .getTable("limelight-front")
+            .getEntry("ta")
+            .setDouble(15.0);
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        double selectedTA = RobotContainer.getSimTA();
+
+        // Only update NetworkTables if the value has actually changed
+        if (selectedTA != lastSentTA) {
+            NetworkTableInstance.getDefault()
+                .getTable("limelight-front")
+                .getEntry("ta")
+                .setDouble(selectedTA);
+
+            // Update the tracker so we don't send it again next loop
+            lastSentTA = selectedTA;
+        }
+    }
 }
