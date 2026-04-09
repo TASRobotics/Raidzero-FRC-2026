@@ -36,8 +36,8 @@ public final class TurretConstants {
         public static final int JMM_1_ID = 6; // 29 tooth
         public static final int JMM_2_ID = 5; // 22 tooth
 
-        public static final double JMM_OFFSET_1 = -0.574463; // 29 tooth
-        public static final double JMM_OFFSET_2 = -0.622559; // 22 tooth
+        public static final double JMM_OFFSET_1 = -0.5349; // 29 tooth
+        public static final double JMM_OFFSET_2 = -0.9775; // 22 tooth
 
         public static final SensorDirectionValue JMM_1_INVERTED = SensorDirectionValue.Clockwise_Positive;
         public static final SensorDirectionValue JMM_2_INVERTED = SensorDirectionValue.Clockwise_Positive;
@@ -111,7 +111,7 @@ public final class TurretConstants {
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(0.29); // 48.375
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(5.0);
 
-        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(0.098);
+        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(8);
         public static final boolean ENALBE_FORWARD_SOFT_LIMIT = true;
 
         public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(0.0275);
@@ -168,7 +168,6 @@ public final class TurretConstants {
             PITCH_TABLE.put(3.4, 16.5);
             PITCH_TABLE.put(3.65, 17.0);
             PITCH_TABLE.put(4.00, 18.0);
-            PITCH_TABLE.put(4.2, 19.0);
             PITCH_TABLE.put(4.50, 20.0);
             PITCH_TABLE.put(5.43, 25.0);
 
@@ -177,11 +176,10 @@ public final class TurretConstants {
             RPS_TABLE.put(2.05, 26.5);
             RPS_TABLE.put(2.53, 27.0);
             RPS_TABLE.put(2.98, 28.0);
-            RPS_TABLE.put(3.65, 30.0);
-            RPS_TABLE.put(4.00, 29.5);
-            RPS_TABLE.put(4.2, 29.5);
-            RPS_TABLE.put(4.50, 31.0);
-            RPS_TABLE.put(5.43, 31.5);
+            RPS_TABLE.put(3.65, 29.5);
+            RPS_TABLE.put(4.00, 29.0);
+            RPS_TABLE.put(4.50, 30.5);
+            RPS_TABLE.put(5.43, 31.0);
 
             TOF_TABLE.put(1.5, 1.393);
             TOF_TABLE.put(2.0, 1.554);

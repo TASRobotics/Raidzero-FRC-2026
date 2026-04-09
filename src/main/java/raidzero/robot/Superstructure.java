@@ -57,7 +57,7 @@ public class Superstructure {
     private static final Limelight limelight = Limelight.system();
 
     private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.6;
-    private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.50;
+    private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
 
     private static CommandXboxController driver = new CommandXboxController(0);
     private static CommandXboxController operator = new CommandXboxController(1);
@@ -167,7 +167,8 @@ public class Superstructure {
                 () -> fieldCentricDrive
                     .withVelocityX(-driver.getLeftY() * MaxSpeed)
                     .withVelocityY(-driver.getLeftX() * MaxSpeed)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate)
+                    // .withRotationalRate(-driver.getRightX() * MaxAngularRate)
+                    .withRotationalRate(-Math.signum(driver.getRightX()) * Math.pow(driver.getRightX(), 2) * MaxAngularRate)
             )
         );
 
