@@ -377,7 +377,7 @@ public class Auto {
                 scoreCycle("Shooting Cycle 1", true),
 
                 // 2nd Pickup (Hub)
-                followAndIntake("RightMidCollect", "Hub Collect", 0.8),
+                followAndIntake("RightMidCollect", "Hub Collect", 0.0),
 
                 updateAutoStatus("Back to Trench"),
                 follow("RightMidCollectTrenchOut"),
@@ -389,7 +389,7 @@ public class Auto {
                 scoreCycle("Shooting Cycle 2", false),
 
                 // Final Move / Stow
-                followAndIntake("RightShootToMid", "Back to Mid", 0.8),
+                followAndIntake("RightShootToMid", "Back to Mid", 0.0),
                 
                 updateAutoStatus("Auto Complete")
             )
