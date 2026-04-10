@@ -119,7 +119,8 @@ public class Turret extends R0Subsystem<TurretIO> {
      * Sets the startup angle of the turret
      */
     public void setStartupAngle() {
-        Angle startupYaw = JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading());
+        // Angle startupYaw = JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading());
+        Angle startupYaw = Angle.ofBaseUnits(0, Rotations);
         io.setStartupYaw(startupYaw);
     }
 
@@ -196,7 +197,7 @@ public class Turret extends R0Subsystem<TurretIO> {
     }
 
     public double getJmmValue() {
-        return this.JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()).in(Rotations);
+        return (this.JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()).in(Rotations) - 0.628);
     }
 
     /**
