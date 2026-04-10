@@ -128,12 +128,7 @@ public class Robot extends TimedRobot {
     public void testExit() {}
 
     @Override
-    public void simulationInit() {
-        NetworkTableInstance.getDefault()
-            .getTable("limelight-front")
-            .getEntry("ta")
-            .setDouble(15.0);
-    }
+    public void simulationInit() {}
 
     @Override
     public void simulationPeriodic() {
