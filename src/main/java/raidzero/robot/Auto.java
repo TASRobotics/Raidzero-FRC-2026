@@ -213,8 +213,7 @@ public class Auto {
                     Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)).withTimeout(6),
                     Commands.sequence(
                         Commands.parallel(
-                            this.agitate().repeatedly(),
-                            intake.stop()
+                            this.agitate().repeatedly()
                         )
                     )
                 ),
@@ -242,8 +241,7 @@ public class Auto {
                     Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)),
                     Commands.sequence(
                         Commands.parallel(
-                            this.agitate().repeatedly(),
-                            intake.stop()
+                            this.agitate().repeatedly()
                         )
                     )
                 ),
@@ -436,8 +434,7 @@ public class Auto {
                     Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)).withTimeout(6),
                     Commands.sequence(
                         Commands.parallel(
-                            this.agitate().repeatedly(),
-                            intake.stop()
+                            this.agitate().repeatedly()
                         )
                     )
                 ),
@@ -465,8 +462,7 @@ public class Auto {
                     Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)),
                     Commands.sequence(
                         Commands.parallel(
-                            this.agitate().repeatedly(),
-                            intake.stop()
+                            this.agitate().repeatedly()
                         )
                     )
                 ),
