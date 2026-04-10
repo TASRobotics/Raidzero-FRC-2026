@@ -56,8 +56,8 @@ public class Superstructure {
     private static final Swerve swerve = Swerve.system();
     private static final Limelight limelight = Limelight.system();
 
-    private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.6;
-    private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+    private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.8;
+    private static double MaxAngularRate = RotationsPerSecond.of(1.5).in(RadiansPerSecond);
 
     private static CommandXboxController driver = new CommandXboxController(0);
     private static CommandXboxController operator = new CommandXboxController(1);
