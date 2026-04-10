@@ -222,7 +222,10 @@ public class Auto {
                     follow("LeftMidCollect"),
                     Commands.sequence(
                         extender.setStopShooting(true),
-                        extender.extend().withTimeout(1),
+                        extender.extend().withTimeout(0.2)
+                    ),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
                         intake.go()
                     )
                 ),
@@ -250,7 +253,10 @@ public class Auto {
                     follow("LeftShootToMid"),
                     Commands.sequence(
                         extender.setStopShooting(true),
-                        extender.extend().withTimeout(1),
+                        extender.extend().withTimeout(1)
+                    ),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
                         intake.go()
                     )
                 )
@@ -443,7 +449,10 @@ public class Auto {
                     follow("RightMidCollect"),
                     Commands.sequence(
                         extender.setStopShooting(true),
-                        extender.extend().withTimeout(1),
+                        extender.extend().withTimeout(1)
+                    ),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
                         intake.go()
                     )
                 ),
@@ -471,7 +480,10 @@ public class Auto {
                     follow("RightShootToMid"),
                     Commands.sequence(
                         extender.setStopShooting(true),
-                        extender.extend().withTimeout(1),
+                        extender.extend().withTimeout(1)
+                    ),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
                         intake.go()
                     )
                 )

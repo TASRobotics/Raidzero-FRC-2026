@@ -262,6 +262,8 @@ public class Turret extends R0Subsystem<TurretIO> {
             "Kinetic Hub Distance",
             kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
         );
+
+        SmartDashboard.putNumber("trim", TurretConstants.Yaw.TRIM);
     }
 
     /**
