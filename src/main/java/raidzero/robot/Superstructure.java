@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -282,8 +283,8 @@ public class Superstructure {
         operator.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
         operator.povLeft().whileTrue(autos.agitateTeleop().repeatedly());
 
-        operator.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
-        operator.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
+        operator.povUp().onTrue(new InstantCommand(() -> turret.trim(0.025)));
+        operator.povDown().onTrue(new InstantCommand(() -> turret.trim(-0.025)));
     }
 
     /**

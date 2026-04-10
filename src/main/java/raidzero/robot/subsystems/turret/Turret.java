@@ -124,6 +124,10 @@ public class Turret extends R0Subsystem<TurretIO> {
         io.setStartupYaw(startupYaw);
     }
 
+    public void trim(double rotations) {
+        TurretConstants.Yaw.TRIM += rotations;
+    }
+
     /**
      * Gets the distance from the hub april tag to the turret
      *

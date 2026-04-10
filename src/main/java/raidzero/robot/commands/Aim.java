@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.robot.subsystems.turret.AimBot;
 import raidzero.robot.subsystems.turret.Turret;
+import raidzero.robot.subsystems.turret.TurretConstants;
 
 public class Aim extends Command {
     private final Turret turret = Turret.system();
@@ -25,7 +26,7 @@ public class Aim extends Command {
         double robotRelativeTurretSetpoint = aquireAim.goal().getRotation().minus(aquireAim.robot().getRotation())
             .getRotations();
 
-        turret.moveTo(Rotations.of(robotRelativeTurretSetpoint));
+        turret.moveTo(Rotations.of(robotRelativeTurretSetpoint + TurretConstants.Yaw.TRIM));
     }
 
     @Override

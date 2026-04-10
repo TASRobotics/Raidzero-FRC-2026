@@ -77,6 +77,8 @@ public final class TurretConstants {
         public static MotorTelemetry TELEMETRY = new MotorTelemetry();
 
         public static final double TOLERANCE_SRT = 0.5;
+
+        public static double TRIM = 0;
     }
 
     public static final class Pitch {
