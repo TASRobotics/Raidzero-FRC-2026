@@ -222,6 +222,7 @@ public class Auto {
                 Commands.deadline(
                     follow("LeftMidCollect"),
                     Commands.sequence(
+                        extender.setStopShooting(true),
                         extender.extend().withTimeout(1),
                         intake.go()
                     )
@@ -231,6 +232,7 @@ public class Auto {
                 Commands.deadline(
                     follow("LeftMidShoot"),
                     Commands.sequence(
+                        extender.setStopShooting(false),
                         Commands.waitSeconds(1.75),
                         intake.stop()
                     )
@@ -249,6 +251,7 @@ public class Auto {
                 Commands.deadline(
                     follow("LeftShootToMid"),
                     Commands.sequence(
+                        extender.setStopShooting(true),
                         extender.extend().withTimeout(1),
                         intake.go()
                     )
@@ -352,6 +355,7 @@ public class Auto {
                 Commands.deadline(
                     follow("RightMidCollect"),
                     Commands.sequence(
+                        extender.setStopShooting(true),
                         extender.extend().withTimeout(1),
                         intake.go()
                     )
@@ -363,6 +367,7 @@ public class Auto {
                 Commands.deadline(
                     follow("RightMidToOutpostFast"),
                     Commands.sequence(
+                        extender.setStopShooting(false),
                         Commands.waitSeconds(1.75),
                         intake.stop()
                     )
@@ -386,6 +391,7 @@ public class Auto {
                 Commands.deadline(
                     follow("OutpostToMidFast"),
                     Commands.sequence(
+                        extender.setStopShooting(true),
                         extender.extend().withTimeout(1),
                         intake.go()
                     )
@@ -439,6 +445,7 @@ public class Auto {
                 Commands.deadline(
                     follow("RightMidCollect"),
                     Commands.sequence(
+                        extender.setStopShooting(true),
                         extender.extend().withTimeout(1),
                         intake.go()
                     )
@@ -448,6 +455,7 @@ public class Auto {
                 Commands.deadline(
                     follow("RightMidShoot"),
                     Commands.sequence(
+                        extender.setStopShooting(false),
                         Commands.waitSeconds(1.75),
                         intake.stop()
                     )
@@ -466,6 +474,7 @@ public class Auto {
                 Commands.deadline(
                     follow("RightShootToMid"),
                     Commands.sequence(
+                        extender.setStopShooting(true),
                         extender.extend().withTimeout(1),
                         intake.go()
                     )

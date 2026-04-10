@@ -8,6 +8,7 @@ import raidzero.lib.R0Subsystem;
 
 public class Extender extends R0Subsystem<ExtenderIO> {
     private static Extender system;
+    private boolean stopShooting = false;
 
     /**
      * Extends the intake outwards
@@ -36,6 +37,16 @@ public class Extender extends R0Subsystem<ExtenderIO> {
         return run(() -> io.agitateL1())
             .withTimeout(0.2)
             .andThen(run(() -> io.retract()));
+    }
+
+    public boolean getStopShooting() {
+        return stopShooting;
+    }
+
+    public Command setStopShooting(boolean stopShooting) {
+        return run(() -> {
+            this.stopShooting = stopShooting;
+        });
     }
 
     /**

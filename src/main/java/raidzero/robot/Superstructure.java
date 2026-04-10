@@ -123,7 +123,7 @@ public class Superstructure {
     public static Trigger inAutonShootingZone = new Trigger(() -> {
         Pose2d pose = swerve.getState().Pose;
         boolean inAllianceZone = (pose.getX() < 3.5 && pose.getX() > 3) || (pose.getX() > 12.7 && pose.getX() < 13.5);
-        return inAllianceZone && DriverStation.isAutonomousEnabled();
+        return (inAllianceZone && !extender.getStopShooting()) && DriverStation.isAutonomousEnabled();
     });
 
     public static Trigger inAutonReverseZone = new Trigger(() -> {
