@@ -193,70 +193,31 @@ public class Auto {
     public Command getLeft2Cycle() {
         return build(
             "LeftMidStart", () -> Commands.sequence(
-                Commands.deadline(
-                    follow("LeftMidStart"),
-                    Commands.sequence(
-                        Commands.waitSeconds(0.5),
-                        intake.go()
-                    ),
-                    Commands.sequence(
-                        Commands.waitSeconds(0.5),
-                        extender.extend()
-                    )
-                ),
+                // 1st Pickup and Initial Move
+                followAndIntake("LeftMidStart", "Center Collect", 0.3),
 
-                Commands.deadline(
-                    follow("LeftMidTrenchShoot"),
-                    Commands.sequence(
-                        Commands.waitSeconds(1.75),
-                        intake.stop()
-                    )
-                ),
+                // 1st Approach to Shoot
+                followAndStopIntake("LeftMidTrenchShoot", "Drive to Shoot 1"),
 
-                Commands.deadline(
-                    Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)).withTimeout(6),
-                    Commands.sequence(
-                        Commands.parallel(
-                            this.agitate().repeatedly(),
-                            intake.stop()
-                        )
-                    )
-                ),
+                // 1st Agitation Sequence
+                scoreCycle("Shooting Cycle 1", true),
 
-                Commands.deadline(
-                    follow("LeftMidCollect"),
-                    Commands.sequence(
-                        extender.extend().withTimeout(1),
-                        intake.go()
-                    )
-                ),
+                // 2nd Pickup (Hub)
+                followAndIntake("LeftMidCollect", "Hub Collect", 0.0),
 
+                updateAutoStatus("Back to Trench"),
                 follow("LeftMidCollectTrenchOut"),
-                Commands.deadline(
-                    follow("LeftMidShoot"),
-                    Commands.sequence(
-                        Commands.waitSeconds(1.75),
-                        intake.stop()
-                    )
-                ),
 
-                Commands.deadline(
-                    Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)),
-                    Commands.sequence(
-                        Commands.parallel(
-                            this.agitate().repeatedly(),
-                            intake.stop()
-                        )
-                    )
-                ),
+                // 2nd Drive to Shoot
+                followAndStopIntake("LeftMidShoot", "Drive to Shoot 2"),
 
-                Commands.deadline(
-                    follow("LeftShootToMid"),
-                    Commands.sequence(
-                        extender.extend().withTimeout(1),
-                        intake.go()
-                    )
-                )
+                // 2nd Agitation Sequence
+                scoreCycle("Shooting Cycle 2", false),
+
+                // Final Move / Stow
+                followAndIntake("LeftShootToMid", "Back to Mid", 0.0),
+                
+                updateAutoStatus("Auto Complete")
             )
         );
     }
@@ -407,79 +368,80 @@ public class Auto {
         return build(
             "RightMidStartFast", () -> Commands.sequence(
                 // 1st Pickup and Initial Move
-                updateAutoStatus("Drive & Pickup 1"),
-                Commands.deadline(
-                    follow("RightMidStartFast"),
-                    Commands.sequence(Commands.waitSeconds(0.5), intake.go()),
-                    Commands.sequence(Commands.waitSeconds(0.3), extender.extend())
-                ),
+                followAndIntake("RightMidStartFast", "Center Collect", 0.3),
 
                 // 1st Approach to Shoot
-                updateAutoStatus("Drive to Shot 1"),
-                Commands.deadline(
-                    follow("RightMidTrenchShoot"),
-                    Commands.sequence(Commands.waitSeconds(1.75), intake.stop())
-                ),
+                followAndStopIntake("RightMidTrenchShoot", "Drive to Shoot 1"),
 
                 // 1st Agitation Sequence
-                updateAutoStatus("Agitating 1"),
-                Commands.deadline(
-                    Commands.sequence(
-                        Commands.waitSeconds(2),
-                        Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.05))
-                    ),
-                    this.agitate().repeatedly(),
-                    intake.stop()
-                ).andThen(extender.extend().withTimeout(1)),
+                scoreCycle("Shooting Cycle 1", true),
 
                 // 2nd Pickup (Hub)
-                updateAutoStatus("Hub Collect"),
-                Commands.deadline(
-                    follow("RightMidCollect"),
-                    Commands.sequence(
-                        extender.extend().withTimeout(1),
-                        intake.go()
-                    )
-                ),
+                followAndIntake("RightMidCollect", "Hub Collect", 0.8),
 
                 updateAutoStatus("Back to Trench"),
                 follow("RightMidCollectTrenchOut"),
 
                 // 2nd Drive to Shoot
-                updateAutoStatus("Drive to Shot 2"),
-                Commands.deadline(
-                    follow("RightMidShoot"),
-                    Commands.sequence(Commands.waitSeconds(1.75), intake.stop())
-                ),
+                followAndStopIntake("RightMidShoot", "Drive to Shoot 2"),
 
                 // 2nd Agitation Sequence
-                updateAutoStatus("Agitating 2"),
-                Commands.deadline(
-                    Commands.sequence(
-                        Commands.waitSeconds(2),
-                        Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.05))
-                    ),
-                    this.agitate().repeatedly(),
-                    intake.stop()
-                ).andThen(extender.extend().withTimeout(1)),
+                scoreCycle("Shooting Cycle 2", false),
 
                 // Final Move / Stow
-                updateAutoStatus("Final Move"),
-                Commands.deadline(
-                    follow("RightShootToMid"),
-                    Commands.sequence(
-                        extender.extend().withTimeout(1),
-                        intake.go()
-                    )
-                ),
+                followAndIntake("RightShootToMid", "Back to Mid", 0.8),
                 
-                Commands.runOnce(() -> SmartDashboard.putString("Auto Status", "Auto Complete"))
+                updateAutoStatus("Auto Complete")
             )
         );
     }
 
-    public Command updateAutoStatus(String status) {
+    private Command updateAutoStatus(String status) {
         return Commands.runOnce(() -> SmartDashboard.putString("Auto Status", status));
+    }
+
+    private Command followAndIntake(String pathName, String status, double extendDelay){
+        return Commands.sequence(
+            updateAutoStatus(status),
+            Commands.deadline(
+                follow(pathName),
+                Commands.sequence(Commands.waitSeconds(extendDelay), extender.extend()),
+                Commands.sequence(Commands.waitSeconds(extendDelay + 0.2), intake.go())
+            )
+        );
+    }
+
+    private Command followAndStopIntake(String pathName, String status) {
+        return Commands.sequence(
+            updateAutoStatus(status),
+            Commands.deadline(
+                follow(pathName),
+                Commands.sequence(Commands.waitSeconds(1.75), intake.stop())
+            )
+        );
+    }
+
+    private Command scoreCycle(String status, boolean isTimeout) {
+        // Determine the status string based on the boolean
+        String displayStatus = isTimeout ?  status + " - Times Out" : status;
+
+        // Create the base waitUntil command
+        Command waitCommand = Commands.waitUntil(() -> 
+            ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.05));
+
+        if (isTimeout) {
+            waitCommand = waitCommand.withTimeout(6);
+        }
+
+        return Commands.sequence(
+            updateAutoStatus(displayStatus),
+            Commands.waitSeconds(1),
+            Commands.deadline(
+                waitCommand,
+                this.agitate().repeatedly(),
+                intake.stop()
+            )
+        );
     }
 
     /**

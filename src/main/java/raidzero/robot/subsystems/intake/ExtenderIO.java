@@ -2,13 +2,14 @@ package raidzero.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Rotations;
-import static raidzero.robot.subsystems.intake.IntakeConstants.Extender;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
 import raidzero.robot.Superstructure;
+import raidzero.robot.subsystems.intake.IntakeConstants.Extender;
 
 public interface ExtenderIO extends SubsystemIO {
 
@@ -168,5 +169,41 @@ public interface ExtenderIO extends SubsystemIO {
         }
     }
 
-    public class Sim extends Real {}
+    public class Sim extends Real {
+
+        private String lastStage = "";
+
+        private void logStage(String stage) {
+            if (!stage.equals(lastStage)) {
+                System.out.println("[SIM] Extender State: " + stage);
+                SmartDashboard.putString("Extender State", stage);
+                lastStage = stage;
+            }
+        }
+
+        @Override
+        public void extend() {
+            logStage("Extended");
+        }
+        @Override
+        public void agitateL1() {
+            logStage("L1");
+        }
+        @Override
+        public void agitateL2() {
+            logStage("L2");
+        }
+        @Override
+        public void agitateL3() {
+            logStage("L3");
+        }
+        @Override
+        public void retract() {
+            logStage("Retracted");
+        }
+        @Override
+        public void stop() {
+            logStage("Stopped");
+        }
+    }
 }

@@ -2,6 +2,7 @@ package raidzero.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Rotations;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.R0Subsystem;
@@ -176,8 +177,10 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      */
     public static Extender system() {
         if (system == null) {
-            if (com.ctre.phoenix6.Utils.isSimulation())
+            if (com.ctre.phoenix6.Utils.isSimulation()){
                 system = new Extender(new ExtenderIO.Sim());
+                SmartDashboard.putString("Extender State", "Initialized");
+            }
             else
                 system = new Extender(new ExtenderIO.Real());
         }

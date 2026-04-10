@@ -1,13 +1,14 @@
 package raidzero.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Amps;
-import static raidzero.robot.subsystems.intake.IntakeConstants.Intake;
 
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
 import raidzero.robot.Superstructure;
+import raidzero.robot.subsystems.intake.IntakeConstants.Intake;
 
 public interface IntakeIO extends SubsystemIO {
     /**
@@ -87,5 +88,25 @@ public interface IntakeIO extends SubsystemIO {
 
     }
 
-    public class Sim extends Real {}
+    public class Sim extends Real {
+        private String lastStage = "";
+
+        private void logStage(String stage) {
+            if (!stage.equals(lastStage)) {
+                System.out.println("[SIM] Intake State: " + stage);
+                SmartDashboard.putString("Intake State", stage);
+                lastStage = stage;
+            }
+        }
+
+        @Override
+        public void go(AngularVelocity velocity) {
+            logStage("Running");
+        }
+
+        @Override
+        public void stop() {
+            logStage("Stopped");
+        }
+    }
 }

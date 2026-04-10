@@ -1,6 +1,8 @@
 package raidzero.robot.subsystems.intake;
 
 import com.ctre.phoenix6.Utils;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.lib.R0Subsystem;
 
@@ -61,8 +63,10 @@ public class Intake extends R0Subsystem<IntakeIO> {
      */
     public static Intake system() {
         if (system == null) {
-            if (Utils.isSimulation())
+            if (Utils.isSimulation()){
                 system = new Intake(new IntakeIO.Sim());
+                SmartDashboard.putString("Intake State", "Initialized");
+            }
             else
                 system = new Intake(new IntakeIO.Real());
         }
