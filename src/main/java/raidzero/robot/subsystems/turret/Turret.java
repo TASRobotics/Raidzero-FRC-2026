@@ -63,7 +63,7 @@ public class Turret extends R0Subsystem<TurretIO> {
     }
 
     public Command manualMove() {
-        return run(() -> io.moveTo(this.findBestWrap(currentTarget)));
+        return run(() -> io.moveTo(/* this.findBestWrap(currentTarget)) */ currentTarget));
     }
 
     public Command incrementTarget(Angle target) {
@@ -132,6 +132,7 @@ public class Turret extends R0Subsystem<TurretIO> {
     public void setStartupAngle() {
         Angle startupYaw = JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading());
         io.setStartupYaw(startupYaw);
+        currentTarget = startupYaw;
     }
 
     /**
