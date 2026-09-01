@@ -12,8 +12,6 @@ public class RobotContainer {
      */
     public RobotContainer() {
         Superstructure.applyDefaultCommands();
-        // feeder.setDefaultCommand(feeder.stop());
-
         Superstructure.runSubsystemInitRoutines();
         Superstructure.applyButtonBindings();
         // Superstructure.applyDebugBindings();
