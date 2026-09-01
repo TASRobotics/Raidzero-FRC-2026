@@ -1,5 +1,6 @@
 package raidzero.robot.subsystems.turret;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 
@@ -50,6 +51,8 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     private static boolean goalPoseInitailized = false;
 
+    private static Angle currentTarget = Degrees.of(0.0);
+
     /**
      * Moves the robot to the given setpoint
      *
@@ -57,6 +60,14 @@ public class Turret extends R0Subsystem<TurretIO> {
      */
     public void moveTo(Angle setpoint) {
         io.moveTo(this.findBestWrap(setpoint));
+    }
+
+    public Command manualMove() {
+        return run(() -> io.moveTo(this.findBestWrap(currentTarget)));
+    }
+
+    public Command incrementTarget(Angle target) {
+        return runOnce(() -> currentTarget = currentTarget.plus(target));
     }
 
     private Angle findBestWrap(Angle desiredAngle) {

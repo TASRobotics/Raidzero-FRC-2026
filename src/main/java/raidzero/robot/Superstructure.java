@@ -192,8 +192,15 @@ public class Superstructure {
                 .alongWith(shooter.shoot())
                 .alongWith(spindexer.go())
         );
-        // driver.y().onTrue(hood.incrementPitch(Rotations.of(10.0)));
-        // driver.a().onTrue(hood.incrementPitch(Rotations.of(-10.0)));
+        driver.povUp().onTrue(hood.incrementPitch(Degrees.of(2.0)));
+        driver.povDown().onTrue(hood.incrementPitch(Degrees.of(-2.0)));
+        driver.povUp().onTrue(hood.aim());
+        driver.povDown().onTrue(hood.aim());
+
+        driver.povLeft().onTrue(turret.incrementTarget(Degrees.of(5.0)));
+        driver.povRight().onTrue(turret.incrementTarget(Degrees.of(-5.0)));
+        driver.povLeft().onTrue(turret.manualMove());
+        driver.povRight().onTrue(turret.manualMove());
 
         // driver.povUp().whileTrue(swerve.applyRequest(() -> povStrafe.apply(0)));
         // driver.pov(45).whileTrue(swerve.applyRequest(() -> povStrafe.apply(45)));
