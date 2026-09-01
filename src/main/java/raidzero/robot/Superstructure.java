@@ -154,134 +154,143 @@ public class Superstructure {
      */
     public static void runSubsystemInitRoutines() {
         turret.setStartupAngle();
-        hood.setStartupAngle();
-        extender.setStartupAngle();
+        // hood.setStartupAngle();
+        // extender.setStartupAngle();
     }
 
     /**
      * Applies the default commands
      */
     public static void applyDefaultCommands() {
-        swerve.setDefaultCommand(
-            swerve.applyRequest(
-                () -> fieldCentricDrive
-                    .withVelocityX(-driver.getLeftY() * MaxSpeed)
-                    .withVelocityY(-driver.getLeftX() * MaxSpeed)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate)
-            )
-        );
+        // swerve.setDefaultCommand(
+        // swerve.applyRequest(
+        // () -> fieldCentricDrive
+        // .withVelocityX(-driver.getLeftY() * MaxSpeed)
+        // .withVelocityY(-driver.getLeftX() * MaxSpeed)
+        // .withRotationalRate(-driver.getRightX() * MaxAngularRate)
+        // )
+        // );
 
-        hood.setDefaultCommand(hood.aim(Degrees.of(10)));
-        // hood.setDefaultCommand(hood.manualAim());
-        turret.setDefaultCommand(new Aim());
+        // hood.setDefaultCommand(hood.aim(Degrees.of(10)));
+        hood.setDefaultCommand(hood.manualAim());
+        // turret.setDefaultCommand(new Aim());
 
         shooter.setDefaultCommand(shooter.stop());
         feeder.setDefaultCommand(feeder.stop());
         spindexer.setDefaultCommand(spindexer.stop());
-        extender.setDefaultCommand(extender.stop());
-        intake.setDefaultCommand(intake.stop());
+        // extender.setDefaultCommand(extender.stop());
+        // intake.setDefaultCommand(intake.stop());
     }
 
     /**
      * Applies driver button bindings
      */
     public static void applyButtonBindings() {
-        driver.povUp().whileTrue(swerve.applyRequest(() -> povStrafe.apply(0)));
-        driver.pov(45).whileTrue(swerve.applyRequest(() -> povStrafe.apply(45)));
-        driver.povRight().whileTrue(swerve.applyRequest(() -> povStrafe.apply(90)));
-        driver.pov(135).whileTrue(swerve.applyRequest(() -> povStrafe.apply(135)));
-        driver.povDown().whileTrue(swerve.applyRequest(() -> povStrafe.apply(180)));
-        driver.pov(225).whileTrue(swerve.applyRequest(() -> povStrafe.apply(225)));
-        driver.povLeft().whileTrue(swerve.applyRequest(() -> povStrafe.apply(270)));
-        driver.pov(315).whileTrue(swerve.applyRequest(() -> povStrafe.apply(315)));
-
-        driver.rightBumper().whileTrue(swerve.applyRequest(() -> brake));
-        driver.rightBumper().whileTrue(hood.aim());
-        driver.b().whileTrue(hood.aim(Degrees.of(10)));
-
-        driver.x().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
-
-        driver.start().and(driver.back()).onTrue(Commands.runOnce(() -> {
-            limelight.setUseMt2(false);
-            limelight.setImuMode(IMU_MODE.EXTERNAL_SEED);
-            ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - DR"));
-        })
-            .andThen(
-                new WaitCommand(1)
-                    .alongWith(swerve.stop())
-            )
-            .andThen(Commands.runOnce(() -> {
-                limelight.setUseMt2(true);
-                swerve.seedFieldCentric(
-                    Rotation2d.fromDegrees(limelight.getAverageHeading())
-                        .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
-                );
-                limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
-            }))
+        System.out.println("yay ggmu");
+        driver.x().whileTrue(
+            feeder.go()
+                .alongWith(shooter.shoot())
+                .alongWith(spindexer.go())
         );
+        // driver.y().onTrue(hood.incrementPitch(Rotations.of(10.0)));
+        // driver.a().onTrue(hood.incrementPitch(Rotations.of(-10.0)));
 
-        // operator.b().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
-        operator.b().whileTrue(spindexer.go());
-        // operator.b().whileTrue(intake.go());
-        // operator.b().and(operator.rightBumper().negate()).whileTrue(Commands.waitSeconds(1.4).andThen(extender.autoAgitate().repeatedly()));
+        // driver.povUp().whileTrue(swerve.applyRequest(() -> povStrafe.apply(0)));
+        // driver.pov(45).whileTrue(swerve.applyRequest(() -> povStrafe.apply(45)));
+        // driver.povRight().whileTrue(swerve.applyRequest(() -> povStrafe.apply(90)));
+        // driver.pov(135).whileTrue(swerve.applyRequest(() -> povStrafe.apply(135)));
+        // driver.povDown().whileTrue(swerve.applyRequest(() -> povStrafe.apply(180)));
+        // driver.pov(225).whileTrue(swerve.applyRequest(() -> povStrafe.apply(225)));
+        // driver.povLeft().whileTrue(swerve.applyRequest(() -> povStrafe.apply(270)));
+        // driver.pov(315).whileTrue(swerve.applyRequest(() -> povStrafe.apply(315)));
 
-        // operator.x().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
-        operator.x().whileTrue(spindexer.reverse());
-        // operator.x().whileTrue(intake.go());
-        // operator.x().and(operator.rightBumper().negate()).whileTrue(Commands.waitSeconds(1.4).andThen(extender.autoAgitate().repeatedly()));
+        // driver.rightBumper().whileTrue(swerve.applyRequest(() -> brake));
+        // driver.rightBumper().whileTrue(hood.aim());
+        // driver.b().whileTrue(hood.aim(Degrees.of(10)));
 
-        operator.x().or(operator.b()).and(operator.y()).and(operator.rightTrigger().negate()).whileTrue(hood.aim());
+        // driver.x().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
 
-        operator.y().whileTrue(shooter.shoot());
-        operator.y().whileTrue(feeder.go());
+        // driver.start().and(driver.back()).onTrue(Commands.runOnce(() -> {
+        // limelight.setUseMt2(false);
+        // limelight.setImuMode(IMU_MODE.EXTERNAL_SEED);
+        // ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - DR"));
+        // })
+        // .andThen(
+        // new WaitCommand(1)
+        // .alongWith(swerve.stop())
+        // )
+        // .andThen(Commands.runOnce(() -> {
+        // limelight.setUseMt2(true);
+        // swerve.seedFieldCentric(
+        // Rotation2d.fromDegrees(limelight.getAverageHeading())
+        // .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
+        // );
+        // limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
+        // }))
+        // );
 
-        operator.rightBumper().whileTrue(intake.go());
-        operator.leftBumper().whileTrue(intake.reverse());
+        // // operator.b().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
+        // operator.b().whileTrue(spindexer.go());
+        // // operator.b().whileTrue(intake.go());
+        // // operator.b().and(operator.rightBumper().negate()).whileTrue(Commands.waitSeconds(1.4).andThen(extender.autoAgitate().repeatedly()));
 
-        operator.back().onTrue(extender.retract()).onFalse(extender.extend());
+        // // operator.x().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
+        // operator.x().whileTrue(spindexer.reverse());
+        // // operator.x().whileTrue(intake.go());
+        // // operator.x().and(operator.rightBumper().negate()).whileTrue(Commands.waitSeconds(1.4).andThen(extender.autoAgitate().repeatedly()));
 
-        operator.rightTrigger().and(passingArea1)
-            .whileTrue(
-                new StaticAim(
-                    Rotations.of(
-                        Util.isBlueAlliance() ? 0.45 : 0.05
-                    )
-                )
-                    .alongWith(hood.aim(Pitch.PASSING_ANGLE))
-                    .alongWith(shooter.shoot().alongWith(feeder.go()))
-            );
+        // operator.x().or(operator.b()).and(operator.y()).and(operator.rightTrigger().negate()).whileTrue(hood.aim());
 
-        operator.rightTrigger().and(passingArea2).whileTrue(
-            new StaticAim(
-                Rotations.of(
-                    Util.isBlueAlliance() ? 0.55 : 0.95
-                )
-            )
-                .alongWith(hood.aim(Pitch.PASSING_ANGLE)).alongWith(shooter.shoot().alongWith(feeder.go()))
-        );
+        // operator.y().whileTrue(shooter.shoot());
+        // operator.y().whileTrue(feeder.go());
 
-        operator.leftStick().onTrue(Commands.runOnce(() -> {
-            limelight.setUseMt2(false);
-            limelight.setImuMode(IMU_MODE.EXTERNAL_SEED);
-            ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - OP"));
-        })).onFalse(Commands.runOnce(() -> {
-            limelight.setUseMt2(true);
-            swerve.seedFieldCentric(
-                Rotation2d.fromDegrees(limelight.getAverageHeading())
-                    .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
-            );
-            limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
-        }));
+        // operator.rightBumper().whileTrue(intake.go());
+        // operator.leftBumper().whileTrue(intake.reverse());
 
-        operator.leftStick().and(operator.rightStick())
-            .onTrue(Commands.runOnce(() -> limelight.resetSeed()))
-            .onFalse(Commands.runOnce(() -> limelight.setManualSeed(true)));
+        // operator.back().onTrue(extender.retract()).onFalse(extender.extend());
 
-        operator.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
-        operator.povLeft().whileTrue(autos.agitateTeleop().repeatedly());
+        // operator.rightTrigger().and(passingArea1)
+        // .whileTrue(
+        // new StaticAim(
+        // Rotations.of(
+        // Util.isBlueAlliance() ? 0.45 : 0.05
+        // )
+        // )
+        // .alongWith(hood.aim(Pitch.PASSING_ANGLE))
+        // .alongWith(shooter.shoot().alongWith(feeder.go()))
+        // );
 
-        operator.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
-        operator.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
+        // operator.rightTrigger().and(passingArea2).whileTrue(
+        // new StaticAim(
+        // Rotations.of(
+        // Util.isBlueAlliance() ? 0.55 : 0.95
+        // )
+        // )
+        // .alongWith(hood.aim(Pitch.PASSING_ANGLE)).alongWith(shooter.shoot().alongWith(feeder.go()))
+        // );
+
+        // operator.leftStick().onTrue(Commands.runOnce(() -> {
+        // limelight.setUseMt2(false);
+        // limelight.setImuMode(IMU_MODE.EXTERNAL_SEED);
+        // ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - OP"));
+        // })).onFalse(Commands.runOnce(() -> {
+        // limelight.setUseMt2(true);
+        // swerve.seedFieldCentric(
+        // Rotation2d.fromDegrees(limelight.getAverageHeading())
+        // .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
+        // );
+        // limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
+        // }));
+
+        // operator.leftStick().and(operator.rightStick())
+        // .onTrue(Commands.runOnce(() -> limelight.resetSeed()))
+        // .onFalse(Commands.runOnce(() -> limelight.setManualSeed(true)));
+
+        // operator.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
+        // operator.povLeft().whileTrue(autos.agitateTeleop().repeatedly());
+
+        // operator.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
+        // operator.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
     }
 
     /**

@@ -11,12 +11,14 @@ public class RobotContainer {
      * Constructs a {@link RobotContainer} instance
      */
     public RobotContainer() {
-        Superstructure.runSubsystemInitRoutines();
         Superstructure.applyDefaultCommands();
+        // feeder.setDefaultCommand(feeder.stop());
+
+        Superstructure.runSubsystemInitRoutines();
         Superstructure.applyButtonBindings();
         // Superstructure.applyDebugBindings();
-        Superstructure.bindTriggers();
-        Superstructure.configureAutons();
+        // Superstructure.bindTriggers();
+        // Superstructure.configureAutons();
     }
 
     /**

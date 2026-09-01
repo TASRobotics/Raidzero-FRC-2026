@@ -24,10 +24,11 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      */
     public Command shoot() {
         return run(() -> {
-            AngularVelocity target = RotationsPerSecond
-                .of(Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
+            io.setPercent(0.2);
+            // AngularVelocity target = RotationsPerSecond.of(35);
+            // // .of(Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
 
-            io.setVelocity(target);
+            // io.setVelocity(target);
         });
     }
 
