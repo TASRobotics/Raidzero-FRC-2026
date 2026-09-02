@@ -153,7 +153,7 @@ public class Superstructure {
      * Runs the initialization routines for subsystems
      */
     public static void runSubsystemInitRoutines() {
-        turret.setStartupAngle();
+        // turret.setStartupAngle();
         // hood.setStartupAngle();
         // extender.setStartupAngle();
     }
@@ -189,9 +189,10 @@ public class Superstructure {
         System.out.println("yay ggmu");
         driver.x().whileTrue(
             feeder.go()
-                .alongWith(shooter.shoot())
                 .alongWith(spindexer.go())
         );
+        driver.rightTrigger().or(driver.leftTrigger()).whileTrue(shooter.shoot());
+
         driver.povUp().onTrue(hood.incrementPitch(Degrees.of(2.0)));
         driver.povDown().onTrue(hood.incrementPitch(Degrees.of(-2.0)));
         driver.povUp().onTrue(hood.aim());

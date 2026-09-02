@@ -68,10 +68,10 @@ public final class TurretConstants {
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(1.0); // max is 3.2
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(1.0); // max is 10
 
-        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(1.16);
+        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(0.7 /* before club fair: 1.16 */);
         public static final boolean ENALBE_FORWARD_SOFT_LIMIT = true;
 
-        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.4);
+        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(-0.9 /*-0.4*/);
         public static final boolean ENABLE_REVERSE_SOFT_LIMIT = true;
 
         public static MotorTelemetry TELEMETRY = new MotorTelemetry();
