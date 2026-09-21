@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.Meters;
 
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.lib.R0Subsystem;
 import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
@@ -51,8 +50,6 @@ public class Hood extends R0Subsystem<HoodIO> {
         return run(() -> {
             Angle target = Degrees.of(Kinetics.PITCH_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
 
-            SmartDashboard.putNumber("Target pitch", target.in(Degrees));
-
             io.moveTo(target);
         });
     }
@@ -84,15 +81,6 @@ public class Hood extends R0Subsystem<HoodIO> {
         return runOnce(() -> angleTarget = angleTarget.plus(angle));
     }
 
-    @Override
-    public void periodic() {
-        super.periodic();
-
-        SmartDashboard.putNumber("Pitch", io.getPitch().in(Degrees));
-
-        SmartDashboard.putNumber("LUT Target Pitch", angleTarget.in(Degrees));
-    }
-
     /**
      * Constructs a new {@link Hood} subsystem
      *
@@ -110,9 +98,9 @@ public class Hood extends R0Subsystem<HoodIO> {
     public static Hood system() {
         if (system == null) {
             if (Utils.isSimulation())
-                system = new Hood(new HoodIO.Real());
-            else
                 system = new Hood(new HoodIO.Sim());
+            else
+                system = new Hood(new HoodIO.Real());
         }
 
         return system;

@@ -3,7 +3,7 @@ package raidzero.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.R0Subsystem;
@@ -89,12 +89,12 @@ public class Feeder extends R0Subsystem<FeederIO> {
         return system;
     }
 
-    @Override
-    public void periodic() {
-        super.periodic();
-        // SmartDashboard.putNumber("Indexer Velocity",
-        // io.getVelocity().in(RotationsPerSecond));
-        SmartDashboard.putBoolean("Ball detected", io.ballDetected());
+    /**
+     * Gets the current velocity of the feeder motor
+     *
+     * @return The velocity of the feeder motor as an {@link AngularVelocity}
+     */
+    public AngularVelocity getVelocity() {
+        return io.getVelocity();
     }
-
 }

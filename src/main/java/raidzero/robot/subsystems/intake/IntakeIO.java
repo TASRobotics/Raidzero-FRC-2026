@@ -30,61 +30,27 @@ public interface IntakeIO extends SubsystemIO {
     AngularVelocity getVelocity();
 
     public class Real implements IntakeIO {
-        LazyTalon motor;
 
         /**
-         * Constructs the real instance of the Intake IO
+         * Constructs the real instance of the Intake IO (Hardware disabled)
          */
         public Real() {
-            motor = new LazyTalonBuilder(
-                Intake.MOTOR_ID, Superstructure.canDoAttitude,
-                Intake.SENSOR_TO_MECHANISM_RATIO, Intake.INVERTED,
-                Intake.STATOR_CURRENT_LIMIT.in(Amps), Intake.SUPPLY_CURRENT_LIMIT.in(Amps)
-            )
-                .withPIDFConfiguration(
-                    Intake.P, Intake.I, Intake.D,
-                    Intake.S, Intake.G, Intake.V, Intake.A,
-                    Intake.FF_GRAVITY_TYPE, Intake.FF_SIGN,
-                    0
-                )
-                .withPIDFConfiguration(
-                    Intake.P_1, Intake.I_1, Intake.D_1,
-                    Intake.S_1, Intake.G_1, Intake.V_1, Intake.A_1,
-                    Intake.FF_GRAVITY_TYPE, Intake.FF_SIGN,
-                    1
-                )
-                .withMotionMagicConfiguration(
-                    0, 0,
-                    Intake.CRUISE_VELOCITY,
-                    Intake.ACCELERATION
-                )
-                .withFollower(Intake.FOLLOW_ID, Superstructure.canDoAttitude, Intake.FOLLOW_ALIGNMENT)
-                .build();
-            motor.setCoast();
-
-            // Superstructure.orchestra.addInstrument(this.motor.getMotor());
+            // Hardware disabled
         }
 
         @Override
-        public void go(AngularVelocity velocity) {
-            motor.setVelocityTorqueCurrentTarget(velocity, Intake.A_1, 1);
-        }
+        public void go(AngularVelocity velocity) {}
 
         @Override
-        public void stop() {
-            motor.stop();
-        }
+        public void stop() {}
 
         @Override
         public AngularVelocity getVelocity() {
-            return motor.getVelocity();
+            return edu.wpi.first.units.Units.RotationsPerSecond.of(0);
         }
 
         @Override
-        public void updateTelemetry() {
-            motor.updateTelemetry(Intake.TELEMETRY);
-        }
-
+        public void updateTelemetry() {}
     }
 
     public class Sim extends Real {}

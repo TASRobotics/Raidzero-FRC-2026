@@ -1,6 +1,7 @@
 package raidzero.robot.subsystems.intake;
 
 import com.ctre.phoenix6.Utils;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.lib.R0Subsystem;
 
@@ -43,6 +44,15 @@ public class Intake extends R0Subsystem<IntakeIO> {
     public Command antiJam() {
         return run(() -> io.go(IntakeConstants.Intake.INTAKE_SPEED))
             .withTimeout(0.1);
+    }
+
+    /**
+     * Gets the current velocity of the intake
+     *
+     * @return The velocity of the intake as an {@link AngularVelocity}
+     */
+    public AngularVelocity getVelocity() {
+        return io.getVelocity();
     }
 
     /**

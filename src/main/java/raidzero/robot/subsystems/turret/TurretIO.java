@@ -7,6 +7,7 @@ import static raidzero.robot.subsystems.turret.TurretConstants.Yaw;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyFXS;
 import raidzero.lib.wrappers.motors.LazyFXSBuilder;
@@ -60,6 +61,13 @@ public interface TurretIO extends SubsystemIO {
      * @return the sensor reading in rotations
      */
     double getJMM2Reading();
+
+    /**
+     * Gets the current angular velocity of the yaw motor
+     *
+     * @return the angular velocity
+     */
+    AngularVelocity getVelocity();
 
     public class Real implements TurretIO {
         private LazyFXS yaw;
@@ -147,11 +155,16 @@ public interface TurretIO extends SubsystemIO {
             return jmm2.getAbsolutePosition().getValueAsDouble() * Yaw.JARED_TEETH_2;
         }
 
+        @Override
+        public AngularVelocity getVelocity() {
+            return yaw.getVelocity();
+        }
+
         /**
          * Updates the SmartDashboard with telemetry values for the turret
          */
+        @Override
         public void updateTelemetry() {
-            // @Override
             // yaw.updateTelemetry(Yaw.TELEMETRY);
         }
     }

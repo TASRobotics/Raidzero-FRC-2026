@@ -5,10 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.function.Supplier;
 import raidzero.robot.subsystems.drive.TunerConstants;
 
@@ -25,7 +22,6 @@ public class LimelightState {
     private LimelightHelpers.IMUData imuData;
     private LimelightHelpers.PoseEstimate currEstimate;
     private LimelightHelpers.PoseEstimate prevEstimate;
-    private StructPublisher<Pose2d> ntPublisher;
     private boolean ignore;
     private PIPELINE pipeline = PIPELINE.TAG;
     private IMU_MODE imuMode = IMU_MODE.EXTERNAL_ONLY;
@@ -53,9 +49,6 @@ public class LimelightState {
     public LimelightState(String limelightName, PIPELINE pipeline, Supplier<Double> robotYawSupplier, Supplier<Double> robotYawRateSupplier, VisionMeasurementConsumer addVisionMeasurementConsumer) {
         this.limelightName = limelightName;
         setPipeline(pipeline);
-        this.ntPublisher = NetworkTableInstance.getDefault()
-            .getStructTopic(limelightName.split("-")[1] + "NT", Pose2d.struct)
-            .publish();
 
         this.ignore = false;
         this.robotYawSupplier = robotYawSupplier;
@@ -200,8 +193,6 @@ public class LimelightState {
             if (!ignore && !ignoreAll) {
                 lastValidPose = Timer.getTimestamp();
 
-                ntPublisher.set(currEstimate.pose);
-
                 addVisionMeasurementConsumer.add(
                     currEstimate.pose,
                     currEstimate.timestampSeconds,
@@ -215,15 +206,33 @@ public class LimelightState {
         } else {
             ignore = false;
         }
+    }
 
-        if (imuData != null) {
-            SmartDashboard.putNumber(
-                limelightName.split("-")[1] + "RYaw",
-                imuData.robotYaw
-            );
-        }
+    /**
+     * Gets the current estimated pose if available
+     *
+     * @return The current {@link Pose2d}, or null if unavailable
+     */
+    public Pose2d getPose() {
+        return (currEstimate != null) ? currEstimate.pose : null;
+    }
 
-        SmartDashboard.putBoolean(limelightName.split("-")[1] + "Pose", !ignore && !ignoreAll);
+    /**
+     * Gets whether the current pose estimate is valid and not ignored
+     *
+     * @return True if valid and not ignored, false otherwise
+     */
+    public boolean hasValidPose() {
+        return currEstimate != null && currEstimate.pose != null && !ignore;
+    }
+
+    /**
+     * Gets the latest IMU data if available
+     *
+     * @return The {@link LimelightHelpers.IMUData} or null
+     */
+    public LimelightHelpers.IMUData getImuData() {
+        return imuData;
     }
 
     /**

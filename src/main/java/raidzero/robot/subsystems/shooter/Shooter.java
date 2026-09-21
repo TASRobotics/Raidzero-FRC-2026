@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.R0Subsystem;
@@ -131,6 +130,15 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     }
 
     /**
+     * Gets the current velocity of the shooter flywheel
+     *
+     * @return The velocity of the shooter flywheel as an {@link AngularVelocity}
+     */
+    public AngularVelocity getVelocity() {
+        return io.getVelocity();
+    }
+
+    /**
      * Constructs the {@link Shooter} subsystem
      *
      * @param io The {@link ShooterIO} implementation to use for this subsystem
@@ -154,18 +162,5 @@ public class Shooter extends R0Subsystem<ShooterIO> {
         }
 
         return system;
-    }
-
-    @Override
-    public void periodic() {
-        super.periodic();
-        SmartDashboard.putNumber(
-            "Shooter speed",
-            io.getVelocity().in(RotationsPerSecond)
-        );
-        SmartDashboard.putNumber(
-            "Shooter target speed",
-            velocityTarget.in(RotationsPerSecond)
-        );
     }
 }

@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.Degrees;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -52,28 +51,28 @@ public class Limelight {
             "limelight-front",
             LimelightState.PIPELINE.OBJECT,
             () -> swerve.getState().Pose.getRotation().getDegrees(),
-            () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
+            () -> 0.0,
             swerve::addVisionMeasurement
         );
         rightState = new LimelightState(
             "limelight-right",
             LimelightState.PIPELINE.TAG,
             () -> swerve.getState().Pose.getRotation().getDegrees(),
-            () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
+            () -> 0.0,
             swerve::addVisionMeasurement
         );
         rearState = new LimelightState(
             "limelight-rear",
             LimelightState.PIPELINE.TAG,
             () -> swerve.getState().Pose.getRotation().getDegrees(),
-            () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
+            () -> 0.0,
             swerve::addVisionMeasurement
         );
         leftState = new LimelightState(
             "limelight-left",
             LimelightState.PIPELINE.TAG,
             () -> swerve.getState().Pose.getRotation().getDegrees(),
-            () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
+            () -> 0.0,
             swerve::addVisionMeasurement
         );
 
@@ -196,11 +195,8 @@ public class Limelight {
      * The main loop of the Limelight odometry thread
      */
     public void loop() {
-        if (Math.abs(swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720) {
-            ignoreAllLimes = true;
-        } else {
-            ignoreAllLimes = false;
-        }
+        // Pigeon 2 is not attached
+        ignoreAllLimes = false;
 
         for (LimelightState state : limes) {
             state.update(ignoreAllLimes, !DriverStation.isDisabled() && useMt2, swerve.getState().Pose);
@@ -236,8 +232,51 @@ public class Limelight {
         // SmartDashboard.putBoolean("ManualSeed", manualSeed);
         // SmartDashboard.putNumber("HeadingReadingsSize", headingReadings.size());
         // SmartDashboard.putNumber("seedinterval", seedInterval.get());
-        // SmartDashboard.putNumber("seedtimer", seedTimer.get());
-        SmartDashboard.putBoolean("Ignore Limes", ignoreAllLimes);
+    }
+
+    /**
+     * Gets the front LimelightState
+     *
+     * @return the front LimelightState
+     */
+    public LimelightState getFront() {
+        return frontState;
+    }
+
+    /**
+     * Gets the right LimelightState
+     *
+     * @return the right LimelightState
+     */
+    public LimelightState getRight() {
+        return rightState;
+    }
+
+    /**
+     * Gets the rear LimelightState
+     *
+     * @return the rear LimelightState
+     */
+    public LimelightState getRear() {
+        return rearState;
+    }
+
+    /**
+     * Gets the left LimelightState
+     *
+     * @return the left LimelightState
+     */
+    public LimelightState getLeft() {
+        return leftState;
+    }
+
+    /**
+     * Gets whether all limelights are currently ignored
+     *
+     * @return true if ignored
+     */
+    public boolean isIgnoringAllLimes() {
+        return ignoreAllLimes;
     }
 
     /**

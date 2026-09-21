@@ -69,14 +69,8 @@ public interface FeederIO extends SubsystemIO {
                 )
                 .build();
 
-            canrange = new LazyRangeBuilder(Canrange.CAN_ID, Superstructure.canDoAttitude)
-                .withFovParams(
-                    Canrange.FOV_CENTER_X, Canrange.FOV_CENTER_Y, Canrange.FOV_RANGE_X,
-                    Canrange.FOV_RANGE_Y
-                )
-                .withProximityParams(Canrange.PROXIMITY_THRESHOLD)
-                .withToFParams(Canrange.UPDATE_MODE, Canrange.UPDATE_FREQUENCY)
-                .build();
+            // CANrange disabled as sensor is not attached
+            canrange = null;
             // Superstructure.orchestra.addInstrument(this.motor.getMotor());
         }
 
@@ -87,11 +81,7 @@ public interface FeederIO extends SubsystemIO {
 
         @Override
         public boolean ballDetected() {
-            if (canrange.isDetected()) {
-                lastDetectedTime = Timer.getTimestamp();
-            }
-
-            return (Timer.getTimestamp() - lastDetectedTime) <= Canrange.DETECTION_WINDOW;
+            return false;
         }
 
         @Override
