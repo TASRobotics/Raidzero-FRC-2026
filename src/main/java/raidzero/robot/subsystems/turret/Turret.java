@@ -16,6 +16,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.DoubleSupplier;
@@ -31,6 +32,8 @@ public class Turret extends R0Subsystem<TurretIO> {
 
     private Translation2d allianceTargetFieldPose = Kinetics.GOAL_LOCATION_BLUE;
     private double manualTargetRotations = 0.0;
+    private boolean isWrapping = false;
+    private double wrapStartTime = 0.0;
 
     private final LinearFilter vxFilter = LinearFilter.movingAverage(5);
     private final LinearFilter vyFilter = LinearFilter.movingAverage(5);
@@ -75,7 +78,11 @@ public class Turret extends R0Subsystem<TurretIO> {
     }
 
     public Trigger isPirouetteing() {
-        return new Trigger(() -> this.isPirouetteing);
+        return new Trigger(() -> this.isPirouetteing || this.isWrapping);
+    }
+
+    public Trigger isWrapping() {
+        return new Trigger(() -> this.isWrapping);
     }
 
     /**
@@ -118,12 +125,28 @@ public class Turret extends R0Subsystem<TurretIO> {
     /**
      * Drives the turret manually via a joystick axis input with scaled velocity and soft limit wrapping.
      * Pulling left turns left, pulling right turns right. Velocity scales with percent dragged.
+     * During wrapping, joystick commands are ignored until the turret reaches the wrapped target.
      *
      * @param stickSupplier Supplier for joystick X input [-1, 1] (left negative, right positive)
      * @return A command to control the turret yaw
      */
     public Command manualDrive(DoubleSupplier stickSupplier) {
         return run(() -> {
+            double revLimit = Yaw.REVERSE_SOFT_LIMIT.in(Rotations); // -0.40
+            double fwdLimit = Yaw.FORWARD_SOFT_LIMIT.in(Rotations); // 1.16
+
+            // During wrapping, do NOT register any joystick commands!
+            if (isWrapping) {
+                io.moveTo(Rotations.of(manualTargetRotations));
+
+                double currentRot = io.getYaw().in(Rotations);
+                if (Math.abs(currentRot - manualTargetRotations) < 0.04 || Timer.getTimestamp() - wrapStartTime > 2.0) {
+                    isWrapping = false;
+                    isPirouetteing = false;
+                }
+                return;
+            }
+
             double stick = stickSupplier.getAsDouble();
             stick = MathUtil.applyDeadband(stick, 0.08);
 
@@ -138,25 +161,36 @@ public class Turret extends R0Subsystem<TurretIO> {
                 double delta = velocityRps * dt;
                 double newTargetRot = manualTargetRotations + delta;
 
-                double revLimit = Yaw.REVERSE_SOFT_LIMIT.in(Rotations); // -0.40
-                double fwdLimit = Yaw.FORWARD_SOFT_LIMIT.in(Rotations); // 1.16
-
-                // Wrap if target exceeds limits
+                // Wrap if target exceeds limits and ignore joystick until wrap completes
                 if (newTargetRot > fwdLimit) {
-                    newTargetRot -= 1.0;
+                    manualTargetRotations = MathUtil.clamp(newTargetRot - 1.0, revLimit, fwdLimit);
+                    isWrapping = true;
+                    isPirouetteing = true;
+                    wrapStartTime = Timer.getTimestamp();
+                    io.moveTo(Rotations.of(manualTargetRotations));
                 } else if (newTargetRot < revLimit) {
-                    newTargetRot += 1.0;
+                    manualTargetRotations = MathUtil.clamp(newTargetRot + 1.0, revLimit, fwdLimit);
+                    isWrapping = true;
+                    isPirouetteing = true;
+                    wrapStartTime = Timer.getTimestamp();
+                    io.moveTo(Rotations.of(manualTargetRotations));
+                } else {
+                    manualTargetRotations = newTargetRot;
+                    io.moveTo(Rotations.of(manualTargetRotations));
                 }
-
-                manualTargetRotations = newTargetRot;
-                moveTo(Rotations.of(manualTargetRotations));
             } else {
-                moveTo(Rotations.of(manualTargetRotations));
+                io.moveTo(Rotations.of(manualTargetRotations));
             }
         })
-        .beforeStarting(() -> {
-            manualTargetRotations = io.getYaw().in(Rotations);
-        });
+            .beforeStarting(() -> {
+                manualTargetRotations = io.getYaw().in(Rotations);
+                isWrapping = false;
+                isPirouetteing = false;
+            })
+            .finallyDo(() -> {
+                isWrapping = false;
+                isPirouetteing = false;
+            });
     }
 
     /**
@@ -166,6 +200,8 @@ public class Turret extends R0Subsystem<TurretIO> {
     public void setStartupAngle() {
         io.setStartupYaw(Rotations.of(0));
         manualTargetRotations = 0.0;
+        isWrapping = false;
+        isPirouetteing = false;
     }
 
     /**

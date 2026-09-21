@@ -119,6 +119,7 @@ public final class TurretConstants {
 
         public static final Angle STARTING_ANGLE = Degrees.of(10.0);
         public static final Angle PASSING_ANGLE = Degrees.of(34.5);
+        public static final Angle PRESET_SHOOTING_ANGLE = Degrees.of(34.5);
 
         public static MotorTelemetry TELEMETRY = new MotorTelemetry();
     }

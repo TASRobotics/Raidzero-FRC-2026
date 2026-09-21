@@ -89,14 +89,14 @@ public class Superstructure {
     }
 
     /**
-     * Creates a command that spins up the shooter and aims the hood,
+     * Creates a command that spins up the shooter and aims the hood to the preset angle,
      * and once the shooter reaches target velocity, runs the feeder and spindexer.
      *
      * @return A {@link Command} for shooting
      */
     public static Command createShootCommand() {
         return shooter.shoot()
-            .alongWith(hood.aim())
+            .alongWith(hood.aimPreset())
             .alongWith(
                 Commands.waitUntil(shooter.atTargetVelocity())
                     .andThen(feeder.go().alongWith(spindexer.go()))
@@ -116,7 +116,7 @@ public class Superstructure {
             )
         );
 
-        hood.setDefaultCommand(hood.aim(Degrees.of(10)));
+        hood.setDefaultCommand(hood.aimResting());
         // hood.setDefaultCommand(hood.manualAim());
         turret.setDefaultCommand(turret.manualDrive(Superstructure::getTurretManualInput));
 
@@ -134,6 +134,10 @@ public class Superstructure {
         // Turret zeroing / relative forward position
         driver.a().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
         driver.x().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
+
+        // AimBot: hold button B to aim turret at goal (without shooting)
+        driver.b().whileTrue(new Aim());
+        operator.b().whileTrue(new Aim());
 
         // Left trigger: spin up shooter & aim hood, feed when ready
         driver.leftTrigger().whileTrue(createShootCommand());

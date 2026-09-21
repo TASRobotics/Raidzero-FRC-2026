@@ -92,7 +92,7 @@ public class Robot extends TimedRobot {
 
         alreadyEnabled = true;
         Elastic.initTeleop();
-        Superstructure.getHood().setDefaultCommand(Superstructure.getHood().aim(Degrees.of(10)));
+        Superstructure.getHood().setDefaultCommand(Superstructure.getHood().aimResting());
         Superstructure.getLimelight().setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
 
         Superstructure.getSwerve().seedFieldCentric(

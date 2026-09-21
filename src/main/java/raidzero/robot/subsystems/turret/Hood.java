@@ -8,10 +8,31 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import raidzero.lib.R0Subsystem;
 import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
+import raidzero.robot.subsystems.turret.TurretConstants.Pitch;
 
 public class Hood extends R0Subsystem<HoodIO> {
     private static Hood system;
-    private Angle angleTarget = Degrees.of(10);
+    public static final Angle RESTING_ANGLE = Pitch.STARTING_ANGLE;
+    public static final Angle PRESET_ANGLE = Pitch.PRESET_SHOOTING_ANGLE;
+    private Angle angleTarget = PRESET_ANGLE;
+
+    /**
+     * Aims to the resting angle (flat resting position, 10 degrees)
+     *
+     * @return A {@link Command} that aims to the resting angle
+     */
+    public Command aimResting() {
+        return run(() -> io.moveTo(RESTING_ANGLE));
+    }
+
+    /**
+     * Aims to the preset hood angle (higher angle for a lower, flatter arc shot)
+     *
+     * @return A {@link Command} that aims to the preset hood angle
+     */
+    public Command aimPreset() {
+        return run(() -> io.moveTo(PRESET_ANGLE));
+    }
 
     /**
      * Aims to the angle target
