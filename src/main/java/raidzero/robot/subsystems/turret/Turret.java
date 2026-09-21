@@ -2,8 +2,10 @@ package raidzero.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -16,6 +18,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.function.DoubleSupplier;
 import raidzero.lib.R0Subsystem;
 import raidzero.lib.Util;
 import raidzero.robot.subsystems.drive.Swerve;
@@ -27,6 +30,7 @@ public class Turret extends R0Subsystem<TurretIO> {
     private static Swerve swerve = Swerve.system();
 
     private Translation2d allianceTargetFieldPose = Kinetics.GOAL_LOCATION_BLUE;
+    private double manualTargetRotations = 0.0;
 
     private final LinearFilter vxFilter = LinearFilter.movingAverage(5);
     private final LinearFilter vyFilter = LinearFilter.movingAverage(5);
@@ -112,11 +116,56 @@ public class Turret extends R0Subsystem<TurretIO> {
     }
 
     /**
-     * Sets the startup angle of the turret
+     * Drives the turret manually via a joystick axis input with scaled velocity and soft limit wrapping.
+     * Pulling left turns left, pulling right turns right. Velocity scales with percent dragged.
+     *
+     * @param stickSupplier Supplier for joystick X input [-1, 1] (left negative, right positive)
+     * @return A command to control the turret yaw
+     */
+    public Command manualDrive(DoubleSupplier stickSupplier) {
+        return run(() -> {
+            double stick = stickSupplier.getAsDouble();
+            stick = MathUtil.applyDeadband(stick, 0.08);
+
+            // CRUISE_VELOCITY is 1.0 RPS (360 deg/sec)
+            double maxSpeedRps = Yaw.CRUISE_VELOCITY.in(RotationsPerSecond);
+            double dt = 0.02;
+
+            if (Math.abs(stick) > 0.0) {
+                // Pulling left (stick < 0) -> turns left (+ angle)
+                // Pulling right (stick > 0) -> turns right (- angle)
+                double velocityRps = -stick * maxSpeedRps;
+                double delta = velocityRps * dt;
+                double newTargetRot = manualTargetRotations + delta;
+
+                double revLimit = Yaw.REVERSE_SOFT_LIMIT.in(Rotations); // -0.40
+                double fwdLimit = Yaw.FORWARD_SOFT_LIMIT.in(Rotations); // 1.16
+
+                // Wrap if target exceeds limits
+                if (newTargetRot > fwdLimit) {
+                    newTargetRot -= 1.0;
+                } else if (newTargetRot < revLimit) {
+                    newTargetRot += 1.0;
+                }
+
+                manualTargetRotations = newTargetRot;
+                moveTo(Rotations.of(manualTargetRotations));
+            } else {
+                moveTo(Rotations.of(manualTargetRotations));
+            }
+        })
+        .beforeStarting(() -> {
+            manualTargetRotations = io.getYaw().in(Rotations);
+        });
+    }
+
+    /**
+     * Sets the startup angle of the turret.
+     * With the bot starting facing forward for relative pos, sets position to 0 rotations.
      */
     public void setStartupAngle() {
-        Angle startupYaw = JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading());
-        io.setStartupYaw(startupYaw);
+        io.setStartupYaw(Rotations.of(0));
+        manualTargetRotations = 0.0;
     }
 
     /**
