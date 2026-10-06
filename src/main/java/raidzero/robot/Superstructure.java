@@ -9,8 +9,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -88,7 +86,7 @@ public class Superstructure {
 
     private static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 
-    private static final Auto autos = new Auto(swerve, intake, extender);
+    // private static final Auto autos = new Auto(swerve, intake, extender);
 
     private static SendableChooser<Command> autoChooser;
 
@@ -561,15 +559,15 @@ public class Superstructure {
      * Configures autonomous command options
      */
     public static void configureAutons() {
-        CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
-        autoChooser = AutoBuilder.buildAutoChooser();
-        autoChooser.addOption("Depot single", autos.getDepot1Cycle());
-        autoChooser.addOption("Left Double", autos.getLeft2Cycle());
-        autoChooser.addOption("Right Oupost", autos.getRightOutpostAuto());
-        autoChooser.addOption("Right Double", autos.getRight2Cycle());
-        autoChooser.addOption("Right Outpost Double", autos.getRightOutpostDoubleAuto());
+        // CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
+        // autoChooser = AutoBuilder.buildAutoChooser();
+        // autoChooser.addOption("Depot single", autos.getDepot1Cycle());
+        // autoChooser.addOption("Left Double", autos.getLeft2Cycle());
+        // autoChooser.addOption("Right Oupost", autos.getRightOutpostAuto());
+        // autoChooser.addOption("Right Double", autos.getRight2Cycle());
+        // autoChooser.addOption("Right Outpost Double", autos.getRightOutpostDoubleAuto());
 
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+        // SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     /**

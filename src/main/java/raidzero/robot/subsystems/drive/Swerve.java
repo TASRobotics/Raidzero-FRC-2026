@@ -7,11 +7,6 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,6 +23,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.lang.reflect.Field;
@@ -332,32 +328,33 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
      * @return A {@link Command} to pathfind to the specified pose
      */
     public Command goToPoseAuto(Pose2d pose, LinearVelocity goalEndVelocity) {
-        return defer(() -> {
-            Pose2d targetPose = pose;
+        return Commands.none();
+        // return defer(() -> {
+        // Pose2d targetPose = pose;
 
-            if (Util.isRedAlliance()) {
-                double fieldLength = 17.548;
-                double fieldWidth = 8.052;
+        // if (Util.isRedAlliance()) {
+        // double fieldLength = 17.548;
+        // double fieldWidth = 8.052;
 
-                targetPose = new Pose2d(
-                    fieldLength - pose.getX(),
-                    fieldWidth - pose.getY(),
-                    pose.getRotation().plus(Rotation2d.kPi)
-                );
-            }
+        // targetPose = new Pose2d(
+        // fieldLength - pose.getX(),
+        // fieldWidth - pose.getY(),
+        // pose.getRotation().plus(Rotation2d.kPi)
+        // );
+        // }
 
-            return AutoBuilder.pathfindToPose(
-                targetPose,
-                // TODO: Change PathPlanner constraints from 1.0 / 1.0 to 3.0 / 3.0
-                new PathConstraints(
-                    1, // 3.5
-                    1, // 4.0
-                    Units.degreesToRadians(540),
-                    Units.degreesToRadians(720)
-                ),
-                goalEndVelocity
-            );
-        });
+        // return AutoBuilder.pathfindToPose(
+        // targetPose,
+        // // TODO: Change PathPlanner constraints from 1.0 / 1.0 to 3.0 / 3.0
+        // new PathConstraints(
+        // 1, // 3.5
+        // 1, // 4.0
+        // Units.degreesToRadians(540),
+        // Units.degreesToRadians(720)
+        // ),
+        // goalEndVelocity
+        // );
+        // });
     }
 
     /**
@@ -365,23 +362,23 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
      */
     private void configureAutoBuilder() {
         try {
-            AutoBuilder.configure(
-                () -> this.getState().Pose,
-                this::resetPose,
-                () -> this.getState().Speeds,
-                (speeds, feedforwards) -> setControl(
-                    pathplannerSpeeds.withSpeeds(speeds)
-                        .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
-                        .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())
-                ),
-                new PPHolonomicDriveController(
-                    new PIDConstants(2, 0, 0.1), // 5.05, 0, 0.145 --> 0.4 - 2.1 cm off,solid velo prof
-                    new PIDConstants(3.5, 0, 0.1)
-                ),
-                RobotConfig.fromGUISettings(),
-                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
-                this
-            );
+            // AutoBuilder.configure(
+            // () -> this.getState().Pose,
+            // this::resetPose,
+            // () -> this.getState().Speeds,
+            // (speeds, feedforwards) -> setControl(
+            // pathplannerSpeeds.withSpeeds(speeds)
+            // .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
+            // .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())
+            // ),
+            // new PPHolonomicDriveController(
+            // new PIDConstants(2, 0, 0.1), // 5.05, 0, 0.145 --> 0.4 - 2.1 cm off,solid velo prof
+            // new PIDConstants(3.5, 0, 0.1)
+            // ),
+            // RobotConfig.fromGUISettings(),
+            // () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+            // this
+            // );
         } catch (Exception e) {
             DriverStation.reportError("Failed to load PathPlanner config and configure Autobuilder", e.getStackTrace());
         }
