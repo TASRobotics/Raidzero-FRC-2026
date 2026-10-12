@@ -1,6 +1,6 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
+import org.wpilib.wpilibj.DriverStation;
 import frc.lib.ElasticLib;
 import frc.lib.Util;
 

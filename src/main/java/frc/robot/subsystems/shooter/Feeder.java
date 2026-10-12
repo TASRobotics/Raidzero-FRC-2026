@@ -4,8 +4,8 @@ import static org.wpilib.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;
 import org.wpilib.smartdashboard.SmartDashboard;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.button.Trigger;
+import org.wpilib.command3.Command;
+import org.wpilib.command3.Trigger;
 import frc.lib.R0Subsystem;
 
 public class Feeder extends R0Subsystem<FeederIO> {

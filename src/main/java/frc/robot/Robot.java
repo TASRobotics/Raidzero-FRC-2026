@@ -4,16 +4,15 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
+import static org.wpilib.units.Units.Degrees;
 
 import com.ctre.phoenix6.HootAutoReplay;
 import com.ctre.phoenix6.SignalLogger;
 import org.wpilib.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.framework.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.wpilib.driverstation.DriverStation;
+import org.wpilib.system.RobotController;
+import org.wpilib.framework.TimedRobot;
+import org.wpilib.command3.Command;
 import frc.lib.Util;
 import frc.lib.LimelightState.IMU_MODE;
 import frc.lib.LimelightState.PIPELINE;

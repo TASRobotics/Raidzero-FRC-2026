@@ -1,9 +1,9 @@
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Amps;
+import static org.wpilib.units.Units.Amps;
 
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.system.Timer;
+import org.wpilib.units.measure.AngularVelocity;
+import org.wpilib.system.Timer;
 import frc.lib.SubsystemIO;
 import frc.lib.wrappers.motors.LazyRange;
 import frc.lib.wrappers.motors.LazyRangeBuilder;

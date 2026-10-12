@@ -2,8 +2,8 @@ package frc.robot.subsystems.intake;
 
 import static org.wpilib.units.Units.Rotations;
 
-import org.wpilib.command2.Command;
-import org.wpilib.command2.button.Trigger;
+import org.wpilib.command3.Command;
+import org.wpilib.command3.Trigger;
 import frc.lib.R0Subsystem;
 
 public class Extender extends R0Subsystem<ExtenderIO> {

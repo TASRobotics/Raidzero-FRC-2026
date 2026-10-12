@@ -37,7 +37,7 @@
     "org.mockito.Mockito.*",
     "org.mockito.ArgumentMatchers.*",
     "org.mockito.Answers.*",
-    "edu.wpi.first.first.units.Units.*"
+    "org.wpilib.first.units.Units.*"
   ],
   "java.completion.filteredTypes": [
     "java.awt.*",
@@ -53,9 +53,9 @@
     "javax.swing.*",
     "javax.management.*",
     "javax.smartcardio.*",
-    "edu.wpi.first.first.math.proto.*",
-    "edu.wpi.first.first.math.**.proto.*",
-    "edu.wpi.first.first.math.**.struct.*",
+    "org.wpilib.first.math.proto.*",
+    "org.wpilib.first.math.**.proto.*",
+    "org.wpilib.first.math.**.struct.*",
   ],
   "java.dependency.enableDependencyCheckup": false,
   "java.jdt.ls.vmargs": "-XX:+UseZGC -Xmx24G -Xms4G -Xlog:disable",
