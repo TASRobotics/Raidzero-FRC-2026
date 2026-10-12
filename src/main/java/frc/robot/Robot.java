@@ -8,16 +8,9 @@ import static org.wpilib.units.Units.Degrees;
 
 import com.ctre.phoenix6.HootAutoReplay;
 import com.ctre.phoenix6.SignalLogger;
-import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.driverstation.DriverStation;
-import org.wpilib.system.RobotController;
 import org.wpilib.framework.TimedRobot;
 import org.wpilib.command3.Command;
 import org.wpilib.command3.Scheduler;
-
-import frc.lib.Util;
-import frc.lib.LimelightState.IMU_MODE;
-import frc.lib.LimelightState.PIPELINE;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;

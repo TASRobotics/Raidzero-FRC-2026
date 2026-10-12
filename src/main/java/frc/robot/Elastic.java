@@ -1,6 +1,7 @@
 package frc.robot;
 
-import org.wpilib.wpilibj.DriverStation;
+import org.wpilib.driverstation.RobotState;
+
 import frc.lib.ElasticLib;
 import frc.lib.Util;
 
@@ -36,7 +37,7 @@ public class Elastic {
      * Checks the alliance color and sets the isBlueAlliance variable accordingly
      */
     public static void checkForAlliance() {
-        if (!DriverStation.isDSAttached()) {
+        if (!RobotState.isDSAttached()) {
             return;
         }
 
