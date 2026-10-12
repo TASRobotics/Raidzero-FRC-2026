@@ -1,8 +1,8 @@
 package frc.lib;
 
-import org.wpilib.command2.SubsystemBase;
+import org.wpilib.command3.Mechanism;
 
-public abstract class R0Subsystem<T extends SubsystemIO> extends SubsystemBase {
+public abstract class R0Subsystem<T extends SubsystemIO> extends Mechanism {
     protected T io;
 
     /**
@@ -14,8 +14,8 @@ public abstract class R0Subsystem<T extends SubsystemIO> extends SubsystemBase {
         this.io = io;
     }
 
-    @Override
-    public void periodic() {
-        // io.updateTelemetry();
-    }
+    // @Override
+    // public void periodic() {
+    //     // io.updateTelemetry();
+    // }
 }

@@ -6,7 +6,7 @@ import static org.wpilib.units.Units.Meters;
 import com.ctre.phoenix6.Utils;
 import org.wpilib.units.measure.Angle;
 import org.wpilib.smartdashboard.SmartDashboard;
-import org.wpilib.command2.Command;
+import org.wpilib.command3.Command;
 import frc.lib.R0Subsystem;
 import frc.robot.subsystems.turret.TurretConstants.Kinetics;
 

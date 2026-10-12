@@ -9,14 +9,20 @@ import static org.wpilib.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathfindingCommand;
+// import com.pathplanner.lib.auto.AutoBuilder;
+// import com.pathplanner.lib.commands.PathfindingCommand;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.wpilibj.DriverStation;
-import org.wpilib.wpilibj.GenericHID.RumbleType;
-import org.wpilib.wpilibj2.command.button.CommandXboxController;
-import org.wpilib.wpilibj2.command.button.Trigger;
+import org.wpilib.smartdashboard.SendableChooser;
+import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.system.Timer;
+import org.wpilib.driverstation.DriverStation;
+import org.wpilib.driverstation.POVDirection;
+import org.wpilib.driverstation.RobotState;
+import org.wpilib.driverstation.GenericHID.RumbleType;
+import org.wpilib.command3.button.CommandNiDsXboxController;
+import org.wpilib.command3.Command;
+import org.wpilib.command3.Trigger;
 import frc.lib.ElasticLib;
 import frc.lib.Util;
 import frc.lib.ElasticLib.Notification;
@@ -52,8 +58,8 @@ public class Superstructure {
     private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.6;
     private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.50;
 
-    private static CommandXboxController driver = new CommandXboxController(0);
-    private static CommandXboxController operator = new CommandXboxController(1);
+    private static CommandNiDsXboxController driver = new CommandNiDsXboxController(0);
+    private static CommandNiDsXboxController operator = new CommandNiDsXboxController(1);
 
     private static final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
         .withDeadband(MaxSpeed * 0.08).withRotationalDeadband(MaxAngularRate * 0.08)
@@ -116,30 +122,30 @@ public class Superstructure {
     public static Trigger inAutonShootingZone = new Trigger(() -> {
         Pose2d pose = swerve.getState().Pose;
         boolean inAllianceZone = (pose.getX() < 3.5 && pose.getX() > 3) || (pose.getX() > 12.7 && pose.getX() < 13.5);
-        return inAllianceZone && DriverStation.isAutonomousEnabled();
+        return inAllianceZone && RobotState.isAutonomousEnabled();
     });
 
     public static Trigger inAutonReverseZone = new Trigger(() -> {
         Pose2d pose = swerve.getState().Pose;
         boolean inAllianceZone = (pose.getX() > 3.5 && pose.getX() < 5.1) || (pose.getX() > 12.7 && pose.getX() < 11.2);
-        return inAllianceZone && DriverStation.isAutonomousEnabled();
+        return inAllianceZone && RobotState.isAutonomousEnabled();
     });
 
     // 1:55 1:30 1:05 0:40
     public static Trigger timestampOne = new Trigger(() -> {
-        return DriverStation.getMatchTime() <= 118;
+        return Timer.getMatchTime() <= 118;
     });
     public static Trigger timestampTwo = new Trigger(() -> {
-        return DriverStation.getMatchTime() <= 93;
+        return Timer.getMatchTime() <= 93;
     });
     public static Trigger timestampThree = new Trigger(() -> {
-        return DriverStation.getMatchTime() <= 68;
+        return Timer.getMatchTime() <= 68;
     });
     public static Trigger timestampFour = new Trigger(() -> {
-        return DriverStation.getMatchTime() <= 43;
+        return Timer.getMatchTime() <= 43;
     });
     public static Trigger timestampFive = new Trigger(() -> {
-        return DriverStation.getMatchTime() <= 12;
+        return Timer.getMatchTime() <= 12;
     });
 
     /**
@@ -180,13 +186,13 @@ public class Superstructure {
      */
     public static void applyButtonBindings() {
         driver.povUp().whileTrue(swerve.applyRequest(() -> povStrafe.apply(0)));
-        driver.pov(45).whileTrue(swerve.applyRequest(() -> povStrafe.apply(45)));
+        driver.pov(POVDirection.UP_RIGHT).whileTrue(swerve.applyRequest(() -> povStrafe.apply(45)));
         driver.povRight().whileTrue(swerve.applyRequest(() -> povStrafe.apply(90)));
-        driver.pov(135).whileTrue(swerve.applyRequest(() -> povStrafe.apply(135)));
+        driver.pov(POVDirection.UP_LEFT).whileTrue(swerve.applyRequest(() -> povStrafe.apply(135)));
         driver.povDown().whileTrue(swerve.applyRequest(() -> povStrafe.apply(180)));
-        driver.pov(225).whileTrue(swerve.applyRequest(() -> povStrafe.apply(225)));
+        driver.pov(POVDirection.DOWN_LEFT).whileTrue(swerve.applyRequest(() -> povStrafe.apply(225)));
         driver.povLeft().whileTrue(swerve.applyRequest(() -> povStrafe.apply(270)));
-        driver.pov(315).whileTrue(swerve.applyRequest(() -> povStrafe.apply(315)));
+        driver.pov(POVDirection.DOWN_RIGHT).whileTrue(swerve.applyRequest(() -> povStrafe.apply(315)));
 
         driver.rightBumper().whileTrue(swerve.applyRequest(() -> brake));
         driver.rightBumper().whileTrue(hood.aim());

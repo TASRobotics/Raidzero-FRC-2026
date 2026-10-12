@@ -13,6 +13,8 @@ import org.wpilib.driverstation.DriverStation;
 import org.wpilib.system.RobotController;
 import org.wpilib.framework.TimedRobot;
 import org.wpilib.command3.Command;
+import org.wpilib.command3.Scheduler;
+
 import frc.lib.Util;
 import frc.lib.LimelightState.IMU_MODE;
 import frc.lib.LimelightState.PIPELINE;
@@ -39,16 +41,16 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         m_timeAndJoystickReplay.update();
-        CommandScheduler.getInstance().run();
+        Scheduler.getDefault().run();
 
         // SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
         // SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
-        Superstructure.getLimelight().loop();
+        // Superstructure.getLimelight().loop();
     }
 
     @Override
     public void disabledInit() {
-        Superstructure.getLimelight().setImuMode(IMU_MODE.EXTERNAL_SEED);
+        // Superstructure.getLimelight().setImuMode(IMU_MODE.EXTERNAL_SEED);
     }
 
     @Override
@@ -63,19 +65,19 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-        if (m_autonomousCommand != null) {
-            CommandScheduler.getInstance().schedule(m_autonomousCommand);
-        }
+        // if (m_autonomousCommand != null) {
+        //     CommandScheduler.getInstance().schedule(m_autonomousCommand);
+        // }
 
-        alreadyEnabled = true;
-        Elastic.initAuton();
-        Superstructure.getLimelight().setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
-        Superstructure.getSwerve().seedFieldCentric(
-            Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
-                .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
-        );
+        // alreadyEnabled = true;
+        // Elastic.initAuton();
+        // Superstructure.getLimelight().setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
+        // Superstructure.getSwerve().seedFieldCentric(
+        //     Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
+        //         .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
+        // );
     }
 
     @Override
@@ -87,18 +89,18 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         if (m_autonomousCommand != null) {
-            CommandScheduler.getInstance().cancel(m_autonomousCommand);
+            Scheduler.getDefault().cancel(m_autonomousCommand);
         }
 
         alreadyEnabled = true;
         Elastic.initTeleop();
         Superstructure.getHood().setDefaultCommand(Superstructure.getHood().aim(Degrees.of(10)));
-        Superstructure.getLimelight().setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
+        // Superstructure.getLimelight().setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
 
-        Superstructure.getSwerve().seedFieldCentric(
-            Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
-                .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
-        );
+        // Superstructure.getSwerve().seedFieldCentric(
+        //     Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
+        //         .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
+        // );
     }
 
     @Override
@@ -109,18 +111,18 @@ public class Robot extends TimedRobot {
         SignalLogger.stop();
     }
 
-    @Override
-    public void testInit() {
-        CommandScheduler.getInstance().cancelAll();
+    // @Override
+    // public void testInit() {
+    //     CommandScheduler.getInstance().cancelAll();
 
-        alreadyEnabled = true;
-    }
+    //     alreadyEnabled = true;
+    // }
 
-    @Override
-    public void testPeriodic() {}
+    // @Override
+    // public void testPeriodic() {}
 
-    @Override
-    public void testExit() {}
+    // @Override
+    // public void testExit() {}
 
     @Override
     public void simulationPeriodic() {}

@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import org.wpilib.command2.Command;
+import org.wpilib.command3.Command;
 
 public class RobotContainer {
     /**

@@ -1,3 +1,5 @@
+// FIXME: Migrate this from a class-based command to a coroutine-based command.
+
 package frc.robot.commands;
 
 import static org.wpilib.units.Units.Rotations;
