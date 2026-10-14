@@ -18,12 +18,12 @@ import org.wpilib.math.geometry.Translation2d;
 import java.util.Arrays;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+// import com.fasterxml.jackson.annotation.JsonFormat;
+// import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+// import com.fasterxml.jackson.annotation.JsonProperty;
+// import com.fasterxml.jackson.core.JsonProcessingException;
+// import com.fasterxml.jackson.databind.DeserializationFeature;
+// import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.concurrent.ConcurrentHashMap;
 import org.wpilib.net.PortForwarder;
 
@@ -40,19 +40,19 @@ public class LimelightHelpers {
      */
     public static class LimelightTarget_Retro {
 
-        @JsonProperty("t6c_ts")
+        // // @JsonProperty("t6c_ts")
         private double[] cameraPose_TargetSpace;
 
-        @JsonProperty("t6r_fs")
+        // // @JsonProperty("t6r_fs")
         private double[] robotPose_FieldSpace;
 
-        @JsonProperty("t6r_ts")
+        // // @JsonProperty("t6r_ts")
         private  double[] robotPose_TargetSpace;
 
-        @JsonProperty("t6t_cs")
+        // // @JsonProperty("t6t_cs")
         private double[] targetPose_CameraSpace;
 
-        @JsonProperty("t6t_rs")
+        // // @JsonProperty("t6t_rs")
         private double[] targetPose_RobotSpace;
 
         public Pose3d getCameraPose_TargetSpace()
@@ -97,28 +97,28 @@ public class LimelightHelpers {
             return toPose2D(targetPose_RobotSpace);
         }
 
-        @JsonProperty("ta")
+        // // @JsonProperty("ta")
         public double ta;
 
-        @JsonProperty("tx")
+        // // @JsonProperty("tx")
         public double tx;
         
-        @JsonProperty("ty")
+        // // @JsonProperty("ty")
         public double ty;
 
-        @JsonProperty("txp")
+        // // @JsonProperty("txp")
         public double tx_pixels;
 
-        @JsonProperty("typ")
+        // // @JsonProperty("typ")
         public double ty_pixels;
 
-        @JsonProperty("tx_nocross")
+        // // @JsonProperty("tx_nocross")
         public double tx_nocrosshair;
 
-        @JsonProperty("ty_nocross")
+        // // @JsonProperty("ty_nocross")
         public double ty_nocrosshair;
 
-        @JsonProperty("ts")
+        // // @JsonProperty("ts")
         public double ts;
 
         public LimelightTarget_Retro() {
@@ -136,25 +136,25 @@ public class LimelightHelpers {
      */
     public static class LimelightTarget_Fiducial {
 
-        @JsonProperty("fID")
+        // // @JsonProperty("fID")
         public double fiducialID;
 
-        @JsonProperty("fam")
+        // // @JsonProperty("fam")
         public String fiducialFamily;
 
-        @JsonProperty("t6c_ts")
+        // // @JsonProperty("t6c_ts")
         private double[] cameraPose_TargetSpace;
 
-        @JsonProperty("t6r_fs")
+        // // @JsonProperty("t6r_fs")
         private double[] robotPose_FieldSpace;
 
-        @JsonProperty("t6r_ts")
+        // // @JsonProperty("t6r_ts")
         private double[] robotPose_TargetSpace;
 
-        @JsonProperty("t6t_cs")
+        // // @JsonProperty("t6t_cs")
         private double[] targetPose_CameraSpace;
 
-        @JsonProperty("t6t_rs")
+        // // @JsonProperty("t6t_rs")
         private double[] targetPose_RobotSpace;
 
         public Pose3d getCameraPose_TargetSpace()
@@ -199,28 +199,28 @@ public class LimelightHelpers {
             return toPose2D(targetPose_RobotSpace);
         }
         
-        @JsonProperty("ta")
+        // // @JsonProperty("ta")
         public double ta;
 
-        @JsonProperty("tx")
+        // // @JsonProperty("tx")
         public double tx;
 
-        @JsonProperty("ty")
+        // // @JsonProperty("ty")
         public double ty;
 
-        @JsonProperty("txp")
+        // // @JsonProperty("txp")
         public double tx_pixels;
 
-        @JsonProperty("typ")
+        // // @JsonProperty("typ")
         public double ty_pixels;
 
-        @JsonProperty("tx_nocross")
+        // // @JsonProperty("tx_nocross")
         public double tx_nocrosshair;
 
-        @JsonProperty("ty_nocross")
+        // // @JsonProperty("ty_nocross")
         public double ty_nocrosshair;
 
-        @JsonProperty("ts")
+        // // @JsonProperty("ts")
         public double ts;
         
         public LimelightTarget_Fiducial() {
@@ -240,37 +240,37 @@ public class LimelightHelpers {
         /**
          * Barcode family type (e.g. "QR", "DataMatrix", etc.)
          */
-        @JsonProperty("fam")
+        // // @JsonProperty("fam")
         public String family;
 
         /**
          * Gets the decoded data content of the barcode
          */
-        @JsonProperty("data") 
+        // // @JsonProperty("data") 
         public String data;
 
-        @JsonProperty("txp")
+        // // @JsonProperty("txp")
         public double tx_pixels;
 
-        @JsonProperty("typ")
+        // // @JsonProperty("typ")
         public double ty_pixels;
 
-        @JsonProperty("tx")
+        // // @JsonProperty("tx")
         public double tx;
 
-        @JsonProperty("ty")
+        // // @JsonProperty("ty")
         public double ty;
 
-        @JsonProperty("tx_nocross")
+        // // @JsonProperty("tx_nocross")
         public double tx_nocrosshair;
 
-        @JsonProperty("ty_nocross")
+        // // @JsonProperty("ty_nocross")
         public double ty_nocrosshair;
 
-        @JsonProperty("ta")
+        // // @JsonProperty("ta")
         public double ta;
 
-        @JsonProperty("pts")
+        // // @JsonProperty("pts")
         public double[][] corners;
 
         public LimelightTarget_Barcode() {
@@ -286,28 +286,28 @@ public class LimelightHelpers {
      */
     public static class LimelightTarget_Classifier {
 
-        @JsonProperty("class")
+        // // @JsonProperty("class")
         public String className;
 
-        @JsonProperty("classID")
+        // // @JsonProperty("classID")
         public double classID;
 
-        @JsonProperty("conf")
+        // // @JsonProperty("conf")
         public double confidence;
 
-        @JsonProperty("zone")
+        // // @JsonProperty("zone")
         public double zone;
 
-        @JsonProperty("tx")
+        // // @JsonProperty("tx")
         public double tx;
 
-        @JsonProperty("txp")
+        // // @JsonProperty("txp")
         public double tx_pixels;
 
-        @JsonProperty("ty")
+        // // @JsonProperty("ty")
         public double ty;
 
-        @JsonProperty("typ")
+        // // @JsonProperty("typ")
         public double ty_pixels;
 
         public  LimelightTarget_Classifier() {
@@ -319,34 +319,34 @@ public class LimelightHelpers {
      */
     public static class LimelightTarget_Detector {
 
-        @JsonProperty("class")
+        // // @JsonProperty("class")
         public String className;
 
-        @JsonProperty("classID")
+        // // @JsonProperty("classID")
         public double classID;
 
-        @JsonProperty("conf")
+        // // @JsonProperty("conf")
         public double confidence;
 
-        @JsonProperty("ta")
+        // // @JsonProperty("ta")
         public double ta;
 
-        @JsonProperty("tx")
+        // // @JsonProperty("tx")
         public double tx;
 
-        @JsonProperty("ty")
+        // // @JsonProperty("ty")
         public double ty;
 
-        @JsonProperty("txp")
+        // // @JsonProperty("txp")
         public double tx_pixels;
 
-        @JsonProperty("typ")
+        // // @JsonProperty("typ")
         public double ty_pixels;
 
-        @JsonProperty("tx_nocross")
+        // // @JsonProperty("tx_nocross")
         public double tx_nocrosshair;
 
-        @JsonProperty("ty_nocross")
+        // // @JsonProperty("ty_nocross")
         public double ty_nocrosshair;
 
         public LimelightTarget_Detector() {
@@ -357,22 +357,22 @@ public class LimelightHelpers {
      * Represents hardware statistics from the Limelight.
      */
     public static class HardwareReport {
-        @JsonProperty("cid")
+        // // @JsonProperty("cid")
         public String cameraId;
 
-        @JsonProperty("cpu")
+        // // @JsonProperty("cpu")
         public double cpuUsage;
 
-        @JsonProperty("dfree")
+        // // @JsonProperty("dfree")
         public double diskFree;
 
-        @JsonProperty("dtot")
+        // // @JsonProperty("dtot")
         public double diskTotal;
 
-        @JsonProperty("ram")
+        // // @JsonProperty("ram")
         public double ramUsage;
 
-        @JsonProperty("temp")
+        // // @JsonProperty("temp")
         public double temperature;
 
         public HardwareReport() {
@@ -383,13 +383,13 @@ public class LimelightHelpers {
      * Represents IMU data from the JSON results.
      */
     public static class IMUResults {
-        @JsonProperty("data")
+        // // @JsonProperty("data")
         public double[] data;
 
-        @JsonProperty("quat")
+        // // @JsonProperty("quat")
         public double[] quaternion;
 
-        @JsonProperty("yaw")
+        // // @JsonProperty("yaw")
         public double yaw;
 
         // Parsed from data array
@@ -429,22 +429,22 @@ public class LimelightHelpers {
      * Represents capture rewind buffer statistics.
      */
     public static class RewindStats {
-        @JsonProperty("bufferUsage")
+        // @JsonProperty("bufferUsage")
         public double bufferUsage;
 
-        @JsonProperty("enabled")
+        // @JsonProperty("enabled")
         public int enabled;
 
-        @JsonProperty("flushing")
+        // @JsonProperty("flushing")
         public int flushing;
 
-        @JsonProperty("frameCount")
+        // @JsonProperty("frameCount")
         public int frameCount;
 
-        @JsonProperty("latpen")
+        // @JsonProperty("latpen")
         public int latencyPenalty;
 
-        @JsonProperty("storedSeconds")
+        // @JsonProperty("storedSeconds")
         public double storedSeconds;
 
         public RewindStats() {
@@ -458,97 +458,97 @@ public class LimelightHelpers {
         
         public String error;
         
-        @JsonProperty("pID")
+        // @JsonProperty("pID")
         public double pipelineID;
 
-        @JsonProperty("tl")
+        // @JsonProperty("tl")
         public double latency_pipeline;
 
-        @JsonProperty("cl")
+        // @JsonProperty("cl")
         public double latency_capture;
 
         public double latency_jsonParse;
 
-        @JsonProperty("ts")
+        // @JsonProperty("ts")
         public double timestamp_LIMELIGHT_publish;
 
-        @JsonProperty("ts_rio")
+        // @JsonProperty("ts_rio")
         public double timestamp_RIOFPGA_capture;
 
-        @JsonProperty("ts_nt")
+        // @JsonProperty("ts_nt")
         public long timestamp_nt;
 
-        @JsonProperty("ts_sys")
+        // @JsonProperty("ts_sys")
         public long timestamp_sys;
 
-        @JsonProperty("ts_us")
+        // @JsonProperty("ts_us")
         public long timestamp_us;
 
-        @JsonProperty("v")
-        @JsonFormat(shape = Shape.NUMBER)
+        // @JsonProperty("v")
+        // @JsonFormat(shape = Shape.NUMBER)
         public boolean valid;
 
-        @JsonProperty("pTYPE")
+        // @JsonProperty("pTYPE")
         public String pipelineType;
 
-        @JsonProperty("tx")
+        // @JsonProperty("tx")
         public double tx;
 
-        @JsonProperty("ty")
+        // @JsonProperty("ty")
         public double ty;
 
-        @JsonProperty("txnc")
+        // @JsonProperty("txnc")
         public double tx_nocrosshair;
 
-        @JsonProperty("tync")
+        // @JsonProperty("tync")
         public double ty_nocrosshair;
 
-        @JsonProperty("ta")
+        // @JsonProperty("ta")
         public double ta;
 
-        @JsonProperty("botpose")
+        // @JsonProperty("botpose")
         public double[] botpose;
 
-        @JsonProperty("botpose_wpired")
+        // @JsonProperty("botpose_wpired")
         public double[] botpose_wpired;
 
-        @JsonProperty("botpose_wpiblue")
+        // @JsonProperty("botpose_wpiblue")
         public double[] botpose_wpiblue;
 
-        @JsonProperty("botpose_tagcount")
+        // @JsonProperty("botpose_tagcount")
         public double botpose_tagcount;
        
-        @JsonProperty("botpose_span")
+        // @JsonProperty("botpose_span")
         public double botpose_span;
        
-        @JsonProperty("botpose_avgdist")
+        // @JsonProperty("botpose_avgdist")
         public double botpose_avgdist;
        
-        @JsonProperty("botpose_avgarea")
+        // @JsonProperty("botpose_avgarea")
         public double botpose_avgarea;
 
-        @JsonProperty("botpose_orb")
+        // @JsonProperty("botpose_orb")
         public double[] botpose_orb;
 
-        @JsonProperty("botpose_orb_wpiblue")
+        // @JsonProperty("botpose_orb_wpiblue")
         public double[] botpose_orb_wpiblue;
 
-        @JsonProperty("botpose_orb_wpired")
+        // @JsonProperty("botpose_orb_wpired")
         public double[] botpose_orb_wpired;
 
-        @JsonProperty("t6c_rs")
+        // @JsonProperty("t6c_rs")
         public double[] camerapose_robotspace;
 
-        @JsonProperty("hw")
+        // @JsonProperty("hw")
         public HardwareReport hardware;
 
-        @JsonProperty("imu")
+        // @JsonProperty("imu")
         public IMUResults imuResults;
 
-        @JsonProperty("rewind")
+        // @JsonProperty("rewind")
         public RewindStats rewindStats;
 
-        @JsonProperty("PythonOut")
+        // @JsonProperty("PythonOut")
         public double[] pythonOutput;
 
         public Pose3d getBotPose3d() {
@@ -575,19 +575,19 @@ public class LimelightHelpers {
             return toPose2D(botpose_wpiblue);
         }
 
-        @JsonProperty("Retro")
+        // @JsonProperty("Retro")
         public LimelightTarget_Retro[] targets_Retro;
 
-        @JsonProperty("Fiducial")
+        // @JsonProperty("Fiducial")
         public LimelightTarget_Fiducial[] targets_Fiducials;
 
-        @JsonProperty("Classifier")
+        // @JsonProperty("Classifier")
         public LimelightTarget_Classifier[] targets_Classifier;
 
-        @JsonProperty("Detector")
+        // @JsonProperty("Detector")
         public LimelightTarget_Detector[] targets_Detector;
 
-        @JsonProperty("Barcode")
+        // @JsonProperty("Barcode")
         public LimelightTarget_Barcode[] targets_Barcode;
 
         public LimelightResults() {
@@ -809,7 +809,7 @@ public class LimelightHelpers {
     }
 
 
-    private static ObjectMapper mapper;
+    // private static ObjectMapper mapper;
 
     /**
      * Print JSON Parse time to the console in milliseconds
@@ -1890,23 +1890,23 @@ public class LimelightHelpers {
 
         long start = System.nanoTime();
         LimelightHelpers.LimelightResults results = new LimelightHelpers.LimelightResults();
-        if (mapper == null) {
-            mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        }
+        // if (mapper == null) {
+        //     mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        // }
 
-        try {
+        // try {
             String jsonString = getJSONDump(limelightName);
             if (jsonString == null || jsonString.isEmpty() || jsonString.isBlank()) {
                 results.error = "lljson error: empty json";
             } else {
-                results = mapper.readValue(jsonString, LimelightResults.class);
+                // results = mapper.readValue(jsonString, LimelightResults.class);
                 if (results.imuResults != null) {
                     results.imuResults.parseDataArray();
                 }
             }
-        } catch (JsonProcessingException e) {
-            results.error = "lljson error: " + e.getMessage();
-        }
+        // } catch (JsonProcessingException e) {
+            // results.error = "lljson error: " + e.getMessage();
+        // }
 
         long end = System.nanoTime();
         double millis = (end - start) * .000001;

@@ -18,12 +18,14 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import org.wpilib.units.measure.AngularAcceleration;
 import org.wpilib.units.measure.AngularVelocity;
-import org.wpilib.driverstation.DriverStation;
+import org.wpilib.driverstation.DriverStationErrors;
 
 public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbackSensorSourceValue> {
     private MotorArrangementValue motorArrangement;
     private int motorID, followID, canCoderID;
-    private CANBus canBus = CANBus.roboRIO(), followCanBus = CANBus.roboRIO(), canCoderCanBus = CANBus.roboRIO();
+
+    // TODO: Is this correct? (Used to be CANBus.roborRIO() since roborio only has 1 canbus)
+    private CANBus canBus = CANBus.systemcore(0), followCanBus = CANBus.systemcore(0), canCoderCanBus = CANBus.systemcore(0);
 
     private TalonFXSConfiguration motorConfiguration = null, followConfiguration = null;
     private CANcoderConfiguration canCoderConfiguration = null;
@@ -137,7 +139,7 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
                 motorConfiguration.Slot2.StaticFeedforwardSign = staticSignValue;
                 break;
             default:
-                DriverStation.reportWarning("PDF Slot number is invalid for device ID: " + motorID, true);
+                DriverStationErrors.reportWarning("PDF Slot number is invalid for device ID: " + motorID, true);
         }
 
         return this;

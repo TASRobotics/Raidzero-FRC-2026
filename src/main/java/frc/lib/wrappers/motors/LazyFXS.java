@@ -3,6 +3,7 @@ package frc.lib.wrappers.motors;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
@@ -85,17 +86,17 @@ public class LazyFXS implements LazyCTRE {
 
     @Override
     public void setDutyCycle(double percent) {
-        this.motor.set(percent);
+        this.motor.setControl(new DutyCycleOut(percent));
     }
 
     @Override
     public void setCoast() {
-        this.motor.setNeutralMode(NeutralModeValue.Coast);
+        this.motor.configNeutralMode(NeutralModeValue.Coast);
     }
 
     @Override
     public void setBrake() {
-        this.motor.setNeutralMode(NeutralModeValue.Brake);
+        this.motor.configNeutralMode(NeutralModeValue.Brake);
     }
 
     @Override

@@ -5,21 +5,21 @@
 
 package frc.lib;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+// import com.fasterxml.jackson.annotation.JsonProperty;
+// import com.fasterxml.jackson.core.JsonProcessingException;
+// import com.fasterxml.jackson.databind.ObjectMapper;
 import org.wpilib.networktables.NetworkTableInstance;
 import org.wpilib.networktables.PubSubOption;
 import org.wpilib.networktables.StringPublisher;
 import org.wpilib.networktables.StringTopic;
 
 public final class ElasticLib {
-    private static final StringTopic notificationTopic = NetworkTableInstance.getDefault().getStringTopic("/Elastic/RobotNotifications");
-    private static final StringPublisher notificationPublisher = notificationTopic
-        .publish(PubSubOption.sendAll(true), PubSubOption.keepDuplicates(true));
+    // private static final StringTopic notificationTopic = NetworkTableInstance.getDefault().getStringTopic("/Elastic/RobotNotifications");
+    // private static final StringPublisher notificationPublisher = notificationTopic
+    //     .publish(PubSubOption.SEND_ALL, PubSubOption.KEEP_DUPLICATES);
     private static final StringTopic selectedTabTopic = NetworkTableInstance.getDefault().getStringTopic("/Elastic/SelectedTab");
-    private static final StringPublisher selectedTabPublisher = selectedTabTopic.publish(PubSubOption.keepDuplicates(true));
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final StringPublisher selectedTabPublisher = selectedTabTopic.publish(PubSubOption.KEEP_DUPLICATES);
+    // private static final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Represents the possible levels of notifications for the Elastic dashboard. These levels are
@@ -41,11 +41,11 @@ public final class ElasticLib {
      * @param notification the {@link Notification} object containing notification details
      */
     public static void sendNotification(Notification notification) {
-        try {
-            notificationPublisher.set(objectMapper.writeValueAsString(notification));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        // try {
+        //     notificationPublisher.set(objectMapper.writeValueAsString(notification));
+        // } catch (JsonProcessingException e) {
+        //     e.printStackTrace();
+        // }
     }
 
     /**
@@ -77,22 +77,22 @@ public final class ElasticLib {
      * notification is displayed on the dashboard.
      */
     public static class Notification {
-        @JsonProperty("level")
+        // @JsonProperty("level")
         private NotificationLevel level;
 
-        @JsonProperty("title")
+        // @JsonProperty("title")
         private String title;
 
-        @JsonProperty("description")
+        // @JsonProperty("description")
         private String description;
 
-        @JsonProperty("displayTime")
+        // @JsonProperty("displayTime")
         private int displayTimeMillis;
 
-        @JsonProperty("width")
+        // @JsonProperty("width")
         private double width;
 
-        @JsonProperty("height")
+        // @JsonProperty("height")
         private double height;
 
         /**

@@ -1,7 +1,7 @@
 package frc.lib;
 
-import org.wpilib.driverstation.DriverStation;
-import org.wpilib.driverstation.DriverStation.Alliance;
+import org.wpilib.driverstation.MatchState;
+import org.wpilib.driverstation.Alliance;
 import java.util.Optional;
 
 public class Util {
@@ -11,7 +11,7 @@ public class Util {
      * @return true if the robot is on the blue alliance, false otherwise
      */
     public static boolean isBlueAlliance() {
-        return DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue;
+        return MatchState.getAlliance().orElse(Alliance.RED) == Alliance.BLUE;
     }
 
     /**
@@ -20,10 +20,10 @@ public class Util {
      * @return True if the current alliance is Red, false otherwise (including if the alliance is not yet determined)
      */
     public static boolean isRedAlliance() {
-        Optional<Alliance> alliance = DriverStation.getAlliance();
+        Optional<Alliance> alliance = MatchState.getAlliance();
 
         if (alliance.isPresent()) {
-            return alliance.get() == Alliance.Red;
+            return alliance.get() == Alliance.RED;
         }
 
         return false;
