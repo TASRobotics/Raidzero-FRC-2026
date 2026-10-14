@@ -6,6 +6,7 @@ import static frc.robot.subsystems.turret.TurretConstants.Yaw;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
+
 import org.wpilib.units.measure.Angle;
 import frc.lib.SubsystemIO;
 import frc.lib.wrappers.motors.LazyFXS;
@@ -100,7 +101,8 @@ public interface TurretIO extends SubsystemIO {
             jmm1Config.MagnetSensor.SensorDirection = Yaw.JMM_1_INVERTED;
             jmm1Config.MagnetSensor.MagnetOffset = Yaw.JMM_OFFSET_1;
 
-            jmm1 = new CANcoder(Yaw.JMM_1_ID, Yaw.CAN_BUS_NAME);
+            jmm1 = new CANcoder(Yaw.JMM_1_ID, Yaw.CAN_BUS);
+        
             jmm1.getConfigurator().apply(jmm1Config);
 
             CANcoderConfiguration jmm2Config = new CANcoderConfiguration();
@@ -108,7 +110,7 @@ public interface TurretIO extends SubsystemIO {
             jmm2Config.MagnetSensor.SensorDirection = Yaw.JMM_2_INVERTED;
             jmm2Config.MagnetSensor.MagnetOffset = Yaw.JMM_OFFSET_2;
 
-            jmm2 = new CANcoder(Yaw.JMM_2_ID, Yaw.CAN_BUS_NAME);
+            jmm2 = new CANcoder(Yaw.JMM_2_ID, Yaw.CAN_BUS);
             jmm2.getConfigurator().apply(jmm2Config);
         }
 

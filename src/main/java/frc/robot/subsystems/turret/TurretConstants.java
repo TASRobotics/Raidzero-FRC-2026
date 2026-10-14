@@ -8,6 +8,7 @@ import static org.wpilib.units.Units.Rotations;
 import static org.wpilib.units.Units.RotationsPerSecond;
 import static org.wpilib.units.Units.RotationsPerSecondPerSecond;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
@@ -25,7 +26,7 @@ import frc.lib.wrappers.motors.LazyCTRE.MotorTelemetry;
 public final class TurretConstants {
     public static final class Yaw {
         public static final int MOTOR_ID = 14;
-        public static final String CAN_BUS_NAME = "canDoAttitude";
+        public static final CANBus CAN_BUS = new CANBus("canDoAttitude");
         public static final MotorArrangementValue MOTOR_ARRANGEMENT = MotorArrangementValue.Minion_JST;
 
         public static final double SENSOR_TO_MECHANISM_RATIO = 280.0 / 10.0; // old ratio: 250.0 / 10.0;
@@ -81,7 +82,7 @@ public final class TurretConstants {
 
     public static final class Pitch {
         public static final int MOTOR_ID = 13;
-        public static final String CAN_BUS_NAME = "canDoAttitude";
+        public static final CANBus CAN_BUS_NAME = new CANBus("canDoAttitude");
         public static final MotorArrangementValue MOTOR_ARRANGEMENT = MotorArrangementValue.Minion_JST;
 
         public static final double SENSOR_TO_MECHANISM_RATIO = (42.0 / 10.0) * (42.0 / 14.0) * (25.0 / 16.0) * (205.0 / 12.0);

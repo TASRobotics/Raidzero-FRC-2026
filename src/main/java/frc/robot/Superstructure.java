@@ -539,6 +539,10 @@ public class Superstructure {
         return swerve;
     }
 
+    public static void updateInputs() {
+        turret.updateInputs();
+    }
+
     /**
      * Configures autonomous command options
      */

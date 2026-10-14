@@ -8,13 +8,14 @@ import org.wpilib.math.filter.LinearFilter;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
 import org.wpilib.networktables.NetworkTable;
 import org.wpilib.networktables.NetworkTableInstance;
 import org.wpilib.networktables.StructPublisher;
 import org.wpilib.units.measure.Angle;
 import org.wpilib.units.measure.Distance;
-import org.wpilib.driverstation.DriverStation;
-import org.wpilib.driverstation.Alliance;
+import org.wpilib.driverstation.DriverStationErrors;
+import org.wpilib.driverstation.RobotState;
 import org.wpilib.smartdashboard.SmartDashboard;
 import org.wpilib.command3.Command;
 import org.wpilib.command3.Trigger;
@@ -93,7 +94,8 @@ public class Turret extends R0Subsystem<TurretIO> {
      * @return A {@link Command} to be scheduled and run
      */
     public Command movePercent(double percent) {
-        return run(() -> io.runYawPercent(percent));
+        return run(coroutine -> io.runYawPercent(percent))
+            .named("Turret duty cycle");
     }
 
     /**
@@ -102,7 +104,8 @@ public class Turret extends R0Subsystem<TurretIO> {
      * @return A {@link Command} to be scheduled and run
      */
     public Command stop() {
-        return run(() -> io.stop());
+        return run(coroutine -> io.stop())
+            .named("Turret stop");
     }
 
     /**
@@ -190,7 +193,7 @@ public class Turret extends R0Subsystem<TurretIO> {
             }
         }
 
-        DriverStation.reportWarning("Looks like the SRT failed in Turret.java", false);
+        DriverStationErrors.reportWarning("Looks like the SRT failed in Turret.java", false);
         return Rotations.of(0.0);
     }
 
@@ -207,20 +210,19 @@ public class Turret extends R0Subsystem<TurretIO> {
         return staticAimBot.turret();
     }
 
-    @Override
-    public void periodic() {
+    public void updateInputs() {
         // SmartDashboard.putNumber("Yaw", io.getYaw().in(Rotations));
-        if (!goalPoseInitailized && DriverStation.isDSAttached()) {
+        if (!goalPoseInitailized && RobotState.isDSAttached()) {
             boolean isRedAlliance = Util.isRedAlliance();
             allianceTargetFieldPose = isRedAlliance ? Kinetics.GOAL_LOCATION_RED : Kinetics.GOAL_LOCATION_BLUE;
             goalPoseInitailized = true;
         }
 
-        ChassisSpeeds rawSpeeds = swerve.getState().Speeds;
-        ChassisSpeeds filteredSpeeds = new ChassisSpeeds(
-            vxFilter.calculate(rawSpeeds.vxMetersPerSecond),
-            vyFilter.calculate(rawSpeeds.vyMetersPerSecond),
-            omegaFilter.calculate(rawSpeeds.omegaRadiansPerSecond)
+        ChassisVelocities rawSpeeds = swerve.getState().Velocity;
+        ChassisVelocities filteredSpeeds = new ChassisVelocities(
+            vxFilter.calculate(rawSpeeds.vx),
+            vyFilter.calculate(rawSpeeds.vy),
+            omegaFilter.calculate(rawSpeeds.omega)
         );
 
         staticAimBot = staticAimBot.adjustStaticAim(
