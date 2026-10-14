@@ -1,10 +1,11 @@
 package frc.robot.subsystems.intake;
 
 import static org.wpilib.units.Units.RotationsPerSecond;
+import static org.wpilib.units.Units.Seconds;
 
 import org.wpilib.units.measure.AngularVelocity;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.button.Trigger;
+import org.wpilib.command3.Command;
+import org.wpilib.command3.Trigger;
 import frc.lib.R0Subsystem;
 
 public class Spindexer extends R0Subsystem<SpindexerIO> {
@@ -16,7 +17,8 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
      * @return A {@link Command} that spins the spindexer at the index speed
      */
     public Command go() {
-        return run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED));
+        return runRepeatedly(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED))
+            .named("Spndexer go");
     }
 
     /**
@@ -25,7 +27,8 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
      * @return A {@link Command} that spins the spindexer in reverse at the index speed
      */
     public Command reverse() {
-        return run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED.times(-1.0)));
+        return runRepeatedly(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED.times(-1.0)))
+            .named("Spindexer reverse");
     }
 
     /**
@@ -36,8 +39,9 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
      *         short duration
      */
     public Command antiJam() {
-        return run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
-            .withTimeout(0.1);
+        return run(coroutine -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
+            .named("Spindexer antijam")
+            .withTimeout(Seconds.of(0.1));
     }
 
     /**
@@ -48,12 +52,22 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
      *         longer duration
      */
     public Command antiJamBig() {
-        return run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
-            .withTimeout(0.2)
-            .andThen(
-                run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED)).withTimeout(0.3)
-            )
-            .repeatedly();
+        return run(coroutine -> {
+            while (true) {
+                coroutine.await(
+                    runRepeatedly(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
+                        .named("Spindexer antijam")
+                        .withTimeout(Seconds.of(0.2))
+                );
+                coroutine.await(
+                    runRepeatedly(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED))
+                        .named("Spindexer intake")
+                        .withTimeout(Seconds.of(0.3))
+                );
+                coroutine.yield();
+            }
+        })
+            .named("Spindexer antijam big");
     }
 
     /**
@@ -63,17 +77,30 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
      *         longer duration
      */
     public Command antiJamAuto() {
-        return run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED))
-            .withTimeout(1)
-            .andThen(
-                run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
-                    .withTimeout(1)
-            )
-            .andThen(
-                run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED))
-                    .withTimeout(1)
-            )
-            .repeatedly();
+        return run(coroutine -> {
+            while (true) {
+                coroutine.await(
+                    runRepeatedly(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED))
+                        .named("Spindexer intake")
+                        .withTimeout(Seconds.of(1))
+                );
+
+                coroutine.await(
+                    runRepeatedly(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
+                        .named("Spindexer antijam")
+                        .withTimeout(Seconds.of(1))
+                );
+
+                coroutine.await(
+                    runRepeatedly(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED))
+                        .named("Spindexer intake")
+                        .withTimeout(Seconds.of(1))
+                );
+
+                coroutine.yield();
+            }
+        })
+            .named("Spindexer auton antijam");
     }
 
     /**
@@ -82,7 +109,8 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
      * @return A {@link Command} that stops the spindexer
      */
     public Command stop() {
-        return run(() -> io.stop());
+        return runRepeatedly(() -> io.stop())
+            .named("Spindexer stop");
     }
 
     /**
