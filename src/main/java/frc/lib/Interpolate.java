@@ -58,10 +58,7 @@ public class Interpolate<T> implements Command {
         currentSegment = 0;
         segmentStartTime = 0.0;
 
-        while (currentSegment >= path.size() - 1) {
-            if (currentSegment >= path.size() - 1)
-                return;
-
+        while (currentSegment < path.size() - 1) {
             T start = path.get(currentSegment);
             T end = path.get(currentSegment + 1);
 
@@ -79,6 +76,13 @@ public class Interpolate<T> implements Command {
             coroutine.yield();
         }
 
+        timer.stop();
+        T finalPose = path.get(path.size() - 1);
+        poseConsumer.accept(finalPose);
+    }
+
+    @Override
+    public void onCancel() {
         timer.stop();
         T finalPose = path.get(path.size() - 1);
         poseConsumer.accept(finalPose);
