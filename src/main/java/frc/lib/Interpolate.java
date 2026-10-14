@@ -3,12 +3,14 @@ package frc.lib;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.units.measure.Angle;
 import org.wpilib.system.Timer;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.Subsystem;
+import org.wpilib.command3.Command;
+import org.wpilib.command3.Coroutine;
+import org.wpilib.command3.Mechanism;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
-public class Interpolate<T> extends Command {
+public class Interpolate<T> implements Command {
     private final List<T> path;
     private final double segmentTime;
     private final Consumer<T> poseConsumer;
@@ -19,6 +21,8 @@ public class Interpolate<T> extends Command {
     private int currentSegment = 0;
     private double segmentStartTime = 0.0;
 
+    Set<Mechanism> requirements;
+
     /**
      * Constructs an Interpolate object for interpolating between points in a path.
      *
@@ -28,50 +32,53 @@ public class Interpolate<T> extends Command {
      * @param interpolator the interpolator used to compute intermediate points between path elements
      * @param systems the subsystems required by this command
      */
-    public Interpolate(List<T> path, double segmentTimeSeconds, Consumer<T> poseConsumer, PointInterpolator<T> interpolator, Subsystem... systems) {
+    public Interpolate(List<T> path, double segmentTimeSeconds, Consumer<T> poseConsumer, PointInterpolator<T> interpolator, Mechanism... systems) {
         this.path = path;
         this.segmentTime = segmentTimeSeconds;
         this.poseConsumer = poseConsumer;
         this.interpolator = interpolator;
 
-        super.addRequirements(systems);
+        requirements = Set.of(systems);
     }
 
     @Override
-    public void initialize() {
+    public String name() {
+        return "Interpolate";
+    }
+
+    @Override
+    public Set<Mechanism> requirements() {
+        return requirements;
+    }
+
+    @Override
+    public void run(Coroutine coroutine) {
         timer.reset();
         timer.start();
         currentSegment = 0;
         segmentStartTime = 0.0;
-    }
 
-    @Override
-    public void execute() {
-        if (currentSegment >= path.size() - 1)
-            return;
+        while (currentSegment >= path.size() - 1) {
+            if (currentSegment >= path.size() - 1)
+                return;
 
-        T start = path.get(currentSegment);
-        T end = path.get(currentSegment + 1);
+            T start = path.get(currentSegment);
+            T end = path.get(currentSegment + 1);
 
-        double elapsed = timer.get() - segmentStartTime;
-        double t = Math.min(elapsed / segmentTime, 1.0);
+            double elapsed = timer.get() - segmentStartTime;
+            double t = Math.min(elapsed / segmentTime, 1.0);
 
-        T interpolatedPose = this.interpolator.interpolate(start, end, t);
-        poseConsumer.accept(interpolatedPose);
+            T interpolatedPose = this.interpolator.interpolate(start, end, t);
+            poseConsumer.accept(interpolatedPose);
 
-        if (t >= 1.0) {
-            currentSegment++;
-            segmentStartTime = timer.get();
+            if (t >= 1.0) {
+                currentSegment++;
+                segmentStartTime = timer.get();
+            }
+
+            coroutine.yield();
         }
-    }
 
-    @Override
-    public boolean isFinished() {
-        return currentSegment >= path.size() - 1;
-    }
-
-    @Override
-    public void end(boolean interrupted) {
         timer.stop();
         T finalPose = path.get(path.size() - 1);
         poseConsumer.accept(finalPose);
