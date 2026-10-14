@@ -23,7 +23,7 @@ public class Hood extends R0Subsystem<HoodIO> {
      */
     private Hood(HoodIO io) {
         super(io);
-        Scheduler.getDefault().addPeriodic(this::updateInputs);
+        Scheduler.getDefault().addPeriodic(this::periodic);
     }
 
     /**
@@ -76,8 +76,7 @@ public class Hood extends R0Subsystem<HoodIO> {
      * @return A {@link Command} that stops the hood motor
      */
     public Command stop() {
-        // TODO: should this be a runRepeatedly()? It was a v2 run() which corresponds to a v3 runRepeatedly()
-        return run(coroutine -> io.stop())
+        return runRepeatedly(() -> io.stop())
             .named("Hood stop");
     }
 
@@ -100,7 +99,8 @@ public class Hood extends R0Subsystem<HoodIO> {
             .named("Hood increment pitch");
     }
 
-    public void updateInputs() {
+    @Override
+    public void periodic() {
         super.periodic();
 
         SmartDashboard.putNumber("Pitch", io.getPitch().in(Degrees));

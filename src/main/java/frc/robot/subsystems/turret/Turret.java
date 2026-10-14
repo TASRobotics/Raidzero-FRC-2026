@@ -70,7 +70,7 @@ public class Turret extends R0Subsystem<TurretIO> {
         kineticGoalSender = kineticTable.getStructTopic("kineticGoal", Pose2d.struct).publish();
         kineticTurretSender = kineticTable.getStructTopic("kineticTurret", Pose2d.struct).publish();
 
-        Scheduler.getDefault().addPeriodic(this::updateInputs);
+        Scheduler.getDefault().addPeriodic(this::periodic);
     }
 
     /**
@@ -127,7 +127,7 @@ public class Turret extends R0Subsystem<TurretIO> {
      * @return A {@link Command} to be scheduled and run
      */
     public Command stop() {
-        return run(coroutine -> io.stop())
+        return runRepeatedly(() -> io.stop())
             .named("Turret stop");
     }
 
@@ -233,7 +233,8 @@ public class Turret extends R0Subsystem<TurretIO> {
         return staticAimBot.turret();
     }
 
-    public void updateInputs() {
+    @Override
+    public void periodic() {
         // SmartDashboard.putNumber("Yaw", io.getYaw().in(Rotations));
         if (!goalPoseInitailized && RobotState.isDSAttached()) {
             boolean isRedAlliance = Util.isRedAlliance();
