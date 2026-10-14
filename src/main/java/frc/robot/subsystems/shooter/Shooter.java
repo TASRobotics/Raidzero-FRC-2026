@@ -6,8 +6,9 @@ import static org.wpilib.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.Utils;
 import org.wpilib.units.measure.AngularVelocity;
 import org.wpilib.smartdashboard.SmartDashboard;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.button.Trigger;
+import org.wpilib.command3.Command;
+import org.wpilib.command3.Scheduler;
+import org.wpilib.command3.Trigger;
 import frc.lib.R0Subsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.Flywheel;
 import frc.robot.subsystems.turret.Turret;
@@ -18,17 +19,28 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     private AngularVelocity velocityTarget = RotationsPerSecond.of(35);
 
     /**
+     * Constructs the {@link Shooter} subsystem
+     *
+     * @param io The {@link ShooterIO} implementation to use for this subsystem
+     */
+    private Shooter(ShooterIO io) {
+        super(io);
+        Scheduler.getDefault().addPeriodic(this::periodic);
+    }
+
+    /**
      * Runs the shooter at the necessary speed from the RPS interpolating table
      *
      * @return A {@link Command} that runs the shooter at the target speed
      */
     public Command shoot() {
-        return run(() -> {
+        return runRepeatedly(() -> {
             AngularVelocity target = RotationsPerSecond
                 .of(Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
 
             io.setVelocity(target);
-        });
+        })
+            .named("Shooter shoot");
     }
 
     /**
@@ -85,7 +97,8 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      *         velocity
      */
     public Command manualShoot() {
-        return run(() -> io.setVelocity(velocityTarget));
+        return runRepeatedly(() -> io.setVelocity(velocityTarget))
+            .named("Shooter manual shoot");
     }
 
     /**
@@ -96,7 +109,8 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      *         specified amount
      */
     public Command incrementVelocitySetpoint(AngularVelocity speed) {
-        return runOnce(() -> velocityTarget = velocityTarget.plus(speed));
+        return run(coroutine -> velocityTarget = velocityTarget.plus(speed))
+            .named("Shooter incremment velocity setpoint");
     }
 
     /**
@@ -107,7 +121,8 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      */
     public Command shoot(AngularVelocity speed) {
         this.velocityTarget = speed;
-        return run(() -> io.setVelocity(speed));
+        return runRepeatedly(() -> io.setVelocity(speed))
+            .named("Shooter shoot");
     }
 
     /**
@@ -118,7 +133,8 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      *         percentage
      */
     public Command setSpeed(double percent) {
-        return run(() -> io.setPercent(percent));
+        return runRepeatedly(() -> io.setPercent(percent))
+            .named("Shooter run speed");
     }
 
     /**
@@ -127,17 +143,10 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      * @return A {@link Command} that stops the shooter motor
      */
     public Command stop() {
-        return run(() -> io.stop());
+        return runRepeatedly(() -> io.stop())
+            .named("Shooter stop");
     }
 
-    /**
-     * Constructs the {@link Shooter} subsystem
-     *
-     * @param io The {@link ShooterIO} implementation to use for this subsystem
-     */
-    private Shooter(ShooterIO io) {
-        super(io);
-    }
 
     /**
      * Gets the {@link Shooter} subsystem instance
