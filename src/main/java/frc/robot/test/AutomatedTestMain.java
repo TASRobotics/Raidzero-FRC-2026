@@ -1,9 +1,9 @@
-package frc.robot.test;
+// package frc.robot.test;
 
-import org.wpilib.framework.RobotBase;
+// import org.wpilib.framework.RobotBase;
 
-public final class AutomatedTestMain {
-    public static void main(String[] args) {
-        RobotBase.startRobot(AutomatedTestRobot::getInstance);
-    }
-}
+// public final class AutomatedTestMain {
+//     public static void main(String[] args) {
+//         RobotBase.startRobot(AutomatedTestRobot::getInstance);
+//     }
+// }
