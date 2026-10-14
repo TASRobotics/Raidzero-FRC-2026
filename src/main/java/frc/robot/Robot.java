@@ -36,7 +36,6 @@ public class Robot extends TimedRobot {
         m_timeAndJoystickReplay.update();
         Scheduler.getDefault().run();
 
-        Superstructure.updateInputs();
         // SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
         // SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
         // Superstructure.getLimelight().loop();

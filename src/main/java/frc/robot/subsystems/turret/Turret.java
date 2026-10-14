@@ -18,6 +18,7 @@ import org.wpilib.driverstation.DriverStationErrors;
 import org.wpilib.driverstation.RobotState;
 import org.wpilib.smartdashboard.SmartDashboard;
 import org.wpilib.command3.Command;
+import org.wpilib.command3.Scheduler;
 import org.wpilib.command3.Trigger;
 import frc.lib.R0Subsystem;
 import frc.lib.Util;
@@ -49,6 +50,28 @@ public class Turret extends R0Subsystem<TurretIO> {
     private boolean isPirouetteing = false;
 
     private static boolean goalPoseInitailized = false;
+
+    /**
+     * Constructs a Turret instance with the given IO implementation
+     *
+     * @param io the IO implementation to use
+     */
+    private Turret(TurretIO io) {
+        super(io);
+
+        staticAimBot = new AimBot(new Pose2d(), new Pose2d(), new Pose2d());
+        kineticAimBot = new AimBot(new Pose2d(), new Pose2d(), new Pose2d());
+
+        staticTable = nt.getTable("Turret/Static");
+        kineticTable = nt.getTable("Turret/Kinetic");
+
+        staticGoalSender = staticTable.getStructTopic("staticGoal", Pose2d.struct).publish();
+        staticTurretSender = staticTable.getStructTopic("staticTurret", Pose2d.struct).publish();
+        kineticGoalSender = kineticTable.getStructTopic("kineticGoal", Pose2d.struct).publish();
+        kineticTurretSender = kineticTable.getStructTopic("kineticTurret", Pose2d.struct).publish();
+
+        Scheduler.getDefault().addPeriodic(this::updateInputs);
+    }
 
     /**
      * Moves the robot to the given setpoint
@@ -260,25 +283,6 @@ public class Turret extends R0Subsystem<TurretIO> {
         );
     }
 
-    /**
-     * Constructs a Turret instance with the given IO implementation
-     *
-     * @param io the IO implementation to use
-     */
-    private Turret(TurretIO io) {
-        super(io);
-
-        staticAimBot = new AimBot(new Pose2d(), new Pose2d(), new Pose2d());
-        kineticAimBot = new AimBot(new Pose2d(), new Pose2d(), new Pose2d());
-
-        staticTable = nt.getTable("Turret/Static");
-        kineticTable = nt.getTable("Turret/Kinetic");
-
-        staticGoalSender = staticTable.getStructTopic("staticGoal", Pose2d.struct).publish();
-        staticTurretSender = staticTable.getStructTopic("staticTurret", Pose2d.struct).publish();
-        kineticGoalSender = kineticTable.getStructTopic("kineticGoal", Pose2d.struct).publish();
-        kineticTurretSender = kineticTable.getStructTopic("kineticTurret", Pose2d.struct).publish();
-    }
 
     /**
      * Gets the singleton instance of the Turret subsystem, creating it if it

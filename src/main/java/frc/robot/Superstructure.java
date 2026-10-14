@@ -22,6 +22,7 @@ import org.wpilib.driverstation.RobotState;
 import org.wpilib.driverstation.GenericHID.RumbleType;
 import org.wpilib.command3.button.CommandNiDsXboxController;
 import org.wpilib.command3.Command;
+import org.wpilib.command3.Scheduler;
 import org.wpilib.command3.Trigger;
 import frc.lib.ElasticLib;
 import frc.lib.Util;
@@ -537,10 +538,6 @@ public class Superstructure {
      */
     public static Swerve getSwerve() {
         return swerve;
-    }
-
-    public static void updateInputs() {
-        turret.updateInputs();
     }
 
     /**

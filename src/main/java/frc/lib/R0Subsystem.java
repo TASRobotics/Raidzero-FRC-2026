@@ -14,8 +14,7 @@ public abstract class R0Subsystem<T extends SubsystemIO> extends Mechanism {
         this.io = io;
     }
 
-    // @Override
-    // public void periodic() {
-    //     // io.updateTelemetry();
-    // }
+    public void periodic() {
+        io.updateTelemetry();
+    }
 }

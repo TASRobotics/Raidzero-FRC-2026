@@ -7,6 +7,8 @@ import com.ctre.phoenix6.Utils;
 import org.wpilib.units.measure.Angle;
 import org.wpilib.smartdashboard.SmartDashboard;
 import org.wpilib.command3.Command;
+import org.wpilib.command3.Scheduler;
+
 import frc.lib.R0Subsystem;
 import frc.robot.subsystems.turret.TurretConstants.Kinetics;
 
@@ -15,12 +17,23 @@ public class Hood extends R0Subsystem<HoodIO> {
     private Angle angleTarget = Degrees.of(10);
 
     /**
+     * Constructs a new {@link Hood} subsystem
+     *
+     * @param io The {@link HoodIO} implementation to use for this subsystem
+     */
+    private Hood(HoodIO io) {
+        super(io);
+        Scheduler.getDefault().addPeriodic(this::updateInputs);
+    }
+
+    /**
      * Aims to the angle target
      *
      * @return A {@link Command} that aims to the angle target
      */
     public Command manualAim() {
-        return run(() -> io.moveTo(angleTarget));
+        return runRepeatedly(() -> io.moveTo(angleTarget))
+            .named("Hood manul aim");
     }
 
     /**
@@ -39,7 +52,8 @@ public class Hood extends R0Subsystem<HoodIO> {
      * @return A {@link Command} that aims to the specified angle
      */
     public Command aim(Angle angle) {
-        return run(() -> io.moveTo(angle));
+        return runRepeatedly(() -> io.moveTo(angle))
+            .named("Hood aim specified");
     }
 
     /**
@@ -48,13 +62,12 @@ public class Hood extends R0Subsystem<HoodIO> {
     * @return A {@link Command} that aims to the angle from the RPS interpolating table based on the distance to the hub
     */
     public Command aim() {
-        return run(() -> {
+        return runRepeatedly(() -> {
             Angle target = Degrees.of(Kinetics.PITCH_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
-
             SmartDashboard.putNumber("Target pitch", target.in(Degrees));
-
             io.moveTo(target);
-        });
+        })
+            .named("Hood auto aim");
     }
 
     /**
@@ -63,7 +76,9 @@ public class Hood extends R0Subsystem<HoodIO> {
      * @return A {@link Command} that stops the hood motor
      */
     public Command stop() {
-        return run(() -> io.stop());
+        // TODO: should this be a runRepeatedly()? It was a v2 run() which corresponds to a v3 runRepeatedly()
+        return run(coroutine -> io.stop())
+            .named("Hood stop");
     }
 
     /**
@@ -81,11 +96,11 @@ public class Hood extends R0Subsystem<HoodIO> {
      *         aiming
      */
     public Command incrementPitch(Angle angle) {
-        return runOnce(() -> angleTarget = angleTarget.plus(angle));
+        return run(coroutine -> angleTarget = angleTarget.plus(angle))
+            .named("Hood increment pitch");
     }
 
-    @Override
-    public void periodic() {
+    public void updateInputs() {
         super.periodic();
 
         SmartDashboard.putNumber("Pitch", io.getPitch().in(Degrees));
@@ -93,14 +108,7 @@ public class Hood extends R0Subsystem<HoodIO> {
         SmartDashboard.putNumber("LUT Target Pitch", angleTarget.in(Degrees));
     }
 
-    /**
-     * Constructs a new {@link Hood} subsystem
-     *
-     * @param io The {@link HoodIO} implementation to use for this subsystem
-     */
-    private Hood(HoodIO io) {
-        super(io);
-    }
+    
 
     /**
      * Gets the {@link Hood} subsystem instance
