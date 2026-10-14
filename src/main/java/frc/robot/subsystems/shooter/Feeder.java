@@ -17,7 +17,8 @@ public class Feeder extends R0Subsystem<FeederIO> {
      * @return A {@link Command} that runs the feeder
      */
     public Command go() {
-        return run(() -> io.go(ShooterConstants.Feeder.FEEDER_SPEED));
+        return runRepeatedly(() -> io.go(ShooterConstants.Feeder.FEEDER_SPEED))
+            .named("Feeder go");
     }
 
     /**
@@ -26,7 +27,8 @@ public class Feeder extends R0Subsystem<FeederIO> {
      * @return A {@link Command} that reverses the feeder
      */
     public Command reverse() {
-        return run(() -> io.go(ShooterConstants.Feeder.FEEDER_SPEED.times(-1.0)));
+        return runRepeatedly(() -> io.go(ShooterConstants.Feeder.FEEDER_SPEED.times(-1.0)))
+            .named("Feeder reverse");
     }
 
     /**
@@ -48,7 +50,8 @@ public class Feeder extends R0Subsystem<FeederIO> {
      * @return A {@link Command} that stops the feeder
      */
     public Command stop() {
-        return run(() -> io.stop());
+        return run(coroutine -> io.stop())
+            .named("Feeder stop");
     }
 
     /**
