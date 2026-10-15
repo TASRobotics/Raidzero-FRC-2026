@@ -11,6 +11,7 @@ import com.ctre.phoenix6.SignalLogger;
 import org.wpilib.framework.TimedRobot;
 import org.wpilib.command3.Command;
 import org.wpilib.command3.Scheduler;
+import frc.lib.LimelightState;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -38,12 +39,12 @@ public class Robot extends TimedRobot {
 
         // SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
         // SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
-        // Superstructure.getLimelight().loop();
+        Superstructure.getLimelight().loop();
     }
 
     @Override
     public void disabledInit() {
-        // Superstructure.getLimelight().setImuMode(IMU_MODE.EXTERNAL_SEED);
+        Superstructure.getLimelight().setImuMode(LimelightState.IMU_MODE.EXTERNAL_SEED);
     }
 
     @Override
@@ -66,7 +67,7 @@ public class Robot extends TimedRobot {
 
         // alreadyEnabled = true;
         // Elastic.initAuton();
-        // Superstructure.getLimelight().setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
+        Superstructure.getLimelight().setImuMode(LimelightState.IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
         // Superstructure.getSwerve().seedFieldCentric(
         //     Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
         //         .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
