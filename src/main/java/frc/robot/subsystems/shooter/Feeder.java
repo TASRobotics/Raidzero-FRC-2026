@@ -5,6 +5,7 @@ import static org.wpilib.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.Utils;
 import org.wpilib.smartdashboard.SmartDashboard;
 import org.wpilib.command3.Command;
+import org.wpilib.command3.Scheduler;
 import org.wpilib.command3.Trigger;
 import frc.lib.R0Subsystem;
 
@@ -50,7 +51,7 @@ public class Feeder extends R0Subsystem<FeederIO> {
      * @return A {@link Command} that stops the feeder
      */
     public Command stop() {
-        return run(coroutine -> io.stop())
+        return runRepeatedly(() -> io.stop())
             .named("Feeder stop");
     }
 
@@ -75,6 +76,7 @@ public class Feeder extends R0Subsystem<FeederIO> {
      */
     private Feeder(FeederIO io) {
         super(io);
+        Scheduler.getDefault().addPeriodic(this::periodic);
     }
 
     /**
