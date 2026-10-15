@@ -1,4 +1,5 @@
-// FIXME: Swerve needs to be migrated to Commands v3
+// FIXME: Swerve needs to be regenerated
+// Right now, a lot of methods are commented out or return empty commands
 
 package frc.robot.subsystems.drive;
 
