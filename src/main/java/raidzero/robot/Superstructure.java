@@ -12,7 +12,6 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -27,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.ElasticLib;
 import raidzero.lib.ElasticLib.Notification;
 import raidzero.lib.ElasticLib.NotificationLevel;
-import raidzero.lib.LimelightState.IMU_MODE;
 import raidzero.lib.Util;
 import raidzero.robot.commands.Aim;
 import raidzero.robot.commands.StaticAim;
@@ -202,22 +200,14 @@ public class Superstructure {
         driver.x().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
 
         driver.start().and(driver.back()).onTrue(Commands.runOnce(() -> {
-            limelight.setUseMt2(false);
-            limelight.setImuMode(IMU_MODE.EXTERNAL_SEED);
+            limelight.beginHeadingReset();
             ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - DR"));
         })
             .andThen(
                 new WaitCommand(1)
                     .alongWith(swerve.stop())
             )
-            .andThen(Commands.runOnce(() -> {
-                limelight.setUseMt2(true);
-                swerve.seedFieldCentric(
-                    Rotation2d.fromDegrees(limelight.getAverageHeading())
-                        .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
-                );
-                limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
-            }))
+            .andThen(Commands.runOnce(() -> limelight.finishHeadingReset()))
         );
 
         // operator.b().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
@@ -261,17 +251,9 @@ public class Superstructure {
         );
 
         operator.leftStick().onTrue(Commands.runOnce(() -> {
-            limelight.setUseMt2(false);
-            limelight.setImuMode(IMU_MODE.EXTERNAL_SEED);
+            limelight.beginHeadingReset();
             ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - OP"));
-        })).onFalse(Commands.runOnce(() -> {
-            limelight.setUseMt2(true);
-            swerve.seedFieldCentric(
-                Rotation2d.fromDegrees(limelight.getAverageHeading())
-                    .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
-            );
-            limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
-        }));
+        })).onFalse(Commands.runOnce(() -> limelight.finishHeadingReset()));
 
         operator.leftStick().and(operator.rightStick())
             .onTrue(Commands.runOnce(() -> limelight.resetSeed()))
@@ -289,17 +271,9 @@ public class Superstructure {
      */
     public static void applyDebugBindings() {
         driver.start().onTrue(Commands.runOnce(() -> {
-            limelight.setUseMt2(false);
-            limelight.setImuMode(IMU_MODE.EXTERNAL_SEED);
+            limelight.beginHeadingReset();
             ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - DR"));
-        })).onFalse(Commands.runOnce(() -> {
-            limelight.setUseMt2(true);
-            swerve.seedFieldCentric(
-                Rotation2d.fromDegrees(limelight.getAverageHeading())
-                    .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
-            );
-            limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
-        }));
+        })).onFalse(Commands.runOnce(() -> limelight.finishHeadingReset()));
 
         driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
         driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));

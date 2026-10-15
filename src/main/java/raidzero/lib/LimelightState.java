@@ -1,15 +1,19 @@
 package raidzero.lib;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.function.Supplier;
+import raidzero.robot.subsystems.drive.LimelightConstants.Estimator;
+import raidzero.robot.subsystems.drive.LimelightConstants.EstimatorConfig;
 import raidzero.robot.subsystems.drive.TunerConstants;
 
 public class LimelightState {
@@ -135,46 +139,11 @@ public class LimelightState {
     /**
      * Updates the limelight state
      *
+     * @param config    The {@link EstimatorConfig} that picks the pose estimate and how it is accepted and weighted
      * @param ignoreAll Whether to ignore all measurements
-     * @param useMt2    Whether to use the MetaTag2 pose estimation method
+     * @param robotPose The current robot pose
      */
-    public void update(boolean ignoreAll, boolean useMt2, Pose2d robotPose) {
-        update(ignoreAll, 0.5, 0.5, Units.degreesToRadians(10), useMt2, robotPose);
-    }
-
-    /**
-     * Updates the limelight state
-     *
-     * @param ignoreAll Whether to ignore all measurements
-     * @param stdevX    The standard deviation in the X direction in meters
-     * @param stdevY    The standard deviation in the Y direction in meters
-     * @param useMt2    Whether to use the MetaTag2 pose estimation method
-     */
-    public void update(boolean ignoreAll, double stdevX, double stdevY, boolean useMt2, Pose2d robotPose) {
-        update(ignoreAll, stdevX, stdevY, Units.degreesToRadians(10), useMt2, robotPose);
-    }
-
-    /**
-     * Updates the limelight state
-     *
-     * @param ignoreAll Whether to ignore all measurements
-     * @param stdevRot  The standard deviation for rotations in radians
-     * @param useMt2    Whether to use the MetaTag2 pose estimation method
-     */
-    public void update(boolean ignoreAll, double stdevRot, boolean useMt2, Pose2d robotPose) {
-        update(ignoreAll, 0.5, 0.5, stdevRot, useMt2, robotPose);
-    }
-
-    /**
-     * Updates the limelight state
-     *
-     * @param ignoreAll Whether to ignore all measurements
-     * @param stdevX    The standard deviation in the X direction in meters
-     * @param stdevY    The standard deviation in the Y direction in meters
-     * @param stdevRot  The standard deviation for rotations in radians
-     * @param useMt2    Whether to use the MetaTag2 pose estimation method
-     */
-    public void update(boolean ignoreAll, double stdevX, double stdevY, double stdevRot, boolean useMt2, Pose2d robotPose) {
+    public void update(EstimatorConfig config, boolean ignoreAll, Pose2d robotPose) {
         if (pipeline != PIPELINE.TAG) {
             return;
         }
@@ -189,25 +158,31 @@ public class LimelightState {
             0
         );
 
-        currEstimate = useMt2 ? LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName) :
+        currEstimate = config.estimator() == Estimator.MT2 ? LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName) :
             LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
 
         imuData = LimelightHelpers.getIMUData(limelightName);
 
         if (currEstimate != null && currEstimate.pose != null) {
-            ignore = checkIgnore(robotPose);
+            ignore = currEstimate.tagCount < config.minTags() || (config.filter() && checkIgnore(robotPose));
 
             if (!ignore && !ignoreAll) {
                 lastValidPose = Timer.getTimestamp();
 
                 ntPublisher.set(currEstimate.pose);
 
+                Matrix<N3, N1> stdDevs = VecBuilder.fill(config.xyStdDev(), config.xyStdDev(), config.rotStdDev());
+
+                if (config.scaleStdDevs()) {
+                    stdDevs = stdDevs
+                        .div(Math.max(LimelightHelpers.getTA(limelightName), 0.05))
+                        .times(hoodAngleSupplier != null && hoodAngleSupplier.get() > 20 ? 1.0 : 1.75);
+                }
+
                 addVisionMeasurementConsumer.add(
                     currEstimate.pose,
                     currEstimate.timestampSeconds,
-                    VecBuilder.fill(stdevX, stdevY, stdevRot)
-                        .div(Math.max(LimelightHelpers.getTA(limelightName), 0.05))
-                        .times(hoodAngleSupplier != null && hoodAngleSupplier.get() > 20 ? 1.0 : 1.75)
+                    stdDevs
                 );
             }
 

@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,7 +13,12 @@ import java.util.Map;
 import raidzero.lib.ElasticLib;
 import raidzero.lib.ElasticLib.Notification;
 import raidzero.lib.ElasticLib.NotificationLevel;
+import raidzero.lib.LimelightHelpers;
 import raidzero.lib.LimelightState;
+import raidzero.lib.Util;
+import raidzero.robot.subsystems.drive.LimelightConstants.EstimatorConfig;
+import raidzero.robot.subsystems.drive.LimelightConstants.HeadingReset;
+import raidzero.robot.subsystems.drive.LimelightConstants.Profile;
 import raidzero.robot.subsystems.turret.Hood;
 
 public class Limelight {
@@ -34,7 +40,11 @@ public class Limelight {
     private Timer seedInterval;
     private Timer seedTimer;
 
-    private boolean useMt2 = true;
+    private boolean headingResetActive = false;
+    private LimelightState.IMU_MODE lastImuMode = null;
+
+    private final SendableChooser<Profile> profileChooser = new SendableChooser<>();
+    private final SendableChooser<Integer> imuModeChooser = new SendableChooser<>();
 
     private Swerve swerve = Swerve.system();
     private Hood hood = Hood.system();
@@ -91,6 +101,23 @@ public class Limelight {
 
         limes = limelights.values();
 
+        for (LimelightState state : limes) {
+            LimelightHelpers.SetIMUAssistAlpha(state.getName(), LimelightConstants.IMU_ASSIST_ALPHA);
+        }
+
+        for (Profile profile : LimelightConstants.PROFILES) {
+            profileChooser.addOption(profile.name(), profile);
+        }
+        profileChooser.setDefaultOption(LimelightConstants.DEFAULT_PROFILE.name(), LimelightConstants.DEFAULT_PROFILE);
+
+        imuModeChooser.setDefaultOption("Profile default", -1);
+        for (LimelightState.IMU_MODE mode : LimelightState.IMU_MODE.values()) {
+            imuModeChooser.addOption(mode.ordinal() + ": " + mode.name(), mode.ordinal());
+        }
+
+        SmartDashboard.putData("Limelight/Profile", profileChooser);
+        SmartDashboard.putData("Limelight/MT2 IMU Mode", imuModeChooser);
+
         seedInterval = new Timer();
         seedInterval.start();
         seedTimer = new Timer();
@@ -117,8 +144,44 @@ public class Limelight {
         ignoreAllLimes = !ignoreAllLimes;
     }
 
-    public void setUseMt2(boolean useMt2) {
-        this.useMt2 = useMt2;
+    /**
+     * Seeds the heading at enable if the selected profile calls for it
+     */
+    public void onEnable() {
+        if (profileChooser.getSelected().headingReset() == HeadingReset.MT1_AVERAGE) {
+            seedFromAverageHeading();
+        }
+    }
+
+    /**
+     * Starts a heading reset, which runs the disabled config until {@link #finishHeadingReset()} is called
+     */
+    public void beginHeadingReset() {
+        headingResetActive = profileChooser.getSelected().headingReset() != HeadingReset.DRIVER_FORWARD;
+    }
+
+    /**
+     * Finishes a heading reset according to the selected profile's {@link HeadingReset}
+     */
+    public void finishHeadingReset() {
+        headingResetActive = false;
+
+        switch (profileChooser.getSelected().headingReset()) {
+            case MT1_AVERAGE -> seedFromAverageHeading();
+            case DRIVER_FORWARD -> swerve.seedFieldCentric();
+            case MT1_FUSE -> {
+            }
+        }
+    }
+
+    /**
+     * Seeds the swerve heading from the average MT1 heading of all limelights
+     */
+    private void seedFromAverageHeading() {
+        swerve.seedFieldCentric(
+            Rotation2d.fromDegrees(getAverageHeading())
+                .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
+        );
     }
 
     /**
@@ -196,14 +259,23 @@ public class Limelight {
      * The main loop of the Limelight odometry thread
      */
     public void loop() {
-        if (Math.abs(swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720) {
-            ignoreAllLimes = true;
-        } else {
-            ignoreAllLimes = false;
+        Profile profile = profileChooser.getSelected();
+        boolean useDisabledConfig = DriverStation.isDisabled() || headingResetActive;
+        EstimatorConfig config = useDisabledConfig ? profile.disabled() : profile.enabled();
+
+        int imuModeOverride = imuModeChooser.getSelected();
+        LimelightState.IMU_MODE imuMode = useDisabledConfig ? profile.disabledImuMode() :
+            imuModeOverride >= 0 ? LimelightState.IMU_MODE.values()[imuModeOverride] : profile.enabledImuMode();
+
+        if (imuMode != lastImuMode) {
+            setImuMode(imuMode);
+            lastImuMode = imuMode;
         }
 
+        ignoreAllLimes = config.filter() && Math.abs(swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720;
+
         for (LimelightState state : limes) {
-            state.update(ignoreAllLimes, !DriverStation.isDisabled() && useMt2, swerve.getState().Pose);
+            state.update(config, ignoreAllLimes, swerve.getState().Pose);
         }
 
         // if (!seededPigeon && seedTimer.get() < 15 && seedInterval.hasElapsed(0.25)) {
@@ -238,6 +310,9 @@ public class Limelight {
         // SmartDashboard.putNumber("seedinterval", seedInterval.get());
         // SmartDashboard.putNumber("seedtimer", seedTimer.get());
         SmartDashboard.putBoolean("Ignore Limes", ignoreAllLimes);
+        SmartDashboard.putString("Limelight/Active Profile", profile.name());
+        SmartDashboard.putString("Limelight/Estimator", config.estimator().name());
+        SmartDashboard.putString("Limelight/IMU Mode", imuMode.ordinal() + ": " + imuMode.name());
     }
 
     /**
