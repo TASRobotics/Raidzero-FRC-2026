@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import org.littletonrobotics.junction.Logger;
 import raidzero.lib.ElasticLib;
 import raidzero.lib.ElasticLib.Notification;
 import raidzero.lib.ElasticLib.NotificationLevel;
@@ -313,6 +314,12 @@ public class Limelight {
         SmartDashboard.putString("Limelight/Active Profile", profile.name());
         SmartDashboard.putString("Limelight/Estimator", config.estimator().name());
         SmartDashboard.putString("Limelight/IMU Mode", imuMode.ordinal() + ": " + imuMode.name());
+
+        Logger.recordOutput("Limelight/Profile", profile.name());
+        Logger.recordOutput("Limelight/Estimator", config.estimator());
+        Logger.recordOutput("Limelight/IMUMode", imuMode);
+        Logger.recordOutput("Limelight/HeadingResetActive", headingResetActive);
+        Logger.recordOutput("Limelight/IgnoreAll", ignoreAllLimes);
     }
 
     /**

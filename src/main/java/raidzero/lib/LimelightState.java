@@ -11,7 +11,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.Arrays;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 import raidzero.robot.subsystems.drive.LimelightConstants.Estimator;
 import raidzero.robot.subsystems.drive.LimelightConstants.EstimatorConfig;
 import raidzero.robot.subsystems.drive.TunerConstants;
@@ -43,6 +45,10 @@ public class LimelightState {
 
     private static final double RECOVERY_FACTOR = 1.25;
 
+    private static final Pose2d[] NO_POSES = new Pose2d[0];
+
+    private final String logKey;
+
     private boolean seededRobot = false;
 
     /**
@@ -56,6 +62,7 @@ public class LimelightState {
      */
     public LimelightState(String limelightName, PIPELINE pipeline, Supplier<Double> robotYawSupplier, Supplier<Double> robotYawRateSupplier, VisionMeasurementConsumer addVisionMeasurementConsumer) {
         this.limelightName = limelightName;
+        this.logKey = "Limelight/" + limelightName.split("-")[1] + "/";
         setPipeline(pipeline);
         this.ntPublisher = NetworkTableInstance.getDefault()
             .getStructTopic(limelightName.split("-")[1] + "NT", Pose2d.struct)
@@ -158,10 +165,16 @@ public class LimelightState {
             0
         );
 
-        currEstimate = config.estimator() == Estimator.MT2 ? LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName) :
-            LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+        LimelightHelpers.PoseEstimate mt1Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+        LimelightHelpers.PoseEstimate mt2Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+
+        currEstimate = config.estimator() == Estimator.MT2 ? mt2Estimate : mt1Estimate;
 
         imuData = LimelightHelpers.getIMUData(limelightName);
+
+        Pose2d[] acceptedPose = NO_POSES;
+        Pose2d[] rejectedPose = NO_POSES;
+        double[] acceptedStdDevs = new double[0];
 
         if (currEstimate != null && currEstimate.pose != null) {
             ignore = currEstimate.tagCount < config.minTags() || (config.filter() && checkIgnore(robotPose));
@@ -184,6 +197,11 @@ public class LimelightState {
                     currEstimate.timestampSeconds,
                     stdDevs
                 );
+
+                acceptedPose = new Pose2d[] { currEstimate.pose };
+                acceptedStdDevs = stdDevs.getData();
+            } else if (currEstimate.tagCount > 0) {
+                rejectedPose = new Pose2d[] { currEstimate.pose };
             }
 
             prevEstimate = currEstimate;
@@ -199,6 +217,30 @@ public class LimelightState {
         }
 
         SmartDashboard.putBoolean(limelightName.split("-")[1] + "Pose", !ignore && !ignoreAll);
+
+        Logger.recordOutput(logKey + "MT1Pose", posesWithTags(mt1Estimate));
+        Logger.recordOutput(logKey + "MT2Pose", posesWithTags(mt2Estimate));
+        Logger.recordOutput(logKey + "AcceptedPose", acceptedPose);
+        Logger.recordOutput(logKey + "RejectedPose", rejectedPose);
+        Logger.recordOutput(logKey + "AcceptedStdDevs", acceptedStdDevs);
+        Logger.recordOutput(logKey + "TagCount", currEstimate != null ? currEstimate.tagCount : 0);
+        Logger.recordOutput(logKey + "AvgTagDist", currEstimate != null ? currEstimate.avgTagDist : 0.0);
+        Logger.recordOutput(
+            logKey + "TagIds",
+            currEstimate != null && currEstimate.rawFiducials != null ?
+                Arrays.stream(currEstimate.rawFiducials).mapToInt(fiducial -> fiducial.id).toArray() :
+                new int[0]
+        );
+    }
+
+    /**
+     * Wraps an estimate's pose in an array so it can be logged and disappears from the field view when no tags are seen
+     *
+     * @param estimate The {@link LimelightHelpers.PoseEstimate} to wrap
+     * @return An array holding the estimate's pose, or an empty array if the estimate is null or sees no tags
+     */
+    private static Pose2d[] posesWithTags(LimelightHelpers.PoseEstimate estimate) {
+        return estimate != null && estimate.pose != null && estimate.tagCount > 0 ? new Pose2d[] { estimate.pose } : NO_POSES;
     }
 
     /**

@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -33,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 import raidzero.lib.Util;
 import raidzero.robot.subsystems.drive.TunerConstants.TunerSwerveDrivetrain;
 
@@ -251,8 +253,16 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             });
         }
 
-        botpose.set(this.getState().Pose);
-        field.setRobotPose(this.getState().Pose);
+        SwerveDriveState state = this.getState();
+
+        botpose.set(state.Pose);
+        field.setRobotPose(state.Pose);
+
+        Logger.recordOutput("Swerve/EstimatedPose", state.Pose);
+        Logger.recordOutput("Swerve/Speeds", state.Speeds);
+        Logger.recordOutput("Swerve/ModuleStates", state.ModuleStates);
+        Logger.recordOutput("Swerve/ModuleTargets", state.ModuleTargets);
+        Logger.recordOutput("Swerve/RawHeading", state.RawHeading);
     }
 
     private void startSimThread() {
