@@ -193,13 +193,13 @@ public class Superstructure {
         driver.povLeft().whileTrue(swerve.applyRequest(() -> povStrafe.apply(270)));
         driver.pov(315).whileTrue(swerve.applyRequest(() -> povStrafe.apply(315)));
 
-        driver.rightBumper().whileTrue(swerve.applyRequest(() -> brake));
-        driver.rightBumper().whileTrue(hood.aim());
-        driver.b().whileTrue(hood.aim(Degrees.of(10)));
+        // driver.rightBumper().whileTrue(swerve.applyRequest(() -> brake));
+        // driver.rightBumper().whileTrue(hood.aim());
+        // driver.b().whileTrue(hood.aim(Degrees.of(10)));
 
-        driver.x().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
+        // driver.x().onTrue(Commands.runOnce(() -> turret.setStartupAngle()));
 
-        driver.start().and(driver.back()).onTrue(Commands.runOnce(() -> {
+        driver.b().onTrue(Commands.runOnce(() -> {
             limelight.beginHeadingReset();
             ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - DR"));
         })
@@ -211,59 +211,59 @@ public class Superstructure {
         );
 
         // operator.b().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
-        operator.b().whileTrue(spindexer.go());
+        // operator.b().whileTrue(spindexer.go());
         // operator.b().whileTrue(intake.go());
         // operator.b().and(operator.rightBumper().negate()).whileTrue(Commands.waitSeconds(1.4).andThen(extender.autoAgitate().repeatedly()));
 
         // operator.x().and(operator.rightTrigger().negate()).whileTrue(hood.aim());
-        operator.x().whileTrue(spindexer.reverse());
+        // operator.x().whileTrue(spindexer.reverse());
         // operator.x().whileTrue(intake.go());
         // operator.x().and(operator.rightBumper().negate()).whileTrue(Commands.waitSeconds(1.4).andThen(extender.autoAgitate().repeatedly()));
 
-        operator.x().or(operator.b()).and(operator.y()).and(operator.rightTrigger().negate()).whileTrue(hood.aim());
+        // operator.x().or(operator.b()).and(operator.y()).and(operator.rightTrigger().negate()).whileTrue(hood.aim());
 
-        operator.y().whileTrue(shooter.shoot());
-        operator.y().whileTrue(feeder.go());
+        // operator.y().whileTrue(shooter.shoot());
+        // operator.y().whileTrue(feeder.go());
 
-        operator.rightBumper().whileTrue(intake.go());
-        operator.leftBumper().whileTrue(intake.reverse());
+        // operator.rightBumper().whileTrue(intake.go());
+        // operator.leftBumper().whileTrue(intake.reverse());
 
-        operator.back().onTrue(extender.retract()).onFalse(extender.extend());
+        // operator.back().onTrue(extender.retract()).onFalse(extender.extend());
 
-        operator.rightTrigger().and(passingArea1)
-            .whileTrue(
-                new StaticAim(
-                    Rotations.of(
-                        Util.isBlueAlliance() ? 0.45 : 0.05
-                    )
-                )
-                    .alongWith(hood.aim(Pitch.PASSING_ANGLE))
-                    .alongWith(shooter.shoot().alongWith(feeder.go()))
-            );
+        // operator.rightTrigger().and(passingArea1)
+        // .whileTrue(
+        // new StaticAim(
+        // Rotations.of(
+        // Util.isBlueAlliance() ? 0.45 : 0.05
+        // )
+        // )
+        // .alongWith(hood.aim(Pitch.PASSING_ANGLE))
+        // .alongWith(shooter.shoot().alongWith(feeder.go()))
+        // );
 
-        operator.rightTrigger().and(passingArea2).whileTrue(
-            new StaticAim(
-                Rotations.of(
-                    Util.isBlueAlliance() ? 0.55 : 0.95
-                )
-            )
-                .alongWith(hood.aim(Pitch.PASSING_ANGLE)).alongWith(shooter.shoot().alongWith(feeder.go()))
-        );
+        // operator.rightTrigger().and(passingArea2).whileTrue(
+        // new StaticAim(
+        // Rotations.of(
+        // Util.isBlueAlliance() ? 0.55 : 0.95
+        // )
+        // )
+        // .alongWith(hood.aim(Pitch.PASSING_ANGLE)).alongWith(shooter.shoot().alongWith(feeder.go()))
+        // );
 
-        operator.leftStick().onTrue(Commands.runOnce(() -> {
-            limelight.beginHeadingReset();
-            ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - OP"));
-        })).onFalse(Commands.runOnce(() -> limelight.finishHeadingReset()));
+        // operator.leftStick().onTrue(Commands.runOnce(() -> {
+        // limelight.beginHeadingReset();
+        // ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - OP"));
+        // })).onFalse(Commands.runOnce(() -> limelight.finishHeadingReset()));
 
-        operator.leftStick().and(operator.rightStick())
-            .onTrue(Commands.runOnce(() -> limelight.resetSeed()))
-            .onFalse(Commands.runOnce(() -> limelight.setManualSeed(true)));
+        // operator.leftStick().and(operator.rightStick())
+        // .onTrue(Commands.runOnce(() -> limelight.resetSeed()))
+        // .onFalse(Commands.runOnce(() -> limelight.setManualSeed(true)));
 
-        operator.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
-        operator.povLeft().whileTrue(autos.agitateTeleop().repeatedly());
+        // operator.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
+        // operator.povLeft().whileTrue(autos.agitateTeleop().repeatedly());
 
-        operator.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
-        operator.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
+        // operator.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
+        // operator.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
     }
 
     /**
