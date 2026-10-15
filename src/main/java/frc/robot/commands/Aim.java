@@ -39,6 +39,7 @@ public class Aim implements Command {
                 .getRotations();
 
             turret.moveTo(Rotations.of(robotRelativeTurretSetpoint));
+            coroutine.yield();
         }
     }
 
