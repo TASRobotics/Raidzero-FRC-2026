@@ -3,7 +3,10 @@ package frc.robot.subsystems.intake;
 import static org.wpilib.units.Units.Rotations;
 
 import org.wpilib.command3.Command;
+import org.wpilib.command3.Coroutine;
 import org.wpilib.command3.Trigger;
+import org.wpilib.system.Timer;
+
 import frc.lib.R0Subsystem;
 
 public class Extender extends R0Subsystem<ExtenderIO> {
@@ -15,7 +18,8 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      * @return A {@link Command} that extends the intake
      */
     public Command extend() {
-        return run(() -> io.extend());
+        return runRepeatedly(() -> io.extend())
+            .named("Extender extend");
     }
 
     /**
@@ -24,7 +28,8 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      * @return A {@link Command} that retracts the intake
      */
     public Command retract() {
-        return run(() -> io.retract());
+        return runRepeatedly(() -> io.retract())
+            .named("Extender retract");
     }
 
     /**
@@ -33,9 +38,19 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      * @return A {@link Command} that agitates the intake
      */
     public Command agitate() {
-        return run(() -> io.agitateL1())
-            .withTimeout(0.2)
-            .andThen(run(() -> io.retract()));
+        return run(coroutine -> {
+            Timer timer = new Timer();
+            timer.start();
+            while (timer.get() < 0.1) {
+                io.agitateL1();
+                coroutine.yield();
+            }
+
+            while (true) {
+                io.retract();
+                coroutine.yield();
+            }
+        }).named("Intake agitate");
     }
 
     /**
@@ -46,29 +61,15 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      * @return A {@link Command} that agitates the intake during auto
      */
     public Command autoAgitate() {
-        return run(() -> io.agitateL1())
-            .withTimeout(0.5)
-            .andThen(
-                run(() -> io.extend())
-                    .withTimeout(0.5)
-            )
-            .andThen(
-                run(() -> io.agitateL2())
-                    .withTimeout(0.5)
-            )
-            .andThen(
-                run(() -> io.agitateL1())
-                    .withTimeout(0.5)
-            )
-            .andThen(
-                run(() -> io.agitateL3())
-                    .withTimeout(0.5)
-            )
-            .andThen(
-                run(() -> io.agitateL2())
-                    .withTimeout(0.5)
-            )
-            .andThen(run(() -> io.extend()).withTimeout(0.3));
+        return run(coroutine -> {
+            step(coroutine, io::agitateL1, 0.5);
+            step(coroutine, io::extend,    0.5);
+            step(coroutine, io::agitateL2, 0.5);
+            step(coroutine, io::agitateL1, 0.5);
+            step(coroutine, io::agitateL3, 0.5);
+            step(coroutine, io::agitateL2, 0.5);
+            step(coroutine, io::extend,    0.3);
+        }).named("Intake agitate");
     }
 
     /**
@@ -76,7 +77,8 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      * @return A {@link Command} that moves the extender to the level 1 agitate setpoint
      */
     public Command agitateL1Setpoint() {
-        return run(() -> io.agitateL1());
+        return runRepeatedly(() -> io.agitateL1())
+            .named("Extender agitate L1");
     }
 
     /**
@@ -84,7 +86,8 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      * @return A {@link Command} that moves the extender to the level 2 agitate setpoint
      */
     public Command agitateL2Setpoint() {
-        return run(() -> io.agitateL2());
+        return runRepeatedly(() -> io.agitateL2())
+            .named("Extender agitate L2");
     }
 
     /**
@@ -92,7 +95,8 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      * @return A {@link Command} that moves the extender to the level 3 agitate setpoint
      */
     public Command agitateL3Setpoint() {
-        return run(() -> io.agitateL3());
+        return runRepeatedly(() -> io.agitateL3())
+            .named("Extender agitate L3");
     }
 
     /**
@@ -101,7 +105,8 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      * @return A {@link Command} that stops the extender
      */
     public Command stop() {
-        return run(() -> io.stop());
+        return runRepeatedly(() -> io.stop())
+            .named("Extender stop");
     }
 
     /**
@@ -126,7 +131,8 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      * @return A {@link Command} that increases the agitate level of the extender
      */
     public Command increaseAgitate() {
-        return runOnce(() -> io.increaseAgitate());
+        return run(coroutine -> io.increaseAgitate())
+            .named("Extender increase agitate");
     }
 
     /**
@@ -135,7 +141,8 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      * @return A {@link Command} that decreases the agitate level of the extender
      */
     public Command decreaseAgitate() {
-        return runOnce(() -> io.decreaseAgitate());
+        return run(coroutine -> io.decreaseAgitate())
+            .named("Extender decrease agitate");
     }
 
     /**
@@ -144,7 +151,8 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      * @return A {@link Command} that zeros the encoder position
      */
     public Command zeroEncoderPosition() {
-        return runOnce(() -> io.overrideEncoderPosition(Rotations.of(0.0)));
+        return run(coroutine -> io.overrideEncoderPosition(Rotations.of(0.0)))
+            .named("extender zero encoder");
     }
 
     /**
@@ -169,5 +177,14 @@ public class Extender extends R0Subsystem<ExtenderIO> {
                 system = new Extender(new ExtenderIO.Real());
         }
         return system;
+    }
+
+    private void step(Coroutine coroutine, Runnable action, double seconds) {
+        Timer timer = new Timer();
+        timer.start();
+        while (timer.get() < seconds) {
+            action.run();
+            coroutine.yield();
+        }
     }
 }

@@ -1,7 +1,10 @@
 package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.Utils;
-import org.wpilib.command2.Command;
+
+import static org.wpilib.units.Units.Seconds;
+
+import org.wpilib.command3.Command;
 import frc.lib.R0Subsystem;
 
 public class Intake extends R0Subsystem<IntakeIO> {
@@ -13,7 +16,8 @@ public class Intake extends R0Subsystem<IntakeIO> {
      * @return A {@link Command} that runs the intake
      */
     public Command go() {
-        return run(() -> io.go(IntakeConstants.Intake.INTAKE_SPEED));
+        return runRepeatedly(() -> io.go(IntakeConstants.Intake.INTAKE_SPEED))
+            .named("Intake go");
     }
 
     /**
@@ -22,7 +26,8 @@ public class Intake extends R0Subsystem<IntakeIO> {
      * @return A {@link Command} that reverses the intake
      */
     public Command reverse() {
-        return run(() -> io.go(IntakeConstants.Intake.INTAKE_SPEED.times(-1.0)));
+        return runRepeatedly(() -> io.go(IntakeConstants.Intake.INTAKE_SPEED.times(-1.0)))
+            .named("Intake reverse");
     }
 
     /**
@@ -31,7 +36,8 @@ public class Intake extends R0Subsystem<IntakeIO> {
      * @return A {@link Command} that stops the intake
      */
     public Command stop() {
-        return run(() -> io.stop());
+        return runRepeatedly(() -> io.stop())
+            .named("Intake stop");
     }
 
     /**
@@ -41,8 +47,9 @@ public class Intake extends R0Subsystem<IntakeIO> {
      * @return A {@link Command} that runs the intake at the anti-jam speed
      */
     public Command antiJam() {
-        return run(() -> io.go(IntakeConstants.Intake.INTAKE_SPEED))
-            .withTimeout(0.1);
+        return runRepeatedly(() -> io.go(IntakeConstants.Intake.INTAKE_SPEED))
+            .named("Intake antijam")
+            .withTimeout(Seconds.of(0.1));
     }
 
     /**
