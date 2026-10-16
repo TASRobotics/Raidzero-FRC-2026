@@ -146,7 +146,9 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      */
     public static Shooter system() {
         if (system == null) {
-            if (Utils.isSimulation()) {
+            if (!Flywheel.ENABLED) {
+                system = new Shooter(new ShooterIO.Disabled());
+            } else if (Utils.isSimulation()) {
                 system = new Shooter(new ShooterIO.Sim());
             } else {
                 system = new Shooter(new ShooterIO.Real());

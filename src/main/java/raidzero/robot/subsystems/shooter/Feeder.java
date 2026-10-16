@@ -3,7 +3,6 @@ package raidzero.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.R0Subsystem;
@@ -52,20 +51,6 @@ public class Feeder extends R0Subsystem<FeederIO> {
     }
 
     /**
-     * Returns whether a ball is currently detected by the CANrange sensor
-     *
-     * @return true if a ball has been detected within the detection window
-     */
-
-    public Trigger ballDetected() {
-        return new Trigger(() -> io.ballDetected());
-    }
-
-    public boolean isBallDetected() {
-        return io.ballDetected();
-    }
-
-    /**
      * Constructs the {@link Feeder} subsystem
      *
      * @param io The {@link FeederIO} implementation to use for this subsystem
@@ -94,7 +79,6 @@ public class Feeder extends R0Subsystem<FeederIO> {
         super.periodic();
         // SmartDashboard.putNumber("Indexer Velocity",
         // io.getVelocity().in(RotationsPerSecond));
-        SmartDashboard.putBoolean("Ball detected", io.ballDetected());
     }
 
 }

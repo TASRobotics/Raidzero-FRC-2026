@@ -8,7 +8,6 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
-import com.ctre.phoenix6.signals.UpdateModeValue;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -16,6 +15,9 @@ import raidzero.lib.wrappers.motors.LazyCTRE.MotorTelemetry;
 
 public final class ShooterConstants {
     public static final class Flywheel {
+        /** Whether the flywheel motors exist; when false, the shooter does nothing and creates no motors */
+        public static final boolean ENABLED = false; // leader (ID 10) is broken
+
         public static final int MOTOR_ID = 10;
         public static final String CAN_BUS_NAME = "canDoAttitude";
 
@@ -85,24 +87,6 @@ public final class ShooterConstants {
         public static final AngularVelocity VELOCITY_TOLERANCE = RotationsPerSecond.of(5.0);
 
         public static MotorTelemetry TELEMETRY = new MotorTelemetry();
-    }
-
-    public static final class Canrange {
-
-        public static final int CAN_ID = 1;
-        public static final String CAN_BUS_NAME = "canDoAttitude";
-
-        public static final double FOV_CENTER_X = 0;
-        public static final double FOV_CENTER_Y = 0;
-        public static final double FOV_RANGE_X = 6.75;
-        public static final double FOV_RANGE_Y = 6.75;
-
-        public static final double PROXIMITY_THRESHOLD = 0.13;
-
-        public static final UpdateModeValue UPDATE_MODE = UpdateModeValue.LongRangeUserFreq;
-        public static final double UPDATE_FREQUENCY = 50;
-
-        public static final double DETECTION_WINDOW = 0.25;
     }
 
 }

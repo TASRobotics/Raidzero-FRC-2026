@@ -1,6 +1,7 @@
 package raidzero.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import raidzero.lib.SubsystemIO;
@@ -90,5 +91,27 @@ public interface ShooterIO extends SubsystemIO {
     }
 
     public class Sim extends Real {}
+
+    /**
+     * Creates no motors and ignores every request, for running without the flywheel
+     */
+    public class Disabled implements ShooterIO {
+        @Override
+        public void setVelocity(AngularVelocity velocity) {}
+
+        @Override
+        public void setPercent(double speedPercent) {}
+
+        @Override
+        public void stop() {}
+
+        @Override
+        public AngularVelocity getVelocity() {
+            return RotationsPerSecond.of(0);
+        }
+
+        @Override
+        public void updateTelemetry() {}
+    }
 
 }

@@ -3,14 +3,10 @@ package raidzero.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.Amps;
 
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj.Timer;
 import raidzero.lib.SubsystemIO;
-import raidzero.lib.wrappers.motors.LazyRange;
-import raidzero.lib.wrappers.motors.LazyRangeBuilder;
 import raidzero.lib.wrappers.motors.LazyTalon;
 import raidzero.lib.wrappers.motors.LazyTalonBuilder;
 import raidzero.robot.Superstructure;
-import raidzero.robot.subsystems.shooter.ShooterConstants.Canrange;
 import raidzero.robot.subsystems.shooter.ShooterConstants.Feeder;
 
 public interface FeederIO extends SubsystemIO {
@@ -28,13 +24,6 @@ public interface FeederIO extends SubsystemIO {
     void stop();
 
     /**
-     * Checks if the feeder has detected an object within the proximity threshold
-     *
-     * @return true if an object is detected, false otherwise
-     */
-    boolean ballDetected();
-
-    /**
      * Gets the angular velocity of the feeder motors
      *
      * @return The angular velocity of the feeder motors as an
@@ -44,8 +33,6 @@ public interface FeederIO extends SubsystemIO {
 
     public class Real implements FeederIO {
         LazyTalon motor;
-        LazyRange canrange;
-        double lastDetectedTime = Double.NEGATIVE_INFINITY;
 
         /**
          * Constructs the real instance of the Feeder IO
@@ -68,30 +55,12 @@ public interface FeederIO extends SubsystemIO {
                     Feeder.ACCELERATION
                 )
                 .build();
-
-            canrange = new LazyRangeBuilder(Canrange.CAN_ID, Superstructure.canDoAttitude)
-                .withFovParams(
-                    Canrange.FOV_CENTER_X, Canrange.FOV_CENTER_Y, Canrange.FOV_RANGE_X,
-                    Canrange.FOV_RANGE_Y
-                )
-                .withProximityParams(Canrange.PROXIMITY_THRESHOLD)
-                .withToFParams(Canrange.UPDATE_MODE, Canrange.UPDATE_FREQUENCY)
-                .build();
             // Superstructure.orchestra.addInstrument(this.motor.getMotor());
         }
 
         @Override
         public void go(AngularVelocity velocity) {
             motor.setPIDVelocityTarget(velocity, 0);
-        }
-
-        @Override
-        public boolean ballDetected() {
-            if (canrange.isDetected()) {
-                lastDetectedTime = Timer.getTimestamp();
-            }
-
-            return (Timer.getTimestamp() - lastDetectedTime) <= Canrange.DETECTION_WINDOW;
         }
 
         @Override
