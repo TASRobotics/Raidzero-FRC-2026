@@ -154,6 +154,74 @@
               "period": 0.06,
               "sort_options": false
             }
+          },
+          {
+            "title": "LL Profile",
+            "x": 0.0,
+            "y": 512.0,
+            "width": 320.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Limelight/Profile",
+              "period": 0.06,
+              "sort_options": false
+            }
+          },
+          {
+            "title": "LL MT2 IMU Mode",
+            "x": 320.0,
+            "y": 512.0,
+            "width": 320.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Limelight/MT2 IMU Mode",
+              "period": 0.06,
+              "sort_options": false
+            }
+          },
+          {
+            "title": "LL Active Profile",
+            "x": 0.0,
+            "y": 640.0,
+            "width": 320.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Limelight/Active Profile",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "LL Estimator",
+            "x": 320.0,
+            "y": 640.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Limelight/Estimator",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "LL IMU Mode",
+            "x": 448.0,
+            "y": 640.0,
+            "width": 320.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Limelight/IMU Mode",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
           }
         ]
       }
@@ -491,6 +559,34 @@
               "show_pointer": true,
               "show_ticks": true
             }
+          },
+          {
+            "title": "LL Active Profile",
+            "x": 1312.0,
+            "y": 416.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Limelight/Active Profile",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "LL IMU Mode",
+            "x": 1312.0,
+            "y": 544.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Limelight/IMU Mode",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
           }
         ]
       }
@@ -717,6 +813,34 @@
               "wrap_value": true,
               "show_pointer": true,
               "show_ticks": true
+            }
+          },
+          {
+            "title": "LL Active Profile",
+            "x": 1312.0,
+            "y": 416.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Limelight/Active Profile",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "LL IMU Mode",
+            "x": 1312.0,
+            "y": 544.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Limelight/IMU Mode",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
             }
           }
         ]
