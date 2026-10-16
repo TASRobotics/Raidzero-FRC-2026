@@ -18,6 +18,9 @@ import raidzero.lib.wrappers.motors.LazyCTRE.MotorTelemetry;
 
 public final class IntakeConstants {
     public static final class Intake {
+        /** Whether the intake motors exist; when false, the intake does nothing and creates no motors */
+        public static final boolean ENABLED = false; // not on the robot right now
+
         public static final int MOTOR_ID = 18;
         public static final String CAN_BUS_NAME = "canDoAttitude";
 
@@ -63,6 +66,9 @@ public final class IntakeConstants {
     }
 
     public static final class Extender {
+        /** Whether the extender motors exist; when false, the extender does nothing and creates no motors */
+        public static final boolean ENABLED = false; // not on the robot right now
+
         public static final int MOTOR_ID = 16;
         public static final String CAN_BUS_NAME = "canDoAttitude";
 

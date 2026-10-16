@@ -163,7 +163,9 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      */
     public static Extender system() {
         if (system == null) {
-            if (com.ctre.phoenix6.Utils.isSimulation())
+            if (!IntakeConstants.Extender.ENABLED)
+                system = new Extender(new ExtenderIO.Disabled());
+            else if (com.ctre.phoenix6.Utils.isSimulation())
                 system = new Extender(new ExtenderIO.Sim());
             else
                 system = new Extender(new ExtenderIO.Real());

@@ -61,7 +61,9 @@ public class Intake extends R0Subsystem<IntakeIO> {
      */
     public static Intake system() {
         if (system == null) {
-            if (Utils.isSimulation())
+            if (!IntakeConstants.Intake.ENABLED)
+                system = new Intake(new IntakeIO.Disabled());
+            else if (Utils.isSimulation())
                 system = new Intake(new IntakeIO.Sim());
             else
                 system = new Intake(new IntakeIO.Real());

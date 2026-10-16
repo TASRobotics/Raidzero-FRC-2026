@@ -1,6 +1,7 @@
 package raidzero.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static raidzero.robot.subsystems.intake.IntakeConstants.Intake;
 
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -88,4 +89,23 @@ public interface IntakeIO extends SubsystemIO {
     }
 
     public class Sim extends Real {}
+
+    /**
+     * Creates no motors and ignores every request, for running without the intake
+     */
+    public class Disabled implements IntakeIO {
+        @Override
+        public void go(AngularVelocity velocity) {}
+
+        @Override
+        public void stop() {}
+
+        @Override
+        public AngularVelocity getVelocity() {
+            return RotationsPerSecond.of(0);
+        }
+
+        @Override
+        public void updateTelemetry() {}
+    }
 }

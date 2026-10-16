@@ -169,4 +169,47 @@ public interface ExtenderIO extends SubsystemIO {
     }
 
     public class Sim extends Real {}
+
+    /**
+     * Creates no motors and ignores every request, for running without the extender
+     */
+    public class Disabled implements ExtenderIO {
+        @Override
+        public void extend() {}
+
+        @Override
+        public void retract() {}
+
+        @Override
+        public void agitateL1() {}
+
+        @Override
+        public void agitateL2() {}
+
+        @Override
+        public void agitateL3() {}
+
+        @Override
+        public void stop() {}
+
+        @Override
+        public void setStartupAngle() {}
+
+        @Override
+        public void increaseAgitate() {}
+
+        @Override
+        public void decreaseAgitate() {}
+
+        @Override
+        public void overrideEncoderPosition(Angle position) {}
+
+        @Override
+        public boolean isExtended() {
+            return false;
+        }
+
+        @Override
+        public void updateTelemetry() {}
+    }
 }
