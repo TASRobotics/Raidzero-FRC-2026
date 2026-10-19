@@ -171,7 +171,8 @@ public class Superstructure {
 
         hood.setDefaultCommand(hood.aim(Degrees.of(10)));
         // hood.setDefaultCommand(hood.manualAim());
-        turret.setDefaultCommand(new Aim());
+        // turret.setDefaultCommand(new Aim());
+        turret.setDefaultCommand(turret.stop());
 
         shooter.setDefaultCommand(shooter.stop());
         feeder.setDefaultCommand(feeder.stop());
