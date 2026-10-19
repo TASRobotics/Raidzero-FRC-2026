@@ -48,16 +48,28 @@ public final class LimelightConstants {
      */
     public record Profile(String name, EstimatorConfig disabled, EstimatorConfig enabled, IMU_MODE disabledImuMode, IMU_MODE enabledImuMode, HeadingReset headingReset) {}
 
+    /** Whether accepted vision measurements update the swerve pose while disabled */
+    public static final boolean UPDATE_SWERVE_POSE_DISABLED = true;
+
+    /** Whether accepted vision measurements update the swerve pose while enabled; when false the pose is pure odometry while enabled */
+    public static final boolean UPDATE_SWERVE_POSE_ENABLED = false;
+
+    /** Minimum tags MT1 needs to be logged as a raw pose or used for a heading reset */
+    public static final int MT1_MIN_TAGS = 2;
+
+    /** MT1 standard deviation (meters and radians) while disabled; tiny so the pose snaps onto MT1 before enabling */
+    public static final double DISABLED_MT1_STD_DEV = 0.01;
+
     /** Rotation standard deviation that effectively never fuses the vision heading */
     public static final double IGNORE_ROTATION = 9999999;
 
     /** Complementary filter alpha for IMU modes 3 and 4 (the Limelight default is 0.001) */
     public static final double IMU_ASSIST_ALPHA = 0.001;
 
-    /** MT1 + filters while disabled, MT2 + filters while enabled, heading seeded from the average MT1 heading */
+    /** Fully trusted MT1 (2+ tags) + filters while disabled, MT2 + filters while enabled, heading seeded from the average MT1 heading */
     public static final Profile CURRENT = new Profile(
         "1: Current",
-        new EstimatorConfig(Estimator.MT1, 0, 0.5, Units.degreesToRadians(10), true, true),
+        new EstimatorConfig(Estimator.MT1, MT1_MIN_TAGS, DISABLED_MT1_STD_DEV, DISABLED_MT1_STD_DEV, false, true),
         new EstimatorConfig(Estimator.MT2, 0, 0.5, Units.degreesToRadians(10), true, true),
         IMU_MODE.EXTERNAL_SEED,
         IMU_MODE.INTERNAL_EXTERNAL_ASSIST,
@@ -74,10 +86,10 @@ public final class LimelightConstants {
         HeadingReset.DRIVER_FORWARD
     );
 
-    /** MT1 X/Y and heading with 2+ tags while disabled, unfiltered MT2 X/Y while enabled */
+    /** Fully trusted MT1 X/Y and heading with 2+ tags while disabled, unfiltered MT2 X/Y while enabled */
     public static final Profile MT1_MT2 = new Profile(
         "3: MT1 (2+ tags) + MT2",
-        new EstimatorConfig(Estimator.MT1, 2, 0.5, Units.degreesToRadians(10), true, false),
+        new EstimatorConfig(Estimator.MT1, MT1_MIN_TAGS, DISABLED_MT1_STD_DEV, DISABLED_MT1_STD_DEV, false, false),
         new EstimatorConfig(Estimator.MT2, 1, 0.5, IGNORE_ROTATION, true, false),
         IMU_MODE.EXTERNAL_SEED,
         IMU_MODE.EXTERNAL_ONLY,

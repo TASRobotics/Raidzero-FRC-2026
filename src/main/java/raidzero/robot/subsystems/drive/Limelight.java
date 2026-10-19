@@ -179,8 +179,15 @@ public class Limelight {
      * Seeds the swerve heading from the average MT1 heading of all limelights
      */
     private void seedFromAverageHeading() {
+        double averageHeading = getAverageHeading();
+
+        if (Double.isNaN(averageHeading)) {
+            ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "NO MT1 HEADING - NOT SEEDED"));
+            return;
+        }
+
         swerve.seedFieldCentric(
-            Rotation2d.fromDegrees(getAverageHeading())
+            Rotation2d.fromDegrees(averageHeading)
                 .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
         );
     }
@@ -275,9 +282,14 @@ public class Limelight {
 
         ignoreAllLimes = config.filter() && Math.abs(swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720;
 
+        boolean updateSwervePose = DriverStation.isDisabled() ? LimelightConstants.UPDATE_SWERVE_POSE_DISABLED :
+            LimelightConstants.UPDATE_SWERVE_POSE_ENABLED;
+
         for (LimelightState state : limes) {
-            state.update(config, ignoreAllLimes, swerve.getState().Pose);
+            state.update(config, ignoreAllLimes, updateSwervePose, swerve.getState().Pose);
         }
+
+        Logger.recordOutput("Limelight/UpdatingSwervePose", updateSwervePose);
 
         // if (!seededPigeon && seedTimer.get() < 15 && seedInterval.hasElapsed(0.25)) {
         // Rotation2d rotation;

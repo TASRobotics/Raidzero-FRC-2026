@@ -7,13 +7,16 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTableValue;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Arrays;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
+import raidzero.robot.subsystems.drive.LimelightConstants;
 import raidzero.robot.subsystems.drive.LimelightConstants.Estimator;
 import raidzero.robot.subsystems.drive.LimelightConstants.EstimatorConfig;
 import raidzero.robot.subsystems.drive.TunerConstants;
@@ -48,6 +51,7 @@ public class LimelightState {
     private static final Pose2d[] NO_POSES = new Pose2d[0];
 
     private final String logKey;
+    private final NetworkTable limelightTable;
 
     private boolean seededRobot = false;
 
@@ -63,6 +67,7 @@ public class LimelightState {
     public LimelightState(String limelightName, PIPELINE pipeline, Supplier<Double> robotYawSupplier, Supplier<Double> robotYawRateSupplier, VisionMeasurementConsumer addVisionMeasurementConsumer) {
         this.limelightName = limelightName;
         this.logKey = "Limelight/" + limelightName.split("-")[1] + "/";
+        this.limelightTable = NetworkTableInstance.getDefault().getTable(limelightName);
         setPipeline(pipeline);
         this.ntPublisher = NetworkTableInstance.getDefault()
             .getStructTopic(limelightName.split("-")[1] + "NT", Pose2d.struct)
@@ -147,10 +152,13 @@ public class LimelightState {
      * Updates the limelight state
      *
      * @param config    The {@link EstimatorConfig} that picks the pose estimate and how it is accepted and weighted
-     * @param ignoreAll Whether to ignore all measurements
-     * @param robotPose The current robot pose
+     * @param ignoreAll        Whether to ignore all measurements
+     * @param updateSwervePose Whether accepted measurements are sent to the swerve pose estimator, or only logged
+     * @param robotPose        The current robot pose
      */
-    public void update(EstimatorConfig config, boolean ignoreAll, Pose2d robotPose) {
+    public void update(EstimatorConfig config, boolean ignoreAll, boolean updateSwervePose, Pose2d robotPose) {
+        logRawNetworkTables();
+
         if (pipeline != PIPELINE.TAG) {
             return;
         }
@@ -192,11 +200,13 @@ public class LimelightState {
                         .times(hoodAngleSupplier != null && hoodAngleSupplier.get() > 20 ? 1.0 : 1.75);
                 }
 
-                addVisionMeasurementConsumer.add(
-                    currEstimate.pose,
-                    currEstimate.timestampSeconds,
-                    stdDevs
-                );
+                if (updateSwervePose) {
+                    addVisionMeasurementConsumer.add(
+                        currEstimate.pose,
+                        currEstimate.timestampSeconds,
+                        stdDevs
+                    );
+                }
 
                 acceptedPose = new Pose2d[] { currEstimate.pose };
                 acceptedStdDevs = stdDevs.getData();
@@ -218,8 +228,8 @@ public class LimelightState {
 
         SmartDashboard.putBoolean(limelightName.split("-")[1] + "Pose", !ignore && !ignoreAll);
 
-        Logger.recordOutput(logKey + "MT1Pose", posesWithTags(mt1Estimate));
-        Logger.recordOutput(logKey + "MT2Pose", posesWithTags(mt2Estimate));
+        Logger.recordOutput(logKey + "MT1Pose", posesWithTags(mt1Estimate, LimelightConstants.MT1_MIN_TAGS));
+        Logger.recordOutput(logKey + "MT2Pose", posesWithTags(mt2Estimate, 1));
         Logger.recordOutput(logKey + "AcceptedPose", acceptedPose);
         Logger.recordOutput(logKey + "RejectedPose", rejectedPose);
         Logger.recordOutput(logKey + "AcceptedStdDevs", acceptedStdDevs);
@@ -234,23 +244,57 @@ public class LimelightState {
     }
 
     /**
-     * Wraps an estimate's pose in an array so it can be logged and disappears from the field view when no tags are seen
-     *
-     * @param estimate The {@link LimelightHelpers.PoseEstimate} to wrap
-     * @return An array holding the estimate's pose, or an empty array if the estimate is null or sees no tags
+     * Logs every value in the limelight's NetworkTables table, except the large JSON results dump
      */
-    private static Pose2d[] posesWithTags(LimelightHelpers.PoseEstimate estimate) {
-        return estimate != null && estimate.pose != null && estimate.tagCount > 0 ? new Pose2d[] { estimate.pose } : NO_POSES;
+    private void logRawNetworkTables() {
+        for (String key : limelightTable.getKeys()) {
+            if (key.equals("json")) {
+                continue;
+            }
+
+            NetworkTableValue value = limelightTable.getEntry(key).getValue();
+            String logPath = logKey + "NT/" + key;
+
+            switch (value.getType()) {
+                case kBoolean -> Logger.recordOutput(logPath, value.getBoolean());
+                case kDouble -> Logger.recordOutput(logPath, value.getDouble());
+                case kFloat -> Logger.recordOutput(logPath, value.getFloat());
+                case kInteger -> Logger.recordOutput(logPath, value.getInteger());
+                case kString -> Logger.recordOutput(logPath, value.getString());
+                case kRaw -> Logger.recordOutput(logPath, value.getRaw());
+                case kBooleanArray -> Logger.recordOutput(logPath, value.getBooleanArray());
+                case kDoubleArray -> Logger.recordOutput(logPath, value.getDoubleArray());
+                case kFloatArray -> Logger.recordOutput(logPath, value.getFloatArray());
+                case kIntegerArray -> Logger.recordOutput(logPath, value.getIntegerArray());
+                case kStringArray -> Logger.recordOutput(logPath, value.getStringArray());
+                default -> {
+                }
+            }
+        }
     }
 
     /**
-     * Returns the yaw of the current pose estimate if not null
+     * Wraps an estimate's pose in an array so it can be logged and disappears from the field view when too few tags are seen
      *
-     * @return A {@link Rotation2d} of the current pose estimate, or null if the estimate is null or being ignored
+     * @param estimate The {@link LimelightHelpers.PoseEstimate} to wrap
+     * @param minTags  The minimum number of tags the estimate needs
+     * @return An array holding the estimate's pose, or an empty array if the estimate is null or sees fewer than minTags tags
+     */
+    private static Pose2d[] posesWithTags(LimelightHelpers.PoseEstimate estimate, int minTags) {
+        return estimate != null && estimate.pose != null && estimate.tagCount >= Math.max(minTags, 1) ? new Pose2d[] { estimate.pose } :
+            NO_POSES;
+    }
+
+    /**
+     * Returns the MT1 yaw if MT1 sees enough tags
+     *
+     * @return A {@link Rotation2d} of the MT1 estimate, or null if the estimate is null, being ignored, or sees fewer than
+     *         {@link LimelightConstants#MT1_MIN_TAGS} tags
      */
     public Rotation2d getYaw() {
         LimelightHelpers.PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
-        return (ignore || estimate == null || currEstimate == null || currEstimate.pose == null) ? null : estimate.pose.getRotation();
+        return (ignore || estimate == null || estimate.tagCount < LimelightConstants.MT1_MIN_TAGS || currEstimate == null ||
+            currEstimate.pose == null) ? null : estimate.pose.getRotation();
     }
 
     /**
