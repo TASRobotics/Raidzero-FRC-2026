@@ -1,6 +1,7 @@
 package raidzero.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import raidzero.lib.SubsystemIO;
@@ -81,4 +82,23 @@ public interface FeederIO extends SubsystemIO {
     }
 
     public class Sim extends Real {}
+
+    /**
+     * Creates no motor and ignores every request, for running without the feeder
+     */
+    public class Disabled implements FeederIO {
+        @Override
+        public void go(AngularVelocity velocity) {}
+
+        @Override
+        public void stop() {}
+
+        @Override
+        public AngularVelocity getVelocity() {
+            return RotationsPerSecond.of(0);
+        }
+
+        @Override
+        public void updateTelemetry() {}
+    }
 }

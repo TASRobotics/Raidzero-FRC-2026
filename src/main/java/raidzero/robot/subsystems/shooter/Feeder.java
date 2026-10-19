@@ -66,7 +66,9 @@ public class Feeder extends R0Subsystem<FeederIO> {
      */
     public static Feeder system() {
         if (system == null) {
-            if (Utils.isSimulation())
+            if (!ShooterConstants.Feeder.ENABLED)
+                system = new Feeder(new FeederIO.Disabled());
+            else if (Utils.isSimulation())
                 system = new Feeder(new FeederIO.Sim());
             else
                 system = new Feeder(new FeederIO.Real());

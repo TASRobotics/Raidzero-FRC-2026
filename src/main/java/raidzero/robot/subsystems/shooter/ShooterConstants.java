@@ -56,6 +56,9 @@ public final class ShooterConstants {
     }
 
     public static final class Feeder {
+        /** Whether the feeder motor exists; when false, the feeder does nothing and creates no motor */
+        public static final boolean ENABLED = false; // not on the robot right now
+
         public static final int MOTOR_ID = 12;
         public static final String CAN_BUS_NAME = "canDoAttitude";
 
