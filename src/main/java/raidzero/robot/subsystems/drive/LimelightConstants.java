@@ -66,30 +66,35 @@ public final class LimelightConstants {
     /** Complementary filter alpha for IMU modes 3 and 4 (the Limelight default is 0.001) */
     public static final double IMU_ASSIST_ALPHA = 0.001;
 
-    /** Fully trusted MT1 (2+ tags) + filters while disabled, MT2 + filters while enabled, heading seeded from the average MT1 heading */
+    /** Every profile's disabled config: fully trusted MT1 pose and heading with 2+ tags, with the sanity filters on */
+    public static final EstimatorConfig DISABLED_MT1 = new EstimatorConfig(
+        Estimator.MT1, MT1_MIN_TAGS, DISABLED_MT1_STD_DEV, DISABLED_MT1_STD_DEV, false, true
+    );
+
+    /** Fully trusted MT1 (2+ tags) while disabled, MT2 + filters while enabled, heading seeded from the average MT1 heading */
     public static final Profile CURRENT = new Profile(
         "1: Current",
-        new EstimatorConfig(Estimator.MT1, MT1_MIN_TAGS, DISABLED_MT1_STD_DEV, DISABLED_MT1_STD_DEV, false, true),
+        DISABLED_MT1,
         new EstimatorConfig(Estimator.MT2, 0, 0.5, Units.degreesToRadians(10), true, true),
         IMU_MODE.EXTERNAL_SEED,
         IMU_MODE.INTERNAL_EXTERNAL_ASSIST,
         HeadingReset.MT1_AVERAGE
     );
 
-    /** Heading from the Pigeon only, unfiltered MT2 X/Y while disabled and enabled */
+    /** Fully trusted MT1 (2+ tags) while disabled, then Pigeon heading with unfiltered MT2 X/Y while enabled */
     public static final Profile PIGEON_MT2 = new Profile(
         "2: Pigeon + MT2",
-        new EstimatorConfig(Estimator.MT2, 1, 0.5, IGNORE_ROTATION, true, false),
+        DISABLED_MT1,
         new EstimatorConfig(Estimator.MT2, 1, 0.5, IGNORE_ROTATION, true, false),
         IMU_MODE.EXTERNAL_SEED,
         IMU_MODE.EXTERNAL_ONLY,
         HeadingReset.DRIVER_FORWARD
     );
 
-    /** Fully trusted MT1 X/Y and heading with 2+ tags while disabled, unfiltered MT2 X/Y while enabled */
+    /** Fully trusted MT1 (2+ tags) while disabled, unfiltered MT2 X/Y while enabled */
     public static final Profile MT1_MT2 = new Profile(
         "3: MT1 (2+ tags) + MT2",
-        new EstimatorConfig(Estimator.MT1, MT1_MIN_TAGS, DISABLED_MT1_STD_DEV, DISABLED_MT1_STD_DEV, false, false),
+        DISABLED_MT1,
         new EstimatorConfig(Estimator.MT2, 1, 0.5, IGNORE_ROTATION, true, false),
         IMU_MODE.EXTERNAL_SEED,
         IMU_MODE.EXTERNAL_ONLY,
