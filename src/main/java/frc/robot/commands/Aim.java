@@ -43,8 +43,8 @@ public class Aim implements Command {
         }
     }
 
-    @Override
-    public void onCancel() {
-        turret.stop();
-    }
+    // @Override
+    // public void onCancel() {
+    //     turret.stop();
+    // }
 }

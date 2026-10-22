@@ -47,8 +47,8 @@ public class StaticAim implements Command {
         }
     }
 
-    @Override
-    public void onCancel() {
-        turret.stop();
-    }
+    // @Override
+    // public void onCancel() {
+    //     turret.stop();
+    // }
 }
