@@ -28,9 +28,9 @@ public class Robot extends LoggedRobot {
     private boolean alreadyEnabled;
 
     /* log and replay timestamp and joystick data */
-    private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
-        .withTimestampReplay()
-        .withJoystickReplay();
+    // private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
+    //     .withTimestampReplay()
+    //     .withJoystickReplay();
 
     public Robot() {
         Logger.recordMetadata("ProjectName", "Raidzero-FRC-2026");
@@ -53,7 +53,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void robotPeriodic() {
-        m_timeAndJoystickReplay.update();
+        // m_timeAndJoystickReplay.update();
         CommandScheduler.getInstance().run();
 
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
@@ -101,7 +101,7 @@ public class Robot extends LoggedRobot {
 
         alreadyEnabled = true;
         Elastic.initTeleop();
-        Superstructure.getHood().setDefaultCommand(Superstructure.getHood().aim(Degrees.of(10)));
+        // Superstructure.getHood().setDefaultCommand(Superstructure.getHood().aim(Degrees.of(10)));
         Superstructure.getLimelight().onEnable();
     }
 
