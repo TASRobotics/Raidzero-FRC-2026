@@ -148,7 +148,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         }
 
         configureAutoBuilder();
-        SmartDashboard.putData("Field", field);
+        // SmartDashboard.putData("Field", field);
     }
 
     /**
@@ -171,7 +171,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         }
 
         configureAutoBuilder();
-        SmartDashboard.putData("Field", field);
+        // SmartDashboard.putData("Field", field);
     }
 
     /**
@@ -200,7 +200,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         }
 
         configureAutoBuilder();
-        SmartDashboard.putData("Field", field);
+        // SmartDashboard.putData("Field", field);
     }
 
     /**

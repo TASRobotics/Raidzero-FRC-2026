@@ -116,8 +116,8 @@ public class Limelight {
             imuModeChooser.addOption(mode.ordinal() + ": " + mode.name(), mode.ordinal());
         }
 
-        SmartDashboard.putData("Limelight/Profile", profileChooser);
-        SmartDashboard.putData("Limelight/MT2 IMU Mode", imuModeChooser);
+        // SmartDashboard.putData("Limelight/Profile", profileChooser);
+        // SmartDashboard.putData("Limelight/MT2 IMU Mode", imuModeChooser);
 
         seedInterval = new Timer();
         seedInterval.start();
@@ -322,10 +322,10 @@ public class Limelight {
         // SmartDashboard.putNumber("HeadingReadingsSize", headingReadings.size());
         // SmartDashboard.putNumber("seedinterval", seedInterval.get());
         // SmartDashboard.putNumber("seedtimer", seedTimer.get());
-        SmartDashboard.putBoolean("Ignore Limes", ignoreAllLimes);
-        SmartDashboard.putString("Limelight/Active Profile", profile.name());
-        SmartDashboard.putString("Limelight/Estimator", config.estimator().name());
-        SmartDashboard.putString("Limelight/IMU Mode", imuMode.ordinal() + ": " + imuMode.name());
+        // SmartDashboard.putBoolean("Ignore Limes", ignoreAllLimes);
+        // SmartDashboard.putString("Limelight/Active Profile", profile.name());
+        // SmartDashboard.putString("Limelight/Estimator", config.estimator().name());
+        // SmartDashboard.putString("Limelight/IMU Mode", imuMode.ordinal() + ": " + imuMode.name());
 
         Logger.recordOutput("Limelight/Profile", profile.name());
         Logger.recordOutput("Limelight/Estimator", config.estimator());

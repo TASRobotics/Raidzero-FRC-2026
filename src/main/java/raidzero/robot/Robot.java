@@ -29,8 +29,8 @@ public class Robot extends LoggedRobot {
 
     /* log and replay timestamp and joystick data */
     // private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
-    //     .withTimestampReplay()
-    //     .withJoystickReplay();
+    // .withTimestampReplay()
+    // .withJoystickReplay();
 
     public Robot() {
         Logger.recordMetadata("ProjectName", "Raidzero-FRC-2026");
@@ -56,9 +56,9 @@ public class Robot extends LoggedRobot {
         // m_timeAndJoystickReplay.update();
         CommandScheduler.getInstance().run();
 
-        SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
-        SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
-        Superstructure.getLimelight().loop();
+        // SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+        // SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
+        // Superstructure.getLimelight().loop();
     }
 
     @Override

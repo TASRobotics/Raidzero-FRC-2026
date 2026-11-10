@@ -220,13 +220,13 @@ public class LimelightState {
         }
 
         if (imuData != null) {
-            SmartDashboard.putNumber(
-                limelightName.split("-")[1] + "RYaw",
-                imuData.robotYaw
-            );
+            // SmartDashboard.putNumber(
+            // limelightName.split("-")[1] + "RYaw",
+            // imuData.robotYaw
+            // );
         }
 
-        SmartDashboard.putBoolean(limelightName.split("-")[1] + "Pose", !ignore && !ignoreAll);
+        // SmartDashboard.putBoolean(limelightName.split("-")[1] + "Pose", !ignore && !ignoreAll);
 
         Logger.recordOutput(logKey + "MT1Pose", posesWithTags(mt1Estimate, LimelightConstants.MT1_MIN_TAGS));
         Logger.recordOutput(logKey + "MT2Pose", posesWithTags(mt2Estimate, 1));

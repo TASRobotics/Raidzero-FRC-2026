@@ -92,7 +92,7 @@ public class Superstructure {
 
     // TODO: Scale zone based on ChassisSpeeds (x vel)
     private static Trigger apprTrench = new Trigger(() -> {
-        Pose2d pose = new Pose2d();//turret.getTurretPose();
+        Pose2d pose = new Pose2d();// turret.getTurretPose();
 
         boolean posX = ((pose.getX() > 3.5 && pose.getX() < 4.6) || (pose.getX() > 10.4 && pose.getX() < 11.9));
         boolean negX = ((pose.getX() > 4.6 && pose.getX() < 6.1) || (pose.getX() > 11.9 && pose.getX() < 12.7));
@@ -366,16 +366,16 @@ public class Superstructure {
         // );
 
         // inAutonShootingZone.whileTrue(
-        //     shooter.shoot()
-        //         .until(() -> !inAutonShootingZone.getAsBoolean() && !spindexer.stopped().getAsBoolean())
+        // shooter.shoot()
+        // .until(() -> !inAutonShootingZone.getAsBoolean() && !spindexer.stopped().getAsBoolean())
         // );
 
         // inAutonReverseZone.whileTrue(
-        //     spindexer.reverse()
+        // spindexer.reverse()
         // );
 
         // inAutonShootingZone.whileTrue(
-        //     feeder.go().alongWith(spindexer.antiJamAuto())
+        // feeder.go().alongWith(spindexer.antiJamAuto())
         // );
 
         // inAutonShootingZone.whileTrue(hood.aim());
@@ -383,108 +383,108 @@ public class Superstructure {
         // inAutonShootingZone.negate().whileTrue(hood.aim(Degrees.of(10)));
 
         // timestampOne.onTrue(Commands.run(() -> {
-        //     driver.setRumble(RumbleType.kBothRumble, 1);
+        // driver.setRumble(RumbleType.kBothRumble, 1);
         // })
-        //     .withTimeout(0.25)
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 0);
-        //     }).withTimeout(0.25))
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 1);
-        //     }).withTimeout(0.25))
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 0);
-        //     }).withTimeout(0.25))
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 1);
-        //     }).withTimeout(0.25))
-        //     .finallyDo(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 0);
-        //     })
+        // .withTimeout(0.25)
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 0);
+        // }).withTimeout(0.25))
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 1);
+        // }).withTimeout(0.25))
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 0);
+        // }).withTimeout(0.25))
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 1);
+        // }).withTimeout(0.25))
+        // .finallyDo(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 0);
+        // })
         // );
 
         // timestampTwo.onTrue(Commands.run(() -> {
-        //     driver.setRumble(RumbleType.kBothRumble, 1);
+        // driver.setRumble(RumbleType.kBothRumble, 1);
         // })
-        //     .withTimeout(0.25)
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 0);
-        //     }).withTimeout(0.25))
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 1);
-        //     }).withTimeout(0.25))
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 0);
-        //     }).withTimeout(0.25))
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 1);
-        //     }).withTimeout(0.25))
-        //     .finallyDo(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 0);
-        //     })
+        // .withTimeout(0.25)
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 0);
+        // }).withTimeout(0.25))
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 1);
+        // }).withTimeout(0.25))
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 0);
+        // }).withTimeout(0.25))
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 1);
+        // }).withTimeout(0.25))
+        // .finallyDo(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 0);
+        // })
         // );
 
         // timestampThree.onTrue(Commands.run(() -> {
-        //     driver.setRumble(RumbleType.kBothRumble, 1);
+        // driver.setRumble(RumbleType.kBothRumble, 1);
         // })
-        //     .withTimeout(0.25)
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 0);
-        //     }).withTimeout(0.25))
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 1);
-        //     }).withTimeout(0.25))
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 0);
-        //     }).withTimeout(0.25))
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 1);
-        //     }).withTimeout(0.25))
-        //     .finallyDo(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 0);
-        //     })
+        // .withTimeout(0.25)
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 0);
+        // }).withTimeout(0.25))
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 1);
+        // }).withTimeout(0.25))
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 0);
+        // }).withTimeout(0.25))
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 1);
+        // }).withTimeout(0.25))
+        // .finallyDo(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 0);
+        // })
         // );
 
         // timestampFour.onTrue(Commands.run(() -> {
-        //     driver.setRumble(RumbleType.kBothRumble, 1);
+        // driver.setRumble(RumbleType.kBothRumble, 1);
         // })
-        //     .withTimeout(0.25)
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 0);
-        //     }).withTimeout(0.25))
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 1);
-        //     }).withTimeout(0.25))
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 0);
-        //     }).withTimeout(0.25))
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 1);
-        //     }).withTimeout(0.25))
-        //     .finallyDo(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 0);
-        //     })
+        // .withTimeout(0.25)
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 0);
+        // }).withTimeout(0.25))
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 1);
+        // }).withTimeout(0.25))
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 0);
+        // }).withTimeout(0.25))
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 1);
+        // }).withTimeout(0.25))
+        // .finallyDo(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 0);
+        // })
         // );
 
         // timestampFive.onTrue(Commands.run(() -> {
-        //     driver.setRumble(RumbleType.kBothRumble, 1);
+        // driver.setRumble(RumbleType.kBothRumble, 1);
         // })
-        //     .withTimeout(0.25)
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 0);
-        //     }).withTimeout(0.25))
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 1);
-        //     }).withTimeout(0.25))
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 0);
-        //     }).withTimeout(0.25))
-        //     .andThen(Commands.run(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 1);
-        //     }).withTimeout(0.25))
-        //     .finallyDo(() -> {
-        //         driver.setRumble(RumbleType.kBothRumble, 0);
-        //     })
+        // .withTimeout(0.25)
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 0);
+        // }).withTimeout(0.25))
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 1);
+        // }).withTimeout(0.25))
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 0);
+        // }).withTimeout(0.25))
+        // .andThen(Commands.run(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 1);
+        // }).withTimeout(0.25))
+        // .finallyDo(() -> {
+        // driver.setRumble(RumbleType.kBothRumble, 0);
+        // })
         // );
     }
 
@@ -528,7 +528,7 @@ public class Superstructure {
         // autoChooser.addOption("Right Double", autos.getRight2Cycle());
         // autoChooser.addOption("Right Outpost Double", autos.getRightOutpostDoubleAuto());
 
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+        // SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     /**

@@ -237,10 +237,10 @@ public class Turret extends R0Subsystem<TurretIO> {
         // io.getHubDistance().in(Meters));
 
         // SmartDashboard.putNumber("Turret Angle", io.getYaw().in(Rotations));
-        SmartDashboard.putNumber(
-            "Jmm Value",
-            this.JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()).in(Rotations)
-        );
+        // SmartDashboard.putNumber(
+        // "Jmm Value",
+        // this.JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()).in(Rotations)
+        // );
 
         // SmartDashboard.putBoolean("Hub LOS", io.hasHubLOS());
 
@@ -249,14 +249,14 @@ public class Turret extends R0Subsystem<TurretIO> {
         kineticTurretSender.set(kineticAimBot.turret());
         kineticGoalSender.set(kineticAimBot.goal());
 
-        SmartDashboard.putNumber(
-            "Static Hub Distance",
-            staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
-        );
-        SmartDashboard.putNumber(
-            "Kinetic Hub Distance",
-            kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
-        );
+        // SmartDashboard.putNumber(
+        // "Static Hub Distance",
+        // staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
+        // );
+        // SmartDashboard.putNumber(
+        // "Kinetic Hub Distance",
+        // kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
+        // );
     }
 
     /**
