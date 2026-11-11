@@ -5,7 +5,7 @@ import static org.wpilib.units.Units.Degrees;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.driverstation.RobotState;
 import org.wpilib.system.Timer;
-import org.wpilib.smartdashboard.SmartDashboard;
+// import org.wpilib.smartdashboard.SmartDashboard;
 import frc.lib.ElasticLib;
 import frc.lib.LimelightState;
 import frc.lib.ElasticLib.Notification;
@@ -238,7 +238,7 @@ public class Limelight {
         // SmartDashboard.putNumber("HeadingReadingsSize", headingReadings.size());
         // SmartDashboard.putNumber("seedinterval", seedInterval.get());
         // SmartDashboard.putNumber("seedtimer", seedTimer.get());
-        SmartDashboard.putBoolean("Ignore Limes", ignoreAllLimes);
+        // SmartDashboard.putBoolean("Ignore Limes", ignoreAllLimes);
     }
 
     /**

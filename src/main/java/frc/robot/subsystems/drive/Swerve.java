@@ -24,12 +24,16 @@ import org.wpilib.math.util.Units;
 import org.wpilib.networktables.NetworkTableInstance;
 import org.wpilib.networktables.StructPublisher;
 import org.wpilib.units.measure.LinearVelocity;
-import org.wpilib.driverstation.DriverStation;
+import org.wpilib.driverstation.MatchState;
+import org.wpilib.driverstation.RobotState;
+import org.wpilib.driverstation.Alliance;
+import org.wpilib.driverstation.MatchType;
+import org.wpilib.driverstation.DriverStationErrors;
 import org.wpilib.driverstation.Alliance;
 import org.wpilib.system.Notifier;
 import org.wpilib.system.RobotController;
 import org.wpilib.smartdashboard.Field2d;
-import org.wpilib.smartdashboard.SmartDashboard;
+// import org.wpilib.smartdashboard.SmartDashboard;
 import org.wpilib.command3.Command;
 import org.wpilib.command3.Trigger;
 import frc.lib.Util;
@@ -149,7 +153,7 @@ public class Swerve extends TunerSwerveDrivetrain /*implements Subsystem*/ {
         }
 
         configureAutoBuilder();
-        SmartDashboard.putData("Field", field);
+        // SmartDashboard.putData("Field", field);
     }
 
     /**
@@ -172,7 +176,7 @@ public class Swerve extends TunerSwerveDrivetrain /*implements Subsystem*/ {
         }
 
         configureAutoBuilder();
-        SmartDashboard.putData("Field", field);
+        // SmartDashboard.putData("Field", field);
     }
 
     /**
@@ -201,7 +205,7 @@ public class Swerve extends TunerSwerveDrivetrain /*implements Subsystem*/ {
         }
 
         configureAutoBuilder();
-        SmartDashboard.putData("Field", field);
+        // SmartDashboard.putData("Field", field);
     }
 
     /**
@@ -245,10 +249,10 @@ public class Swerve extends TunerSwerveDrivetrain /*implements Subsystem*/ {
     //      * Otherwise, only check and apply the operator perspective if the DS is disabled.
     //      * This ensures driving behavior doesn't change until an explicit disable event occurs during testing.
     //      */
-    //     // if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
-    //     //     DriverStation.getAlliance().ifPresent(allianceColor -> {
+    //     // if (!m_hasAppliedOperatorPerspective || RobotState.isDisabled()) {
+    //     //     MatchState.getAlliance().ifPresent(allianceColor -> {
     //     //         setOperatorPerspectiveForward(
-    //     //             allianceColor == Alliance.Red ? kRedAlliancePerspectiveRotation : kBlueAlliancePerspectiveRotation
+    //     //             allianceColor == Alliance.RED ? kRedAlliancePerspectiveRotation : kBlueAlliancePerspectiveRotation
     //     //         );
     //     //         m_hasAppliedOperatorPerspective = true;
     //     //     });
@@ -384,11 +388,11 @@ public class Swerve extends TunerSwerveDrivetrain /*implements Subsystem*/ {
         //             new PIDConstants(3.5, 0, 0.1)
         //         ),
         //         RobotConfig.fromGUISettings(),
-        //         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+        //         () -> MatchState.getAlliance().orElse(Alliance.BLUE) == Alliance.RED,
         //         this
         //     );
         // } catch (Exception e) {
-        //     DriverStation.reportError("Failed to load PathPlanner config and configure Autobuilder", e.getStackTrace());
+        //     DriverStationErrors.reportError("Failed to load PathPlanner config and configure Autobuilder", e.getStackTrace());
         // }
     }
 

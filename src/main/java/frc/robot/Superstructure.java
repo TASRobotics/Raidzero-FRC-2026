@@ -16,12 +16,16 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 // import com.pathplanner.lib.commands.PathfindingCommand;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
-import org.wpilib.smartdashboard.SendableChooser;
-import org.wpilib.smartdashboard.SmartDashboard;
+// import org.wpilib.smartdashboard.SendableChooser;
+// import org.wpilib.smartdashboard.SmartDashboard;
 import org.wpilib.system.Timer;
-import org.wpilib.driverstation.DriverStation;
-import org.wpilib.driverstation.POVDirection;
+import org.wpilib.tunable.Selectable;
+import org.wpilib.driverstation.MatchState;
 import org.wpilib.driverstation.RobotState;
+import org.wpilib.driverstation.Alliance;
+import org.wpilib.driverstation.MatchType;
+import org.wpilib.driverstation.DriverStationErrors;
+import org.wpilib.driverstation.POVDirection;
 import org.wpilib.driverstation.GenericHID.RumbleType;
 import org.wpilib.command3.button.CommandNiDsXboxController;
 import org.wpilib.command3.Command;
@@ -94,9 +98,9 @@ public class Superstructure {
 
     // private static final Auto autos = new Auto(swerve, intake, extender);
 
-    private static SendableChooser<Command> autoChooser;
+    private static Selectable<Command> autoChooser;
 
-    // TODO: Scale zone based on ChassisSpeeds (x vel)
+    // TODO: Scale zone based on ChassisVelocities (x vel)
     private static Trigger apprTrench = new Trigger(() -> {
         Pose2d pose = turret.getTurretPose();
 
@@ -235,7 +239,7 @@ public class Superstructure {
                 limelight.setUseMt2(true);
                 swerve.seedFieldCentric(
                     Rotation2d.fromDegrees(limelight.getAverageHeading())
-                        .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg));
+                        .plus(Util.isBlueAlliance() ? Rotation2d.ZERO : Rotation2d.k180deg));
                 limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
             }).named("Seed Limelight Heading")
         );
@@ -277,7 +281,7 @@ public class Superstructure {
                 limelight.setUseMt2(true);
                 swerve.seedFieldCentric(
                     Rotation2d.fromDegrees(limelight.getAverageHeading())
-                        .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg));
+                        .plus(Util.isBlueAlliance() ? Rotation2d.ZERO : Rotation2d.k180deg));
                 limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
             }).named("Limelight Seed End")
         );
@@ -289,11 +293,11 @@ public class Superstructure {
             Command.noRequirements(coroutine -> limelight.setManualSeed(true)).named("Manual Seed")
         );
 
-        operator.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
+        operator.getHID().pov(POVDirection.RIGHT).onTrue(hood.incrementPitch(Degrees.of(1.0)));
         // operator.povLeft().whileTrue(autos.agitateTeleop().repeatedly());
 
-        operator.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
-        operator.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
+        operator.getHID().pov(POVDirection.UP).onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
+        operator.getHID().pov(POVDirection.DOWN).onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
     }
 
     private static Command agitateAfterDelay() {
@@ -324,16 +328,16 @@ public class Superstructure {
                 limelight.setUseMt2(true);
                 swerve.seedFieldCentric(
                     Rotation2d.fromDegrees(limelight.getAverageHeading())
-                        .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg));
+                        .plus(Util.isBlueAlliance() ? Rotation2d.ZERO : Rotation2d.k180deg));
                 limelight.setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
             }).named("Limelight Seed End")
         );
 
-        driver.povRight().onTrue(hood.incrementPitch(Degrees.of(1.0)));
-        driver.povLeft().onTrue(hood.incrementPitch(Degrees.of(-1.0)));
+        driver.getHID().pov(POVDirection.RIGHT).onTrue(hood.incrementPitch(Degrees.of(1.0)));
+        driver.getHID().pov(POVDirection.LEFT).onTrue(hood.incrementPitch(Degrees.of(-1.0)));
 
-        driver.povUp().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
-        driver.povDown().onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
+        driver.getHID().pov(POVDirection.UP).onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(0.5)));
+        driver.getHID().pov(POVDirection.DOWN).onTrue(shooter.incrementVelocitySetpoint(RotationsPerSecond.of(-0.5)));
 
         // driver.leftTrigger().and(feeder.ballDetected().negate()).whileTrue(
         // Commands.waitUntil(shooter.atManualTargetVelocity()).andThen(
@@ -410,17 +414,17 @@ public class Superstructure {
 
     private static Command rumblePulses() {
         return Command.noRequirements(coroutine -> {
-            for (int i = 0; i < 5; i++) {
-                driver.setRumble(RumbleType.LEFT_RUMBLE, i % 2 == 0 ? 1 : 0);   // 1,0,1,0,1
-                driver.setRumble(RumbleType.RIGHT_RUMBLE, i % 2 == 0 ? 1 : 0);   // 1,0,1,0,1
-                coroutine.wait(Seconds.of(0.25));
-            }
-            driver.setRumble(RumbleType.LEFT_RUMBLE, 0);
-            driver.setRumble(RumbleType.RIGHT_RUMBLE, 0);
+            // for (int i = 0; i < 5; i++) {
+            //     driver.setRumble(RumbleType.LEFT_RUMBLE, i % 2 == 0 ? 1 : 0);   // 1,0,1,0,1
+            //     driver.setRumble(RumbleType.RIGHT_RUMBLE, i % 2 == 0 ? 1 : 0);   // 1,0,1,0,1
+            //     coroutine.wait(Seconds.of(0.25));
+            // }
+            // driver.setRumble(RumbleType.LEFT_RUMBLE, 0);
+            // driver.setRumble(RumbleType.RIGHT_RUMBLE, 0);
         })
             .whenCanceled(() -> {
-                driver.setRumble(RumbleType.LEFT_RUMBLE, 0);
-                driver.setRumble(RumbleType.RIGHT_RUMBLE, 0);
+                // driver.setRumble(RumbleType.LEFT_RUMBLE, 0);
+                // driver.setRumble(RumbleType.RIGHT_RUMBLE, 0);
             })
             .named("Rumble Pulses");
     }

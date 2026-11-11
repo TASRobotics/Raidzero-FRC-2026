@@ -37,7 +37,7 @@ public class Robot extends TimedRobot {
         m_timeAndJoystickReplay.update();
         Scheduler.getDefault().run();
 
-        // SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+        // SmartDashboard.putNumber("Match Time", MatchState.getMatchTime());
         // SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
         Superstructure.getLimelight().loop();
     }
@@ -106,17 +106,17 @@ public class Robot extends TimedRobot {
     }
 
     // @Override
-    // public void testInit() {
+    // public void utilityInit() {
     //     CommandScheduler.getInstance().cancelAll();
 
     //     alreadyEnabled = true;
     // }
 
     // @Override
-    // public void testPeriodic() {}
+    // public void utilityPeriodic() {}
 
     // @Override
-    // public void testExit() {}
+    // public void utilityExit() {}
 
     @Override
     public void simulationPeriodic() {}

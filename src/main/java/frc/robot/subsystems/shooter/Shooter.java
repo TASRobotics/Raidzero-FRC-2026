@@ -5,7 +5,7 @@ import static org.wpilib.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;
 import org.wpilib.units.measure.AngularVelocity;
-import org.wpilib.smartdashboard.SmartDashboard;
+// import org.wpilib.smartdashboard.SmartDashboard;
 import org.wpilib.command3.Command;
 import org.wpilib.command3.Scheduler;
 import org.wpilib.command3.Trigger;
@@ -168,13 +168,13 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     @Override
     public void periodic() {
         super.periodic();
-        SmartDashboard.putNumber(
-            "Shooter speed",
-            io.getVelocity().in(RotationsPerSecond)
-        );
-        SmartDashboard.putNumber(
-            "Shooter target speed",
-            velocityTarget.in(RotationsPerSecond)
-        );
+        // SmartDashboard.putNumber(
+        //     "Shooter speed",
+        //     io.getVelocity().in(RotationsPerSecond)
+        // );
+        // SmartDashboard.putNumber(
+        //     "Shooter target speed",
+        //     velocityTarget.in(RotationsPerSecond)
+        // );
     }
 }

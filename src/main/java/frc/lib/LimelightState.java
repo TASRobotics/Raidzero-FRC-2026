@@ -8,7 +8,7 @@ import org.wpilib.math.util.Units;
 import org.wpilib.networktables.NetworkTableInstance;
 import org.wpilib.networktables.StructPublisher;
 import org.wpilib.system.Timer;
-import org.wpilib.smartdashboard.SmartDashboard;
+// import org.wpilib.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drive.TunerConstants;
 
 import java.util.function.Supplier;
@@ -217,14 +217,14 @@ public class LimelightState {
             ignore = false;
         }
 
-        if (imuData != null) {
-            SmartDashboard.putNumber(
-                limelightName.split("-")[1] + "RYaw",
-                imuData.robotYaw
-            );
-        }
+        // if (imuData != null) {
+        //     SmartDashboard.putNumber(
+        //         limelightName.split("-")[1] + "RYaw",
+        //         imuData.robotYaw
+        //     );
+        // }
 
-        SmartDashboard.putBoolean(limelightName.split("-")[1] + "Pose", !ignore && !ignoreAll);
+        // SmartDashboard.putBoolean(limelightName.split("-")[1] + "Pose", !ignore && !ignoreAll);
     }
 
     /**

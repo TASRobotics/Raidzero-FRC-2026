@@ -8,7 +8,11 @@
 // import org.wpilib.math.filter.Debouncer.DebounceType;
 // import org.wpilib.math.geometry.Pose2d;
 // import org.wpilib.math.util.Units;
-// import org.wpilib.driverstation.DriverStation;
+// import org.wpilib.driverstation.MatchState;
+import org.wpilib.driverstation.RobotState;
+import org.wpilib.driverstation.Alliance;
+import org.wpilib.driverstation.MatchType;
+import org.wpilib.driverstation.DriverStationErrors;
 // import org.wpilib.system.Filesystem;
 // import org.wpilib.framework.RobotBase;
 // import org.wpilib.command3.Command;
@@ -66,7 +70,7 @@
 //         File[] files = choreoDir.listFiles((dir, name) -> name.endsWith(".traj"));
 
 //         if (files == null || files.length == 0) {
-//             DriverStation.reportWarning("Auto: No Choreo paths found in deploy/choreo!", false);
+//             DriverStationErrors.reportWarning("Auto: No Choreo paths found in deploy/choreo!", false);
 //             return;
 //         }
 
@@ -75,7 +79,7 @@
 //             try {
 //                 pathCache.put(name, PathPlannerPath.fromChoreoTrajectory(name));
 //             } catch (Exception e) {
-//                 DriverStation.reportError("Auto: Failed to load " + name + ": " + e.getMessage(), e.getStackTrace());
+//                 DriverStationErrors.reportError("Auto: Failed to load " + name + ": " + e.getMessage(), e.getStackTrace());
 //             }
 //         }
 //     }
@@ -85,7 +89,7 @@
 //      */
 //     public PathPlannerPath get(String name) {
 //         if (!pathCache.containsKey(name)) {
-//             DriverStation.reportError("Auto: Path '" + name + "' not found in cache!", false);
+//             DriverStationErrors.reportError("Auto: Path '" + name + "' not found in cache!", false);
 //             return null;
 //         }
 //         return pathCache.get(name);

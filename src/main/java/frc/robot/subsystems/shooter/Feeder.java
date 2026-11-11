@@ -3,7 +3,7 @@ package frc.robot.subsystems.shooter;
 import static org.wpilib.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.Utils;
-import org.wpilib.smartdashboard.SmartDashboard;
+// import org.wpilib.smartdashboard.SmartDashboard;
 import org.wpilib.command3.Command;
 import org.wpilib.command3.Scheduler;
 import org.wpilib.command3.Trigger;
@@ -99,7 +99,7 @@ public class Feeder extends R0Subsystem<FeederIO> {
         super.periodic();
         // SmartDashboard.putNumber("Indexer Velocity",
         // io.getVelocity().in(RotationsPerSecond));
-        SmartDashboard.putBoolean("Ball detected", io.ballDetected());
+        // SmartDashboard.putBoolean("Ball detected", io.ballDetected());
     }
 
 }
