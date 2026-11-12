@@ -32,7 +32,7 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
 
         // what field angle should the turret be at to point at the goal
         Translation2d turretToGoalVector = allianceGoalLocation.minus(fieldRelativeTurretPose.getTranslation());
-        Pose2d fieldRelativeGoalPose = new Pose2d(allianceGoalLocation, turretToGoalVector.getAngle());
+        Pose2d fieldRelativeGoalPose = new Pose2d(allianceGoalLocation, turretToGoalVector.getAngle().get());
 
         return new AimBot(robotPose, fieldRelativeTurretPose, fieldRelativeGoalPose);
     }
@@ -116,7 +116,7 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
             currentDistanceTOF = Kinetics.TOF_TABLE.get(turretToGoalDist);
         }
 
-        Rotation2d turretToVirtualGoalFieldAngle = virtualGoalTranslation.minus(kineticTurret.getTranslation()).getAngle();
+        Rotation2d turretToVirtualGoalFieldAngle = virtualGoalTranslation.minus(kineticTurret.getTranslation()).getAngle().get();
         Pose2d virtualGoalPose = new Pose2d(virtualGoalTranslation, turretToVirtualGoalFieldAngle);
 
         return virtualGoalPose;
