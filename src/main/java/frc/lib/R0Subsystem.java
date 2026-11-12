@@ -2,7 +2,7 @@ package frc.lib;
 
 import org.wpilib.command3.Mechanism;
 
-public abstract class R0Subsystem<T extends SubsystemIO> extends Mechanism {
+public abstract class R0Subsystem<T extends SubsystemIO> implements Mechanism {
     protected T io;
 
     /**
