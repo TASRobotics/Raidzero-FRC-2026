@@ -1,4 +1,4 @@
-// package frc.robot.test;
+package frc.robot.test;
 
 // import org.wpilib.hardware.hal.simulation.DriverStationDataJNI;
 // import org.wpilib.driverstation.MatchState;
