@@ -20,16 +20,10 @@ import org.wpilib.math.geometry.Rotation2d;
 // import org.wpilib.smartdashboard.SmartDashboard;
 import org.wpilib.system.Timer;
 import org.wpilib.tunable.Selectable;
-import org.wpilib.driverstation.MatchState;
 import org.wpilib.driverstation.RobotState;
-import org.wpilib.driverstation.Alliance;
-import org.wpilib.driverstation.MatchType;
-import org.wpilib.driverstation.DriverStationErrors;
 import org.wpilib.driverstation.POVDirection;
-import org.wpilib.driverstation.GenericHID.RumbleType;
 import org.wpilib.command3.button.CommandNiDsXboxController;
 import org.wpilib.command3.Command;
-import org.wpilib.command3.Scheduler;
 import org.wpilib.command3.Trigger;
 import frc.lib.ElasticLib;
 import frc.lib.Util;
@@ -170,14 +164,14 @@ public class Superstructure {
      * Applies the default commands
      */
     public static void applyDefaultCommands() {
-        // swerve.setDefaultCommand(
-        //     swerve.applyRequest(
-        //         () -> fieldCentricDrive
-        //             .withVelocityX(-driver.getLeftY() * MaxSpeed)
-        //             .withVelocityY(-driver.getLeftX() * MaxSpeed)
-        //             .withRotationalRate(-driver.getRightX() * MaxAngularRate)
-        //     )
-        // );
+        swerve.setDefaultCommand(
+            swerve.applyRequest(
+                () -> fieldCentricDrive
+                    .withVelocityX(-driver.getLeftY() * MaxSpeed)
+                    .withVelocityY(-driver.getLeftX() * MaxSpeed)
+                    .withRotationalRate(-driver.getRightX() * MaxAngularRate)
+            )
+        );
 
         hood.setDefaultCommand(hood.aim(Degrees.of(10)));
         // hood.setDefaultCommand(hood.manualAim());
