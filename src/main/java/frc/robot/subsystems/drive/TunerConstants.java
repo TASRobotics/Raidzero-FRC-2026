@@ -79,7 +79,7 @@ public class TunerConstants {
 
     // CAN bus that the devices are located on;
     // All swerve devices must share the same CAN bus
-    public static final CANBus kCANBus = new CANBus("canDrive", "./logs/example.hoot");
+    public static final CANBus kCANBus = new CANBus("canDrive"/*, "./logs/example.hoot"*/);
 
     // Theoretical free speed (m/s) at 12 V applied output;
     // This needs to be tuned to your individual robot
@@ -106,7 +106,7 @@ public class TunerConstants {
     private static final Voltage kDriveFrictionVoltage = Volts.of(0.2);
 
     public static final SwerveDrivetrainConstants DrivetrainConstants = new SwerveDrivetrainConstants()
-        .withCANBusName(kCANBus.getName())
+        .withNetwork(kCANBus)
         .withPigeon2Id(kPigeonId)
         .withPigeon2Configs(pigeonConfigs);
 
