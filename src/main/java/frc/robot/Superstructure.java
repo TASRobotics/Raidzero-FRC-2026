@@ -53,8 +53,8 @@ public class Superstructure {
     public static final Hood hood = Hood.system();
     private static final Feeder feeder = Feeder.system();
     private static final Spindexer spindexer = Spindexer.system();
-    private static final Extender extender = Extender.system();
-    private static final Intake intake = Intake.system();
+    // private static final Extender extender = Extender.system();
+    // private static final Intake intake = Intake.system();
     private static final Swerve swerve = Swerve.system();
     private static final Limelight limelight = Limelight.system();
 
@@ -157,7 +157,7 @@ public class Superstructure {
     public static void runSubsystemInitRoutines() {
         turret.setStartupAngle();
         hood.setStartupAngle();
-        extender.setStartupAngle();
+        // extender.setStartupAngle();
     }
 
     /**
@@ -180,8 +180,8 @@ public class Superstructure {
         shooter.setDefaultCommand(shooter.stop());
         feeder.setDefaultCommand(feeder.stop());
         spindexer.setDefaultCommand(spindexer.stop());
-        extender.setDefaultCommand(extender.stop());
-        intake.setDefaultCommand(intake.stop());
+        // extender.setDefaultCommand(extender.stop());
+        // intake.setDefaultCommand(intake.stop());
     }
 
     private static Command passing(double blueRotations, double redRotations) {
@@ -253,10 +253,10 @@ public class Superstructure {
         operator.y().whileTrue(shooter.shoot());
         operator.y().whileTrue(feeder.go());
 
-        operator.rightBumper().whileTrue(intake.go());
-        operator.leftBumper().whileTrue(intake.reverse());
+        // operator.rightBumper().whileTrue(intake.go());
+        // operator.leftBumper().whileTrue(intake.reverse());
 
-        operator.back().onTrue(extender.retract()).onFalse(extender.extend());
+        // operator.back().onTrue(extender.retract()).onFalse(extender.extend());
 
         operator.rightTrigger().and(passingArea1).whileTrue(passing(0.45, 0.05));
         operator.rightTrigger().and(passingArea2).whileTrue(passing(0.55, 0.95));
@@ -298,7 +298,7 @@ public class Superstructure {
         return Command.noRequirements(coroutine -> {
             coroutine.wait(Seconds.of(1.4));
             while (true) {
-                coroutine.await(extender.autoAgitate());   // fresh command each pass
+                // coroutine.await(extender.autoAgitate());   // fresh command each pass
                 coroutine.yield();
             }
         }).named("Agitate After Delay");
@@ -368,11 +368,11 @@ public class Superstructure {
         // );
 
         driver.leftTrigger().whileTrue(spindexer.go());
-        driver.leftTrigger().whileTrue(intake.go());
+        // driver.leftTrigger().whileTrue(intake.go());
         driver.leftTrigger().whileTrue(agitateAfterDelay());
 
         driver.leftBumper().whileTrue(spindexer.reverse());
-        driver.leftBumper().whileTrue(intake.go());
+        // driver.leftBumper().whileTrue(intake.go());
         driver.leftBumper().whileTrue(agitateAfterDelay());
 
         // driver.rightTrigger().whileTrue(shooter.manualShoot().alongWith(feeder.go()));
@@ -382,9 +382,9 @@ public class Superstructure {
         driver.rightTrigger().whileTrue(feeder.go());
         driver.rightTrigger().whileTrue(hood.aim());
 
-        driver.rightBumper().whileTrue(intake.go());
-        driver.x().onTrue(extender.retract());
-        driver.b().onTrue(extender.extend());
+        // driver.rightBumper().whileTrue(intake.go());
+        // driver.x().onTrue(extender.retract());
+        // driver.b().onTrue(extender.extend());
 
         // driver.rightStick().toggleOnTrue(hood.aim(Degrees.of(10)));
 
