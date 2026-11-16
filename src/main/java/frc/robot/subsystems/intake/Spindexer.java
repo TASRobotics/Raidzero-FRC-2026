@@ -39,7 +39,7 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
      *         short duration
      */
     public Command antiJam() {
-        return run(coroutine -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
+        return runRepeatedly(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
             .named("Spindexer antijam")
             .withTimeout(Seconds.of(0.1));
     }

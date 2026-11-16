@@ -41,7 +41,7 @@ public class Extender extends R0Subsystem<ExtenderIO> {
         return run(coroutine -> {
             Timer timer = new Timer();
             timer.start();
-            while (timer.get() < 0.1) {
+            while (timer.get() < 0.2) {
                 io.agitateL1();
                 coroutine.yield();
             }

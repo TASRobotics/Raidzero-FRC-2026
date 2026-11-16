@@ -117,7 +117,7 @@ public class Turret extends R0Subsystem<TurretIO> {
      * @return A {@link Command} to be scheduled and run
      */
     public Command movePercent(double percent) {
-        return run(coroutine -> io.runYawPercent(percent))
+        return runRepeatedly(() -> io.runYawPercent(percent))
             .named("Turret duty cycle");
     }
 
