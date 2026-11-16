@@ -31,6 +31,7 @@ import org.wpilib.driverstation.MatchType;
 import org.wpilib.driverstation.DriverStationErrors;
 import org.wpilib.driverstation.Alliance;
 import org.wpilib.system.Notifier;
+import org.wpilib.system.Timer;
 import org.wpilib.system.RobotController;
 import org.wpilib.smartdashboard.Field2d;
 // import org.wpilib.smartdashboard.SmartDashboard;
@@ -293,7 +294,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Mechanism {
      */
     @Override
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
-        // super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
+        super.addVisionMeasurement(visionRobotPoseMeters, toPhoenixTime(timestampSeconds));
     }
 
     /**
@@ -311,7 +312,19 @@ public class Swerve extends TunerSwerveDrivetrain implements Mechanism {
      */
     @Override
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
-        // super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+        super.addVisionMeasurement(visionRobotPoseMeters, toPhoenixTime(timestampSeconds), visionMeasurementStdDevs);
+    }
+
+    /**
+     * Converts a timestamp from the WPILib monotonic clock (used by NetworkTables, and therefore by
+     * Limelight pose estimates) to the Phoenix 6 time base expected by the drivetrain pose estimator.
+     * Replaces {@code Utils.fpgaToCurrentTime}, which was removed in Phoenix 26.70.
+     *
+     * @param wpilibTimestampSeconds timestamp on the WPILib monotonic clock, in seconds
+     * @return the same instant on the Phoenix 6 clock, in seconds
+     */
+    private static double toPhoenixTime(double wpilibTimestampSeconds) {
+        return wpilibTimestampSeconds - Timer.getMonotonicTimestamp() + Utils.getCurrentTimeSeconds();
     }
 
     /**
@@ -331,12 +344,10 @@ public class Swerve extends TunerSwerveDrivetrain implements Mechanism {
      * @return A {@link Command} to stop the swerve
      */
     public Command stop() {
-        // return runOnce(
-        //     () -> this.setControl(
-        //         new SwerveRequest.RobotCentric().withVelocityX(0.0).withVelocityY(0.0).withRotationalRate(0.0)
-        //     )
-        // );
-        return Command.noRequirements(c -> {}).named("None");
+        final SwerveRequest.RobotCentric zero = new SwerveRequest.RobotCentric()
+            .withVelocityX(0.0).withVelocityY(0.0).withRotationalRate(0.0);
+        return runRepeatedly(() -> this.setControl(zero))
+            .named("Swerve stop");
     }
 
     /**

@@ -226,7 +226,7 @@ public class Superstructure {
                 ElasticLib.sendNotification(
                     new Notification(NotificationLevel.WARNING, "LL", "SEED CALLED - DR"));
 
-                // Step 2: hold the drivetrain still for 1 second
+                // Step 2: hold the drivetrain still for 1 second while the limelight seeds
                 coroutine.await(swerve.stop().withTimeout(Seconds.of(1)));
 
                 // Step 3: seed the heading and go back to normal
