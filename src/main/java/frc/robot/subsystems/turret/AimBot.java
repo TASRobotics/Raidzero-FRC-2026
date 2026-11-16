@@ -88,7 +88,7 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
         var vy = relativeSpeeds.vy
                 + relativeSpeeds.omega * Kinetics.TURRET_MOUNT_OFFSET.getX();
         var omega = relativeSpeeds.omega;
-        return new ChassisVelocities(vx, vy, omega).toRobotRelative(futurePose.getRotation());
+        return new ChassisVelocities(vx, vy, omega).toFieldRelative(futurePose.getRotation());
     }
 
     /**
