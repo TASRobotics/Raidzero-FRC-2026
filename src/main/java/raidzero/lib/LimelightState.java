@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.GenericSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTableValue;
@@ -14,6 +15,8 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import raidzero.robot.subsystems.drive.LimelightConstants;
@@ -55,6 +58,28 @@ public class LimelightState {
 
     private boolean seededRobot = false;
 
+    /** How many loops between rescans of the limelight's NetworkTables keys (50 loops = 1 second) */
+    private static final int RAW_KEY_RESCAN_LOOPS = 50;
+
+    /** A cached subscriber for one raw limelight NetworkTables key, with its precomputed log path */
+    private static final class RawSubscriber {
+        final String logPath;
+        final GenericSubscriber subscriber;
+        long lastLoggedChange = -1;
+
+        RawSubscriber(String logPath, GenericSubscriber subscriber) {
+            this.logPath = logPath;
+            this.subscriber = subscriber;
+        }
+    }
+
+    private final Map<String, RawSubscriber> rawSubscribers = new LinkedHashMap<>();
+    private int loopsSinceKeyRescan = 0;
+
+    private final String shortName;
+    private final String ryawKey;
+    private final String poseKey;
+
     /**
      * Constructs a LimelightState instance
      *
@@ -66,7 +91,10 @@ public class LimelightState {
      */
     public LimelightState(String limelightName, PIPELINE pipeline, Supplier<Double> robotYawSupplier, Supplier<Double> robotYawRateSupplier, VisionMeasurementConsumer addVisionMeasurementConsumer) {
         this.limelightName = limelightName;
-        this.logKey = "Limelight/" + limelightName.split("-")[1] + "/";
+        this.shortName = limelightName.split("-")[1];
+        this.ryawKey = shortName + "RYaw";
+        this.poseKey = shortName + "Pose";
+        this.logKey = "Limelight/" + shortName + "/";
         this.limelightTable = NetworkTableInstance.getDefault().getTable(limelightName);
         setPipeline(pipeline);
         this.ntPublisher = NetworkTableInstance.getDefault()
@@ -220,13 +248,10 @@ public class LimelightState {
         }
 
         if (imuData != null) {
-            // SmartDashboard.putNumber(
-            // limelightName.split("-")[1] + "RYaw",
-            // imuData.robotYaw
-            // );
+            SmartDashboard.putNumber(ryawKey, imuData.robotYaw);
         }
 
-        // SmartDashboard.putBoolean(limelightName.split("-")[1] + "Pose", !ignore && !ignoreAll);
+        SmartDashboard.putBoolean(poseKey, !ignore && !ignoreAll);
 
         Logger.recordOutput(logKey + "MT1Pose", posesWithTags(mt1Estimate, LimelightConstants.MT1_MIN_TAGS));
         Logger.recordOutput(logKey + "MT2Pose", posesWithTags(mt2Estimate, 1));
@@ -244,16 +269,39 @@ public class LimelightState {
     }
 
     /**
-     * Logs every value in the limelight's NetworkTables table, except the large JSON results dump
+     * Rescans the limelight's NetworkTables keys and subscribes to any new ones. Keys rarely change, so this only runs
+     * every {@link #RAW_KEY_RESCAN_LOOPS} loops instead of every loop.
      */
-    private void logRawNetworkTables() {
+    private void refreshRawSubscribers() {
         for (String key : limelightTable.getKeys()) {
-            if (key.equals("json")) {
+            if (key.equals("json") || rawSubscribers.containsKey(key)) {
                 continue;
             }
 
-            NetworkTableValue value = limelightTable.getEntry(key).getValue();
-            String logPath = logKey + "NT/" + key;
+            rawSubscribers.put(key, new RawSubscriber(logKey + "NT/" + key, limelightTable.getTopic(key).genericSubscribe()));
+        }
+    }
+
+    /**
+     * Logs every value in the limelight's NetworkTables table that changed since the last loop, except the large JSON
+     * results dump. Unchanged values keep their last logged value in the log, so nothing is lost.
+     */
+    private void logRawNetworkTables() {
+        if (loopsSinceKeyRescan++ % RAW_KEY_RESCAN_LOOPS == 0) {
+            refreshRawSubscribers();
+        }
+
+        for (RawSubscriber raw : rawSubscribers.values()) {
+            long lastChange = raw.subscriber.getLastChange();
+
+            if (lastChange == raw.lastLoggedChange) {
+                continue;
+            }
+
+            raw.lastLoggedChange = lastChange;
+
+            NetworkTableValue value = raw.subscriber.get();
+            String logPath = raw.logPath;
 
             switch (value.getType()) {
                 case kBoolean -> Logger.recordOutput(logPath, value.getBoolean());

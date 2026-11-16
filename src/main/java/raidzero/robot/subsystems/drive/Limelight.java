@@ -2,6 +2,7 @@ package raidzero.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -47,6 +48,11 @@ public class Limelight {
     private final SendableChooser<Profile> profileChooser = new SendableChooser<>();
     private final SendableChooser<Integer> imuModeChooser = new SendableChooser<>();
 
+    /** Robot pose, yaw and yaw rate read once per loop and shared by every limelight */
+    private Pose2d cachedPose = Pose2d.kZero;
+    private double cachedYawDegrees = 0.0;
+    private double cachedYawRateDps = 0.0;
+
     private Swerve swerve = Swerve.system();
     private Hood hood = Hood.system();
     private static Limelight instance = null;
@@ -62,29 +68,29 @@ public class Limelight {
         frontState = new LimelightState(
             "limelight-front",
             LimelightState.PIPELINE.OBJECT,
-            () -> swerve.getState().Pose.getRotation().getDegrees(),
-            () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
+            () -> cachedYawDegrees,
+            () -> cachedYawRateDps,
             swerve::addVisionMeasurement
         );
         rightState = new LimelightState(
             "limelight-right",
             LimelightState.PIPELINE.TAG,
-            () -> swerve.getState().Pose.getRotation().getDegrees(),
-            () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
+            () -> cachedYawDegrees,
+            () -> cachedYawRateDps,
             swerve::addVisionMeasurement
         );
         rearState = new LimelightState(
             "limelight-rear",
             LimelightState.PIPELINE.TAG,
-            () -> swerve.getState().Pose.getRotation().getDegrees(),
-            () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
+            () -> cachedYawDegrees,
+            () -> cachedYawRateDps,
             swerve::addVisionMeasurement
         );
         leftState = new LimelightState(
             "limelight-left",
             LimelightState.PIPELINE.TAG,
-            () -> swerve.getState().Pose.getRotation().getDegrees(),
-            () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
+            () -> cachedYawDegrees,
+            () -> cachedYawRateDps,
             swerve::addVisionMeasurement
         );
 
@@ -280,13 +286,17 @@ public class Limelight {
             lastImuMode = imuMode;
         }
 
-        ignoreAllLimes = config.filter() && Math.abs(swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720;
+        cachedPose = swerve.getState().Pose;
+        cachedYawDegrees = cachedPose.getRotation().getDegrees();
+        cachedYawRateDps = swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble();
+
+        ignoreAllLimes = config.filter() && Math.abs(cachedYawRateDps) > 720;
 
         boolean updateSwervePose = DriverStation.isDisabled() ? LimelightConstants.UPDATE_SWERVE_POSE_DISABLED :
             LimelightConstants.UPDATE_SWERVE_POSE_ENABLED;
 
         for (LimelightState state : limes) {
-            state.update(config, ignoreAllLimes, updateSwervePose, swerve.getState().Pose);
+            state.update(config, ignoreAllLimes, updateSwervePose, cachedPose);
         }
 
         Logger.recordOutput("Limelight/UpdatingSwervePose", updateSwervePose);
