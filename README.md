@@ -1,4 +1,4 @@
-# RaidZero-FRC-2026
+# RaidZero-FRC-2026 [![Build](https://github.com/TASRobotics/Raidzero-FRC-2026/actions/workflows/build.yaml/badge.svg)](https://github.com/TASRobotics/Raidzero-FRC-2026/actions/workflows/build.yaml)
 
 4253 Raid Zero robot code for 2026 Rebuilt season
 
