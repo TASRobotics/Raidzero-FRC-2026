@@ -50,13 +50,16 @@ public class Hood extends R0Subsystem<HoodIO> {
      */
     public Command aim() {
         return run(() -> {
-            Angle target = Degrees.of(Kinetics.PITCH_TABLE.get(
-                    Turret.system().getHubDistance(true).in(Meters)));
+            Angle target = Degrees.of(
+                Kinetics.PITCH_TABLE.get(
+                    Turret.system().getHubDistance(true).in(Meters)
+                )
+            );
 
-                SmartDashboard.putNumber("Target pitch", target.in(Degrees));
+            SmartDashboard.putNumber("Target pitch", target.in(Degrees));
 
-                io.moveTo(target);
-            }
+            io.moveTo(target);
+        }
         );
     }
 
@@ -109,8 +112,10 @@ public class Hood extends R0Subsystem<HoodIO> {
      */
     public static Hood system() {
         if (system == null) {
-            if (Utils.isSimulation()) system = new Hood(new HoodIO.Real());
-            else system = new Hood(new HoodIO.Sim());
+            if (Utils.isSimulation())
+                system = new Hood(new HoodIO.Real());
+            else
+                system = new Hood(new HoodIO.Sim());
         }
 
         return system;

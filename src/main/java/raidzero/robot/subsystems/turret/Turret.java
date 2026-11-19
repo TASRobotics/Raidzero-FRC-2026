@@ -128,9 +128,9 @@ public class Turret extends R0Subsystem<TurretIO> {
      */
     public Distance getHubDistance(boolean kineticLead) {
         return Meters.of(
-                kineticLead
-                        ? kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
-                        : staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose));
+            kineticLead ? kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose) :
+                staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
+        );
     }
 
     /**
@@ -213,12 +213,14 @@ public class Turret extends R0Subsystem<TurretIO> {
 
         ChassisSpeeds rawSpeeds = swerve.getState().Speeds;
         ChassisSpeeds filteredSpeeds = new ChassisSpeeds(
-                vxFilter.calculate(rawSpeeds.vxMetersPerSecond),
-                vyFilter.calculate(rawSpeeds.vyMetersPerSecond),
-                omegaFilter.calculate(rawSpeeds.omegaRadiansPerSecond));
+            vxFilter.calculate(rawSpeeds.vxMetersPerSecond),
+            vyFilter.calculate(rawSpeeds.vyMetersPerSecond),
+            omegaFilter.calculate(rawSpeeds.omegaRadiansPerSecond)
+        );
 
         staticAimBot = staticAimBot.adjustStaticAim(
-                swerve.getState().Pose, new Rotation2d(getCurrentYaw()), allianceTargetFieldPose);
+            swerve.getState().Pose, new Rotation2d(getCurrentYaw()), allianceTargetFieldPose
+        );
 
         kineticAimBot = staticAimBot.adjustKineticLead(filteredSpeeds);
 
@@ -229,8 +231,9 @@ public class Turret extends R0Subsystem<TurretIO> {
 
         // SmartDashboard.putNumber("Turret Angle", io.getYaw().in(Rotations));
         SmartDashboard.putNumber(
-                "Jmm Value",
-                this.JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()).in(Rotations));
+            "Jmm Value",
+            this.JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()).in(Rotations)
+        );
 
         // SmartDashboard.putBoolean("Hub LOS", io.hasHubLOS());
 
@@ -240,9 +243,11 @@ public class Turret extends R0Subsystem<TurretIO> {
         kineticGoalSender.set(kineticAimBot.goal());
 
         SmartDashboard.putNumber(
-                "Static Hub Distance", staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose));
+            "Static Hub Distance", staticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
+        );
         SmartDashboard.putNumber(
-                "Kinetic Hub Distance", kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose));
+            "Kinetic Hub Distance", kineticAimBot.turret().getTranslation().getDistance(allianceTargetFieldPose)
+        );
     }
 
     /**
@@ -259,14 +264,10 @@ public class Turret extends R0Subsystem<TurretIO> {
         staticTable = nt.getTable("Turret/Static");
         kineticTable = nt.getTable("Turret/Kinetic");
 
-        staticGoalSender =
-                staticTable.getStructTopic("staticGoal", Pose2d.struct).publish();
-        staticTurretSender =
-                staticTable.getStructTopic("staticTurret", Pose2d.struct).publish();
-        kineticGoalSender =
-                kineticTable.getStructTopic("kineticGoal", Pose2d.struct).publish();
-        kineticTurretSender =
-                kineticTable.getStructTopic("kineticTurret", Pose2d.struct).publish();
+        staticGoalSender = staticTable.getStructTopic("staticGoal", Pose2d.struct).publish();
+        staticTurretSender = staticTable.getStructTopic("staticTurret", Pose2d.struct).publish();
+        kineticGoalSender = kineticTable.getStructTopic("kineticGoal", Pose2d.struct).publish();
+        kineticTurretSender = kineticTable.getStructTopic("kineticTurret", Pose2d.struct).publish();
     }
 
     /**

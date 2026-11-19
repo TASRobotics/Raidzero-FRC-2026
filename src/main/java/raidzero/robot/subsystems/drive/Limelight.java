@@ -47,29 +47,33 @@ public class Limelight {
         manualSeed = false;
 
         frontState = new LimelightState(
-                "limelight-front",
-                LimelightState.PIPELINE.OBJECT,
-                () -> swerve.getState().Pose.getRotation().getDegrees(),
-                () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
-                swerve::addVisionMeasurement);
+            "limelight-front",
+            LimelightState.PIPELINE.OBJECT,
+            () -> swerve.getState().Pose.getRotation().getDegrees(),
+            () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
+            swerve::addVisionMeasurement
+        );
         rightState = new LimelightState(
-                "limelight-right",
-                LimelightState.PIPELINE.TAG,
-                () -> swerve.getState().Pose.getRotation().getDegrees(),
-                () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
-                swerve::addVisionMeasurement);
+            "limelight-right",
+            LimelightState.PIPELINE.TAG,
+            () -> swerve.getState().Pose.getRotation().getDegrees(),
+            () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
+            swerve::addVisionMeasurement
+        );
         rearState = new LimelightState(
-                "limelight-rear",
-                LimelightState.PIPELINE.TAG,
-                () -> swerve.getState().Pose.getRotation().getDegrees(),
-                () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
-                swerve::addVisionMeasurement);
+            "limelight-rear",
+            LimelightState.PIPELINE.TAG,
+            () -> swerve.getState().Pose.getRotation().getDegrees(),
+            () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
+            swerve::addVisionMeasurement
+        );
         leftState = new LimelightState(
-                "limelight-left",
-                LimelightState.PIPELINE.TAG,
-                () -> swerve.getState().Pose.getRotation().getDegrees(),
-                () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
-                swerve::addVisionMeasurement);
+            "limelight-left",
+            LimelightState.PIPELINE.TAG,
+            () -> swerve.getState().Pose.getRotation().getDegrees(),
+            () -> swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(),
+            swerve::addVisionMeasurement
+        );
 
         frontState.setHoodSupplier(() -> hood.getAngle().in(Degrees));
         rightState.setHoodSupplier(() -> hood.getAngle().in(Degrees));
@@ -77,10 +81,11 @@ public class Limelight {
         leftState.setHoodSupplier(() -> hood.getAngle().in(Degrees));
 
         limelights = Map.of(
-                "limelight-front", frontState,
-                "limelight-right", rightState,
-                "limelight-rear", rearState,
-                "limelight-left", leftState);
+            "limelight-front", frontState,
+            "limelight-right", rightState,
+            "limelight-rear", rearState,
+            "limelight-left", leftState
+        );
 
         limes = limelights.values();
 
@@ -127,13 +132,13 @@ public class Limelight {
 
     public double getAverageHeading() {
         return limes.stream()
-                .map(LimelightState::getYaw)
-                .filter(java.util.Objects::nonNull)
-                .map(Rotation2d::getDegrees)
-                .filter(z -> !Double.isNaN(z))
-                .mapToDouble(Double::doubleValue)
-                .average()
-                .orElse(Double.NaN);
+            .map(LimelightState::getYaw)
+            .filter(java.util.Objects::nonNull)
+            .map(Rotation2d::getDegrees)
+            .filter(z -> !Double.isNaN(z))
+            .mapToDouble(Double::doubleValue)
+            .average()
+            .orElse(Double.NaN);
     }
 
     /**
@@ -144,11 +149,11 @@ public class Limelight {
      */
     public double getAverageZ() {
         return limes.stream()
-                .map(LimelightState::getZ)
-                .filter(z -> !Double.isNaN(z))
-                .mapToDouble(Double::doubleValue)
-                .average()
-                .orElse(Double.NaN);
+            .map(LimelightState::getZ)
+            .filter(z -> !Double.isNaN(z))
+            .mapToDouble(Double::doubleValue)
+            .average()
+            .orElse(Double.NaN);
     }
 
     /** Manually resets the seeding process */

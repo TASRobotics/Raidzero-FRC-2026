@@ -30,12 +30,7 @@ public interface LazyCTREBuilder<T, S> {
      * @param sensorDirection the sensor direciton relative to the mechanism
      * @return this motor instance for method chaining
      */
-    public LazyCTREBuilder<T, S> withCANCoder(
-            int CANCoderID,
-            CANBus canCoderCanBus,
-            S sensorType,
-            double magnetOffset,
-            SensorDirectionValue sensorDirection);
+    public LazyCTREBuilder<T, S> withCANCoder(int CANCoderID, CANBus canCoderCanBus, S sensorType, double magnetOffset, SensorDirectionValue sensorDirection);
 
     /**
      * Configures a {@link CANcoder} remote feedback sensor with a specified rotor to sensor ratio and
@@ -50,14 +45,7 @@ public interface LazyCTREBuilder<T, S> {
      * @param rotorToSensorRatio the gear ratio of the sensor to the motor
      * @return this motor instance for method chaining
      */
-    public LazyCTREBuilder<T, S> withCANCoder(
-            int CANCoderID,
-            CANBus canCoderCanBus,
-            S sensorType,
-            double magnetOffset,
-            SensorDirectionValue sensorDirection,
-            double discontinuityPoint,
-            double rotorToSensorRatio);
+    public LazyCTREBuilder<T, S> withCANCoder(int CANCoderID, CANBus canCoderCanBus, S sensorType, double magnetOffset, SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio);
 
     /**
      * Configures the PID and Feedforward gains for this motor
@@ -76,17 +64,7 @@ public interface LazyCTREBuilder<T, S> {
      * @param slotNumber the slot number to use for the PIDF gains
      * @return this motor instance for method chaining
      */
-    public LazyCTREBuilder<T, S> withPIDFConfiguration(
-            double p,
-            double i,
-            double d,
-            double s,
-            double g,
-            double v,
-            double a,
-            GravityTypeValue gravityType,
-            StaticFeedforwardSignValue staticSignValue,
-            int slotNumber);
+    public LazyCTREBuilder<T, S> withPIDFConfiguration(double p, double i, double d, double s, double g, double v, double a, GravityTypeValue gravityType, StaticFeedforwardSignValue staticSignValue, int slotNumber);
 
     /**
      * Configures the motion magic parameters for this motor's motion prifiling
@@ -99,8 +77,7 @@ public interface LazyCTREBuilder<T, S> {
      * @param maxAcceleration the maximum acceleration of the mechanism in rotations/s^2
      * @return this motor instance for method chaining
      */
-    public LazyCTREBuilder<T, S> withMotionMagicConfiguration(
-            double expoV, double expoA, AngularVelocity cruiseVelocity, AngularAcceleration maxAcceleration);
+    public LazyCTREBuilder<T, S> withMotionMagicConfiguration(double expoV, double expoA, AngularVelocity cruiseVelocity, AngularAcceleration maxAcceleration);
 
     /**
      * Configures the motion magic parameters for this motor's motion prifiling
@@ -114,12 +91,7 @@ public interface LazyCTREBuilder<T, S> {
      * @param jerk the maximum jerk of the mechanism in rotations/s^3
      * @return this motor instance for method chaining
      */
-    public LazyCTREBuilder<T, S> withMotionMagicConfiguration(
-            double expoV,
-            double expoA,
-            AngularVelocity cruiseVelocity,
-            AngularAcceleration maxAcceleration,
-            double jerk);
+    public LazyCTREBuilder<T, S> withMotionMagicConfiguration(double expoV, double expoA, AngularVelocity cruiseVelocity, AngularAcceleration maxAcceleration, double jerk);
 
     /**
      * Configures the forward and reverse hardware limit switches
@@ -135,13 +107,7 @@ public interface LazyCTREBuilder<T, S> {
      * @param reverseLimitAutosetPositionValue if true, enables the forward limit switch
      * @return this motor instance for method chaining
      */
-    public LazyCTREBuilder<T, S> withLimitSwitch(
-            boolean forwardLimitEnable,
-            boolean forwardLimitAutosetPositionEnable,
-            double forwardLimitAutosetPositionValue,
-            boolean reverseLimitEnable,
-            boolean reverseLimitAutosetPositionEnable,
-            double reverseLimitAutosetPositionValue);
+    public LazyCTREBuilder<T, S> withLimitSwitch(boolean forwardLimitEnable, boolean forwardLimitAutosetPositionEnable, double forwardLimitAutosetPositionValue, boolean reverseLimitEnable, boolean reverseLimitAutosetPositionEnable, double reverseLimitAutosetPositionValue);
 
     /**
      * Configures the forward and reverse software limit switches
@@ -152,11 +118,7 @@ public interface LazyCTREBuilder<T, S> {
      * @param reverseSoftLimit the encoder value of the reverse software limit in mechanism rotations
      * @return this motor instance for method chaining
      */
-    public LazyCTREBuilder<T, S> withSoftLimits(
-            boolean forwardSoftLimitEnable,
-            double forwardSoftLimit,
-            boolean reverseSoftLimitEnable,
-            double reverseSoftLimit);
+    public LazyCTREBuilder<T, S> withSoftLimits(boolean forwardSoftLimitEnable, double forwardSoftLimit, boolean reverseSoftLimitEnable, double reverseSoftLimit);
 
     /**
      * Applies a custom configuration to this motor

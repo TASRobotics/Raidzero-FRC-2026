@@ -40,26 +40,28 @@ public interface ShooterIO extends SubsystemIO {
 
         Real() {
             flywheel = new LazyTalonBuilder(
-                            Flywheel.MOTOR_ID,
-                            Superstructure.canDoAttitude,
-                            Flywheel.SENSOR_TO_MECHANISM_RATIO,
-                            Flywheel.INVERTED,
-                            Flywheel.STATOR_CURRENT_LIMIT.in(Amps),
-                            Flywheel.SUPPLY_CURRENT_LIMIT.in(Amps))
-                    .withPIDFConfiguration(
-                            Flywheel.P,
-                            Flywheel.I,
-                            Flywheel.D,
-                            Flywheel.S,
-                            Flywheel.G,
-                            Flywheel.V,
-                            Flywheel.A,
-                            Flywheel.FF_GRAVITY_TYPE,
-                            Flywheel.FF_SIGN,
-                            Flywheel.VELOCITY_SLOT)
-                    .withMotionMagicConfiguration(0, 0, Flywheel.CRUISE_VELOCITY, Flywheel.ACCELERATION)
-                    .withFollower(Flywheel.FOLLOW_ID, Superstructure.canDoAttitude, Flywheel.FOLLOWER_INVERTED)
-                    .build();
+                Flywheel.MOTOR_ID,
+                Superstructure.canDoAttitude,
+                Flywheel.SENSOR_TO_MECHANISM_RATIO,
+                Flywheel.INVERTED,
+                Flywheel.STATOR_CURRENT_LIMIT.in(Amps),
+                Flywheel.SUPPLY_CURRENT_LIMIT.in(Amps)
+            )
+                .withPIDFConfiguration(
+                    Flywheel.P,
+                    Flywheel.I,
+                    Flywheel.D,
+                    Flywheel.S,
+                    Flywheel.G,
+                    Flywheel.V,
+                    Flywheel.A,
+                    Flywheel.FF_GRAVITY_TYPE,
+                    Flywheel.FF_SIGN,
+                    Flywheel.VELOCITY_SLOT
+                )
+                .withMotionMagicConfiguration(0, 0, Flywheel.CRUISE_VELOCITY, Flywheel.ACCELERATION)
+                .withFollower(Flywheel.FOLLOW_ID, Superstructure.canDoAttitude, Flywheel.FOLLOWER_INVERTED)
+                .build();
 
             flywheel.setCoast();
         }

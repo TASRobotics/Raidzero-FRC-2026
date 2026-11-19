@@ -28,12 +28,7 @@ public class Interpolate<T> extends Command {
      * @param interpolator the interpolator used to compute intermediate points between path elements
      * @param systems the subsystems required by this command
      */
-    public Interpolate(
-            List<T> path,
-            double segmentTimeSeconds,
-            Consumer<T> poseConsumer,
-            PointInterpolator<T> interpolator,
-            Subsystem... systems) {
+    public Interpolate(List<T> path, double segmentTimeSeconds, Consumer<T> poseConsumer, PointInterpolator<T> interpolator, Subsystem... systems) {
         this.path = path;
         this.segmentTime = segmentTimeSeconds;
         this.poseConsumer = poseConsumer;
@@ -52,7 +47,8 @@ public class Interpolate<T> extends Command {
 
     @Override
     public void execute() {
-        if (currentSegment >= path.size() - 1) return;
+        if (currentSegment >= path.size() - 1)
+            return;
 
         T start = path.get(currentSegment);
         T end = path.get(currentSegment + 1);

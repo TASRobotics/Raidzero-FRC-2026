@@ -35,11 +35,13 @@ public class Auto {
 
     private final Debouncer ballGoneDebouncer = new Debouncer(0.75, DebounceType.kRising);
 
-    public static final PathConstraints DEFAULT_CONSTRAINTS =
-            new PathConstraints(3.0, 2.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+    public static final PathConstraints DEFAULT_CONSTRAINTS = new PathConstraints(
+        3.0, 2.0, Units.degreesToRadians(540), Units.degreesToRadians(720)
+    );
 
-    public static final PathConstraints SLOW_CONSTRAINTS =
-            new PathConstraints(1.0, 1.2, Units.degreesToRadians(360), Units.degreesToRadians(480));
+    public static final PathConstraints SLOW_CONSTRAINTS = new PathConstraints(
+        1.0, 1.2, Units.degreesToRadians(360), Units.degreesToRadians(480)
+    );
 
     /**
      * Constructs a {@link Auto} instance
@@ -97,13 +99,16 @@ public class Auto {
      */
     public Command otf(String pathName) {
         return Commands.defer(
-                () -> Commands.sequence(
-                        AutoBuilder.pathfindToPoseFlipped(
-                                get(pathName).getStartingHolonomicPose().orElse(new Pose2d()),
-                                SLOW_CONSTRAINTS,
-                                get(pathName).getIdealStartingState().velocity()),
-                        follow(pathName)),
-                Set.of(swerve));
+            () -> Commands.sequence(
+                AutoBuilder.pathfindToPoseFlipped(
+                    get(pathName).getStartingHolonomicPose().orElse(new Pose2d()),
+                    SLOW_CONSTRAINTS,
+                    get(pathName).getIdealStartingState().velocity()
+                ),
+                follow(pathName)
+            ),
+            Set.of(swerve)
+        );
     }
 
     /**
@@ -126,20 +131,20 @@ public class Auto {
      */
     private Command build(String startPathName, Supplier<Command> autoLogic) {
         return Commands.defer(
-                () -> {
-                    Pose2d blueStartPose =
-                            get(startPathName).getStartingHolonomicPose().orElse(new Pose2d());
-                    Pose2d initialPose = getAlliancePose(blueStartPose);
+            () -> {
+                Pose2d blueStartPose = get(startPathName).getStartingHolonomicPose().orElse(new Pose2d());
+                Pose2d initialPose = getAlliancePose(blueStartPose);
 
-                    return Commands.sequence(
-                            Commands.runOnce(() -> {
-                                if (RobotBase.isSimulation()
-                                        || startPathName.equals("StraightLine")
-                                        || startPathName.equals("RightRightAngle")) swerve.resetPose(initialPose);
-                            }),
-                            autoLogic.get());
-                },
-                Set.of(swerve, intake, extender));
+                return Commands.sequence(
+                    Commands.runOnce(() -> {
+                        if (RobotBase.isSimulation() || startPathName.equals("StraightLine") || startPathName.equals("RightRightAngle"))
+                            swerve.resetPose(initialPose);
+                    }),
+                    autoLogic.get()
+                );
+            },
+            Set.of(swerve, intake, extender)
+        );
     }
 
     /**
@@ -161,8 +166,9 @@ public class Auto {
      */
     public Command getDepot1Cycle() {
         return build(
-                "DepotCross",
-                () -> Commands.sequence(follow("DepotCross"), Commands.waitSeconds(0.1), follow("DepotClimb")));
+            "DepotCross",
+            () -> Commands.sequence(follow("DepotCross"), Commands.waitSeconds(0.1), follow("DepotClimb"))
+        );
     }
 
     /**
@@ -172,35 +178,48 @@ public class Auto {
      */
     public Command getLeft2Cycle() {
         return build(
-                "LeftMidStart",
-                () -> Commands.sequence(
-                        Commands.deadline(
-                                follow("LeftMidStart"),
-                                Commands.sequence(Commands.waitSeconds(0.5), intake.go()),
-                                Commands.sequence(Commands.waitSeconds(0.5), extender.extend())),
-                        Commands.deadline(
-                                follow("LeftMidTrenchShoot"),
-                                Commands.sequence(Commands.waitSeconds(1.75), intake.stop())),
-                        Commands.deadline(
-                                Commands.waitUntil(() -> ballGoneDebouncer.calculate(
-                                                LimelightHelpers.getTA("limelight-front") < 0.01))
-                                        .withTimeout(6),
-                                Commands.sequence(
-                                        Commands.parallel(this.agitate().repeatedly(), intake.stop()))),
-                        Commands.deadline(
-                                follow("LeftMidCollect"),
-                                Commands.sequence(extender.extend().withTimeout(1), intake.go())),
-                        follow("LeftMidCollectTrenchOut"),
-                        Commands.deadline(
-                                follow("LeftMidShoot"), Commands.sequence(Commands.waitSeconds(1.75), intake.stop())),
-                        Commands.deadline(
-                                Commands.waitUntil(() ->
-                                        ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)),
-                                Commands.sequence(
-                                        Commands.parallel(this.agitate().repeatedly(), intake.stop()))),
-                        Commands.deadline(
-                                follow("LeftShootToMid"),
-                                Commands.sequence(extender.extend().withTimeout(1), intake.go()))));
+            "LeftMidStart",
+            () -> Commands.sequence(
+                Commands.deadline(
+                    follow("LeftMidStart"),
+                    Commands.sequence(Commands.waitSeconds(0.5), intake.go()),
+                    Commands.sequence(Commands.waitSeconds(0.5), extender.extend())
+                ),
+                Commands.deadline(
+                    follow("LeftMidTrenchShoot"),
+                    Commands.sequence(Commands.waitSeconds(1.75), intake.stop())
+                ),
+                Commands.deadline(
+                    Commands.waitUntil(
+                        () -> ballGoneDebouncer.calculate(
+                            LimelightHelpers.getTA("limelight-front") < 0.01
+                        )
+                    )
+                        .withTimeout(6),
+                    Commands.sequence(
+                        Commands.parallel(this.agitate().repeatedly(), intake.stop())
+                    )
+                ),
+                Commands.deadline(
+                    follow("LeftMidCollect"),
+                    Commands.sequence(extender.extend().withTimeout(1), intake.go())
+                ),
+                follow("LeftMidCollectTrenchOut"),
+                Commands.deadline(
+                    follow("LeftMidShoot"), Commands.sequence(Commands.waitSeconds(1.75), intake.stop())
+                ),
+                Commands.deadline(
+                    Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)),
+                    Commands.sequence(
+                        Commands.parallel(this.agitate().repeatedly(), intake.stop())
+                    )
+                ),
+                Commands.deadline(
+                    follow("LeftShootToMid"),
+                    Commands.sequence(extender.extend().withTimeout(1), intake.go())
+                )
+            )
+        );
     }
 
     /**
@@ -210,27 +229,37 @@ public class Auto {
      */
     public Command getRightOutpostAuto() {
         return build(
-                "RightMidStart",
-                () -> Commands.sequence(
-                        // Drive the first path as the leader
-                        Commands.deadline(
-                                follow("RightMidStart"),
-                                Commands.sequence(Commands.waitSeconds(0.5), intake.go()),
-                                Commands.sequence(Commands.waitSeconds(0.5), extender.extend())),
-                        follow("RightMidTrenchIn"),
+            "RightMidStart",
+            () -> Commands.sequence(
+                // Drive the first path as the leader
+                Commands.deadline(
+                    follow("RightMidStart"),
+                    Commands.sequence(Commands.waitSeconds(0.5), intake.go()),
+                    Commands.sequence(Commands.waitSeconds(0.5), extender.extend())
+                ),
+                follow("RightMidTrenchIn"),
 
-                        // Drive and stop intake simultaneously
-                        Commands.deadline(
-                                follow("RightMidToOutpost"),
-                                Commands.sequence(Commands.waitSeconds(1.75), intake.stop())),
-                        Commands.deadline(
-                                Commands.waitUntil(() -> ballGoneDebouncer.calculate(
-                                                LimelightHelpers.getTA("limelight-front") < 0.01))
-                                        .withTimeout(6),
-                                Commands.sequence(
-                                        Commands.parallel(this.agitate().repeatedly(), intake.stop()))),
-                        Commands.deadline(
-                                follow("OutpostToMid"), Commands.sequence(Commands.waitSeconds(2), intake.go()))));
+                // Drive and stop intake simultaneously
+                Commands.deadline(
+                    follow("RightMidToOutpost"),
+                    Commands.sequence(Commands.waitSeconds(1.75), intake.stop())
+                ),
+                Commands.deadline(
+                    Commands.waitUntil(
+                        () -> ballGoneDebouncer.calculate(
+                            LimelightHelpers.getTA("limelight-front") < 0.01
+                        )
+                    )
+                        .withTimeout(6),
+                    Commands.sequence(
+                        Commands.parallel(this.agitate().repeatedly(), intake.stop())
+                    )
+                ),
+                Commands.deadline(
+                    follow("OutpostToMid"), Commands.sequence(Commands.waitSeconds(2), intake.go())
+                )
+            )
+        );
     }
 
     /**
@@ -240,42 +269,56 @@ public class Auto {
      */
     public Command getRightOutpostDoubleAuto() {
         return build(
-                "RightMidStartFast",
-                () -> Commands.sequence(
-                        // Drive the first path as the leader
-                        Commands.deadline(
-                                follow("RightMidStartFast"),
-                                Commands.sequence(Commands.waitSeconds(0.5), intake.go()),
-                                Commands.sequence(Commands.waitSeconds(0.3), extender.extend())),
-                        Commands.deadline(
-                                follow("RightMidTrenchShoot"),
-                                Commands.sequence(Commands.waitSeconds(1.75), intake.stop())),
-                        Commands.deadline(
-                                Commands.waitUntil(() ->
-                                        ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)),
-                                Commands.sequence(
-                                        Commands.parallel(this.agitate().repeatedly(), intake.stop()))),
-                        Commands.deadline(
-                                follow("RightMidCollect"),
-                                Commands.sequence(extender.extend().withTimeout(1), intake.go())),
-                        follow("RightMidCollectTrenchIn"),
+            "RightMidStartFast",
+            () -> Commands.sequence(
+                // Drive the first path as the leader
+                Commands.deadline(
+                    follow("RightMidStartFast"),
+                    Commands.sequence(Commands.waitSeconds(0.5), intake.go()),
+                    Commands.sequence(Commands.waitSeconds(0.3), extender.extend())
+                ),
+                Commands.deadline(
+                    follow("RightMidTrenchShoot"),
+                    Commands.sequence(Commands.waitSeconds(1.75), intake.stop())
+                ),
+                Commands.deadline(
+                    Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)),
+                    Commands.sequence(
+                        Commands.parallel(this.agitate().repeatedly(), intake.stop())
+                    )
+                ),
+                Commands.deadline(
+                    follow("RightMidCollect"),
+                    Commands.sequence(extender.extend().withTimeout(1), intake.go())
+                ),
+                follow("RightMidCollectTrenchIn"),
 
-                        // Drive and stop intake simultaneously
-                        Commands.deadline(
-                                follow("RightMidToOutpostFast"),
-                                Commands.sequence(Commands.waitSeconds(1.75), intake.stop())),
-                        Commands.deadline(
-                                Commands.sequence(
-                                        Commands.waitSeconds(4),
-                                        Commands.waitUntil(() -> ballGoneDebouncer.calculate(
-                                                        LimelightHelpers.getTA("limelight-front") < 0.01))
-                                                .withTimeout(6)),
-                                Commands.sequence(
-                                        Commands.waitSeconds(4),
-                                        Commands.parallel(this.agitate().repeatedly(), intake.stop()))),
-                        Commands.deadline(
-                                follow("OutpostToMidFast"),
-                                Commands.sequence(extender.extend().withTimeout(1), intake.go()))));
+                // Drive and stop intake simultaneously
+                Commands.deadline(
+                    follow("RightMidToOutpostFast"),
+                    Commands.sequence(Commands.waitSeconds(1.75), intake.stop())
+                ),
+                Commands.deadline(
+                    Commands.sequence(
+                        Commands.waitSeconds(4),
+                        Commands.waitUntil(
+                            () -> ballGoneDebouncer.calculate(
+                                LimelightHelpers.getTA("limelight-front") < 0.01
+                            )
+                        )
+                            .withTimeout(6)
+                    ),
+                    Commands.sequence(
+                        Commands.waitSeconds(4),
+                        Commands.parallel(this.agitate().repeatedly(), intake.stop())
+                    )
+                ),
+                Commands.deadline(
+                    follow("OutpostToMidFast"),
+                    Commands.sequence(extender.extend().withTimeout(1), intake.go())
+                )
+            )
+        );
     }
 
     /**
@@ -285,35 +328,48 @@ public class Auto {
      */
     public Command getRight2Cycle() {
         return build(
-                "RightMidStartFast",
-                () -> Commands.sequence(
-                        Commands.deadline(
-                                follow("RightMidStartFast"),
-                                Commands.sequence(Commands.waitSeconds(0.5), intake.go()),
-                                Commands.sequence(Commands.waitSeconds(0.3), extender.extend())),
-                        Commands.deadline(
-                                follow("RightMidTrenchShoot"),
-                                Commands.sequence(Commands.waitSeconds(1.75), intake.stop())),
-                        Commands.deadline(
-                                Commands.waitUntil(() -> ballGoneDebouncer.calculate(
-                                                LimelightHelpers.getTA("limelight-front") < 0.01))
-                                        .withTimeout(6),
-                                Commands.sequence(
-                                        Commands.parallel(this.agitate().repeatedly(), intake.stop()))),
-                        Commands.deadline(
-                                follow("RightMidCollect"),
-                                Commands.sequence(extender.extend().withTimeout(1), intake.go())),
-                        follow("RightMidCollectTrenchOut"),
-                        Commands.deadline(
-                                follow("RightMidShoot"), Commands.sequence(Commands.waitSeconds(1.75), intake.stop())),
-                        Commands.deadline(
-                                Commands.waitUntil(() ->
-                                        ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)),
-                                Commands.sequence(
-                                        Commands.parallel(this.agitate().repeatedly(), intake.stop()))),
-                        Commands.deadline(
-                                follow("RightShootToMid"),
-                                Commands.sequence(extender.extend().withTimeout(1), intake.go()))));
+            "RightMidStartFast",
+            () -> Commands.sequence(
+                Commands.deadline(
+                    follow("RightMidStartFast"),
+                    Commands.sequence(Commands.waitSeconds(0.5), intake.go()),
+                    Commands.sequence(Commands.waitSeconds(0.3), extender.extend())
+                ),
+                Commands.deadline(
+                    follow("RightMidTrenchShoot"),
+                    Commands.sequence(Commands.waitSeconds(1.75), intake.stop())
+                ),
+                Commands.deadline(
+                    Commands.waitUntil(
+                        () -> ballGoneDebouncer.calculate(
+                            LimelightHelpers.getTA("limelight-front") < 0.01
+                        )
+                    )
+                        .withTimeout(6),
+                    Commands.sequence(
+                        Commands.parallel(this.agitate().repeatedly(), intake.stop())
+                    )
+                ),
+                Commands.deadline(
+                    follow("RightMidCollect"),
+                    Commands.sequence(extender.extend().withTimeout(1), intake.go())
+                ),
+                follow("RightMidCollectTrenchOut"),
+                Commands.deadline(
+                    follow("RightMidShoot"), Commands.sequence(Commands.waitSeconds(1.75), intake.stop())
+                ),
+                Commands.deadline(
+                    Commands.waitUntil(() -> ballGoneDebouncer.calculate(LimelightHelpers.getTA("limelight-front") < 0.01)),
+                    Commands.sequence(
+                        Commands.parallel(this.agitate().repeatedly(), intake.stop())
+                    )
+                ),
+                Commands.deadline(
+                    follow("RightShootToMid"),
+                    Commands.sequence(extender.extend().withTimeout(1), intake.go())
+                )
+            )
+        );
     }
 
     /**
@@ -323,12 +379,12 @@ public class Auto {
      */
     public Command agitate() {
         return Commands.waitUntil(() -> LimelightHelpers.getTA("limelight-front") < 12)
-                .andThen(extender.agitateL1Setpoint())
-                .until(() -> LimelightHelpers.getTA("limelight-front") < 10)
-                .andThen(extender.agitateL2Setpoint())
-                .until(() -> LimelightHelpers.getTA("limelight-front") < 8)
-                .andThen(extender.agitateL3Setpoint())
-                .finallyDo(() -> extender.extend().withTimeout(2));
+            .andThen(extender.agitateL1Setpoint())
+            .until(() -> LimelightHelpers.getTA("limelight-front") < 10)
+            .andThen(extender.agitateL2Setpoint())
+            .until(() -> LimelightHelpers.getTA("limelight-front") < 8)
+            .andThen(extender.agitateL3Setpoint())
+            .finallyDo(() -> extender.extend().withTimeout(2));
     }
 
     /**

@@ -59,8 +59,10 @@ public class Intake extends R0Subsystem<IntakeIO> {
      */
     public static Intake system() {
         if (system == null) {
-            if (Utils.isSimulation()) system = new Intake(new IntakeIO.Sim());
-            else system = new Intake(new IntakeIO.Real());
+            if (Utils.isSimulation())
+                system = new Intake(new IntakeIO.Sim());
+            else
+                system = new Intake(new IntakeIO.Real());
         }
         return system;
     }
