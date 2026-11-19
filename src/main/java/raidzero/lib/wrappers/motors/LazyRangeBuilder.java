@@ -34,13 +34,11 @@ public class LazyRangeBuilder {
      * @return this builder
      */
     public LazyRangeBuilder withFovParams(double fovCenterX, double fovCenterY, double fovRangeX, double fovRangeY) {
-        configuration.withFovParams(
-            new FovParamsConfigs()
+        configuration.withFovParams(new FovParamsConfigs()
                 .withFOVCenterX(fovCenterX)
                 .withFOVCenterY(fovCenterY)
                 .withFOVRangeX(fovRangeX)
-                .withFOVRangeY(fovRangeY)
-        );
+                .withFOVRangeY(fovRangeY));
         return this;
     }
 
@@ -52,11 +50,9 @@ public class LazyRangeBuilder {
      * @return this builder
      */
     public LazyRangeBuilder withProximityParams(double proximityThreshold, double hysteresis) {
-        configuration.withProximityParams(
-            new ProximityParamsConfigs()
+        configuration.withProximityParams(new ProximityParamsConfigs()
                 .withProximityThreshold(proximityThreshold)
-                .withProximityHysteresis(hysteresis)
-        );
+                .withProximityHysteresis(hysteresis));
         return this;
     }
 
@@ -67,9 +63,7 @@ public class LazyRangeBuilder {
      * @return this builder
      */
     public LazyRangeBuilder withProximityParams(double proximityThreshold) {
-        configuration.withProximityParams(
-            new ProximityParamsConfigs().withProximityThreshold(proximityThreshold)
-        );
+        configuration.withProximityParams(new ProximityParamsConfigs().withProximityThreshold(proximityThreshold));
         return this;
     }
 
@@ -82,8 +76,7 @@ public class LazyRangeBuilder {
      */
     public LazyRangeBuilder withToFParams(UpdateModeValue updateMode, double updateFrequency) {
         configuration.withToFParams(
-            new ToFParamsConfigs().withUpdateMode(updateMode).withUpdateFrequency(updateFrequency)
-        );
+                new ToFParamsConfigs().withUpdateMode(updateMode).withUpdateFrequency(updateFrequency));
         return this;
     }
 

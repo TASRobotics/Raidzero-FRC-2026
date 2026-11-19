@@ -36,30 +36,26 @@ public interface HoodIO extends SubsystemIO {
         /** Constructs a real instance of the Hood IO */
         public Real() {
             pitch = new LazyFXSBuilder(
-                Pitch.MOTOR_ID,
-                Superstructure.canDoAttitude,
-                Pitch.MOTOR_ARRANGEMENT,
-                Pitch.SENSOR_TO_MECHANISM_RATIO,
-                Pitch.INVERTED,
-                Pitch.STATOR_CURRENT_LIMIT.in(Amps),
-                Pitch.SUPPLY_CURRENT_LIMIT.in(Amps)
-            )
-                .withPIDFConfiguration(
-                    Pitch.P,
-                    Pitch.I,
-                    Pitch.D,
-                    Pitch.S,
-                    Pitch.G,
-                    Pitch.V,
-                    Pitch.A,
-                    Pitch.FF_GRAVITY_TYPE,
-                    Pitch.FF_SIGN,
-                    Pitch.POSITION_SLOT
-                )
-                .withMotionMagicConfiguration(
-                    Pitch.EXPO_V, Pitch.EXPO_A, Pitch.CRUISE_VELOCITY, Pitch.ACCELERATION
-                )
-                .build();
+                            Pitch.MOTOR_ID,
+                            Superstructure.canDoAttitude,
+                            Pitch.MOTOR_ARRANGEMENT,
+                            Pitch.SENSOR_TO_MECHANISM_RATIO,
+                            Pitch.INVERTED,
+                            Pitch.STATOR_CURRENT_LIMIT.in(Amps),
+                            Pitch.SUPPLY_CURRENT_LIMIT.in(Amps))
+                    .withPIDFConfiguration(
+                            Pitch.P,
+                            Pitch.I,
+                            Pitch.D,
+                            Pitch.S,
+                            Pitch.G,
+                            Pitch.V,
+                            Pitch.A,
+                            Pitch.FF_GRAVITY_TYPE,
+                            Pitch.FF_SIGN,
+                            Pitch.POSITION_SLOT)
+                    .withMotionMagicConfiguration(Pitch.EXPO_V, Pitch.EXPO_A, Pitch.CRUISE_VELOCITY, Pitch.ACCELERATION)
+                    .build();
 
             // Superstructure.orchestra.addInstrument(pitch.getMotor());
         }

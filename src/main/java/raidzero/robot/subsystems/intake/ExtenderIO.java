@@ -59,36 +59,30 @@ public interface ExtenderIO extends SubsystemIO {
         /** Constructs a real instance of the Extender IO */
         public Real() {
             motor = new LazyTalonBuilder(
-                Extender.MOTOR_ID,
-                Superstructure.canDoAttitude,
-                Extender.SENSOR_TO_MECHANISM_RATIO,
-                Extender.INVERTED,
-                Extender.STATOR_CURRENT_LIMIT.in(Amps),
-                Extender.SUPPLY_CURRENT_LIMIT.in(Amps)
-            )
-                .withPIDFConfiguration(
-                    Extender.P,
-                    Extender.I,
-                    Extender.D,
-                    Extender.S,
-                    Extender.G,
-                    Extender.V,
-                    Extender.A,
-                    Extender.FF_GRAVITY_TYPE,
-                    Extender.FF_SIGN,
-                    0
-                )
-                .withMotionMagicConfiguration(
-                    Extender.EXPO_V, Extender.EXPO_A, Extender.CRUISE_VELOCITY, Extender.ACCELERATION
-                )
-                .withFollower(
-                    Extender.FOLLOW_ID, Superstructure.canDoAttitude, Extender.FOLLOW_ALIGNMENT
-                )
-                .withSoftLimits(
-                    Extender.ENALBE_FORWARD_SOFT_LIMIT, Extender.FORWARD_SOFT_LIMIT.in(Rotations),
-                    Extender.ENABLE_REVERSE_SOFT_LIMIT, Extender.REVERSE_SOFT_LIMIT.in(Rotations)
-                )
-                .build();
+                            Extender.MOTOR_ID,
+                            Superstructure.canDoAttitude,
+                            Extender.SENSOR_TO_MECHANISM_RATIO,
+                            Extender.INVERTED,
+                            Extender.STATOR_CURRENT_LIMIT.in(Amps),
+                            Extender.SUPPLY_CURRENT_LIMIT.in(Amps))
+                    .withPIDFConfiguration(
+                            Extender.P,
+                            Extender.I,
+                            Extender.D,
+                            Extender.S,
+                            Extender.G,
+                            Extender.V,
+                            Extender.A,
+                            Extender.FF_GRAVITY_TYPE,
+                            Extender.FF_SIGN,
+                            0)
+                    .withMotionMagicConfiguration(
+                            Extender.EXPO_V, Extender.EXPO_A, Extender.CRUISE_VELOCITY, Extender.ACCELERATION)
+                    .withFollower(Extender.FOLLOW_ID, Superstructure.canDoAttitude, Extender.FOLLOW_ALIGNMENT)
+                    .withSoftLimits(
+                            Extender.ENALBE_FORWARD_SOFT_LIMIT, Extender.FORWARD_SOFT_LIMIT.in(Rotations),
+                            Extender.ENABLE_REVERSE_SOFT_LIMIT, Extender.REVERSE_SOFT_LIMIT.in(Rotations))
+                    .build();
         }
 
         @Override
