@@ -161,10 +161,11 @@ spotless {
     }
 
     java {
-        importOrder()
-        targetExclude "**/TunerConstants.java", "**/Telemetry.java", "**/LimelightHelpers.java",
-                    "**/Elastic.java"
-        eclipse().configFile rootProject.file("eclipse-formatter.xml")
+        target "src/**/*.java"
+        targetExclude "**/TunerConstants.java", "**/Telemetry.java", "**/LimelightHelpers.java"
+        palantirJavaFormat()
+        // eclipse().configFile rootProject.file("eclipse-formatter.xml")
+        endWithNewline()
         toggleOffOn()
         trimTrailingWhitespace()
     }

@@ -34,27 +34,25 @@ public interface SpindexerIO extends SubsystemIO {
         /** Constructs a real instance of the Spindexer IO */
         public Real() {
             motor = new LazyTalonBuilder(
-                Spindexer.MOTOR_ID,
-                Superstructure.canDoAttitude,
-                Spindexer.SENSOR_TO_MECHANISM_RATIO,
-                Spindexer.INVERTED,
-                Spindexer.STATOR_CURRENT_LIMIT.in(Amps),
-                Spindexer.SUPPLY_CURRENT_LIMIT.in(Amps)
-            )
-                .withPIDFConfiguration(
-                    Spindexer.P,
-                    Spindexer.I,
-                    Spindexer.D,
-                    Spindexer.S,
-                    Spindexer.G,
-                    Spindexer.V,
-                    Spindexer.A,
-                    Spindexer.FF_GRAVITY_TYPE,
-                    Spindexer.FF_SIGN,
-                    0
-                )
-                .withMotionMagicConfiguration(0, 0, Spindexer.CRUISE_VELOCITY, Spindexer.ACCELERATION)
-                .build();
+                            Spindexer.MOTOR_ID,
+                            Superstructure.canDoAttitude,
+                            Spindexer.SENSOR_TO_MECHANISM_RATIO,
+                            Spindexer.INVERTED,
+                            Spindexer.STATOR_CURRENT_LIMIT.in(Amps),
+                            Spindexer.SUPPLY_CURRENT_LIMIT.in(Amps))
+                    .withPIDFConfiguration(
+                            Spindexer.P,
+                            Spindexer.I,
+                            Spindexer.D,
+                            Spindexer.S,
+                            Spindexer.G,
+                            Spindexer.V,
+                            Spindexer.A,
+                            Spindexer.FF_GRAVITY_TYPE,
+                            Spindexer.FF_SIGN,
+                            0)
+                    .withMotionMagicConfiguration(0, 0, Spindexer.CRUISE_VELOCITY, Spindexer.ACCELERATION)
+                    .build();
 
             // Superstructure.orchestra.addInstrument(this.motor.getMotor());
         }

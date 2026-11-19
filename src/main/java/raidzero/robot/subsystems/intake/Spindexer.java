@@ -45,9 +45,9 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
      */
     public Command antiJamBig() {
         return run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
-            .withTimeout(0.2)
-            .andThen(run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED)).withTimeout(0.3))
-            .repeatedly();
+                .withTimeout(0.2)
+                .andThen(run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED)).withTimeout(0.3))
+                .repeatedly();
     }
 
     /**
@@ -57,13 +57,11 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
      */
     public Command antiJamAuto() {
         return run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED))
-            .withTimeout(1)
-            .andThen(
-                run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
-                    .withTimeout(1)
-            )
-            .andThen(run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED)).withTimeout(1))
-            .repeatedly();
+                .withTimeout(1)
+                .andThen(run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
+                        .withTimeout(1))
+                .andThen(run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED)).withTimeout(1))
+                .repeatedly();
     }
 
     /**
@@ -91,10 +89,9 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
      * @return a {@link Trigger}
      */
     public Trigger atTargetVelocity() {
-        return new Trigger(
-            () -> io.getVelocity().minus(IntakeConstants.Spindexer.INDEX_SPEED)
-                .abs(RotationsPerSecond) < IntakeConstants.Spindexer.VELOCITY_TOLERANCE.in(RotationsPerSecond)
-        );
+        return new Trigger(() ->
+                io.getVelocity().minus(IntakeConstants.Spindexer.INDEX_SPEED).abs(RotationsPerSecond)
+                        < IntakeConstants.Spindexer.VELOCITY_TOLERANCE.in(RotationsPerSecond));
     }
 
     /**
@@ -103,9 +100,8 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
      * @return
      */
     public Trigger stopped() {
-        return new Trigger(
-            () -> io.getVelocity().abs(RotationsPerSecond) < IntakeConstants.Spindexer.VELOCITY_TOLERANCE.in(RotationsPerSecond)
-        );
+        return new Trigger(() -> io.getVelocity().abs(RotationsPerSecond)
+                < IntakeConstants.Spindexer.VELOCITY_TOLERANCE.in(RotationsPerSecond));
     }
 
     /**
@@ -124,10 +120,8 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
      */
     public static Spindexer system() {
         if (system == null) {
-            if (com.ctre.phoenix6.Utils.isSimulation())
-                system = new Spindexer(new SpindexerIO.Sim());
-            else
-                system = new Spindexer(new SpindexerIO.Real());
+            if (com.ctre.phoenix6.Utils.isSimulation()) system = new Spindexer(new SpindexerIO.Sim());
+            else system = new Spindexer(new SpindexerIO.Real());
         }
         return system;
     }

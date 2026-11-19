@@ -37,8 +37,8 @@ public class Feeder extends R0Subsystem<FeederIO> {
      */
     public Trigger atTargetVelocity() {
         return new Trigger(() -> {
-            return io.getVelocity().minus(ShooterConstants.Feeder.FEEDER_SPEED)
-                .abs(RotationsPerSecond) < ShooterConstants.Feeder.VELOCITY_TOLERANCE.in(RotationsPerSecond);
+            return io.getVelocity().minus(ShooterConstants.Feeder.FEEDER_SPEED).abs(RotationsPerSecond)
+                    < ShooterConstants.Feeder.VELOCITY_TOLERANCE.in(RotationsPerSecond);
         });
     }
 
@@ -80,10 +80,8 @@ public class Feeder extends R0Subsystem<FeederIO> {
      */
     public static Feeder system() {
         if (system == null) {
-            if (Utils.isSimulation())
-                system = new Feeder(new FeederIO.Sim());
-            else
-                system = new Feeder(new FeederIO.Real());
+            if (Utils.isSimulation()) system = new Feeder(new FeederIO.Sim());
+            else system = new Feeder(new FeederIO.Real());
         }
         return system;
     }

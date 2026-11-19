@@ -36,7 +36,13 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
      * @param statorCurrentLimit The maximum stator current
      * @param supplyCurrentLimit
      */
-    public LazyTalonBuilder(int motorID, CANBus canBus, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
+    public LazyTalonBuilder(
+            int motorID,
+            CANBus canBus,
+            double sensorToMechanismRatio,
+            InvertedValue invertedValue,
+            double statorCurrentLimit,
+            double supplyCurrentLimit) {
         this.motorID = motorID;
         this.canBus = canBus;
 
@@ -66,7 +72,12 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
     }
 
     @Override
-    public LazyTalonBuilder withCANCoder(int CANCoderID, CANBus canCoderCanBus, FeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection) {
+    public LazyTalonBuilder withCANCoder(
+            int CANCoderID,
+            CANBus canCoderCanBus,
+            FeedbackSensorSourceValue sensorType,
+            double magnetOffset,
+            SensorDirectionValue sensorDirection) {
 
         this.canCoderID = CANCoderID;
         this.canCoderCanBus = canCoderCanBus;
@@ -82,7 +93,14 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
     }
 
     @Override
-    public LazyTalonBuilder withCANCoder(int CANCoderID, CANBus canCoderCanBus, FeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio) {
+    public LazyTalonBuilder withCANCoder(
+            int CANCoderID,
+            CANBus canCoderCanBus,
+            FeedbackSensorSourceValue sensorType,
+            double magnetOffset,
+            SensorDirectionValue sensorDirection,
+            double discontinuityPoint,
+            double rotorToSensorRatio) {
         withCANCoder(CANCoderID, canCoderCanBus, sensorType, magnetOffset, sensorDirection);
 
         canCoderConfiguration.MagnetSensor.AbsoluteSensorDiscontinuityPoint = discontinuityPoint;
@@ -93,7 +111,17 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
     }
 
     @Override
-    public LazyTalonBuilder withPIDFConfiguration(double p, double i, double d, double s, double g, double v, double a, GravityTypeValue gravityType, StaticFeedforwardSignValue staticSignValue, int slotNumber) {
+    public LazyTalonBuilder withPIDFConfiguration(
+            double p,
+            double i,
+            double d,
+            double s,
+            double g,
+            double v,
+            double a,
+            GravityTypeValue gravityType,
+            StaticFeedforwardSignValue staticSignValue,
+            int slotNumber) {
         switch (slotNumber) {
             case 0:
                 motorConfiguration.Slot0.kP = p;
@@ -136,7 +164,8 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
     }
 
     @Override
-    public LazyTalonBuilder withMotionMagicConfiguration(double expoV, double expoA, AngularVelocity cruiseVelocity, AngularAcceleration maxAcceleration) {
+    public LazyTalonBuilder withMotionMagicConfiguration(
+            double expoV, double expoA, AngularVelocity cruiseVelocity, AngularAcceleration maxAcceleration) {
         motorConfiguration.MotionMagic.MotionMagicCruiseVelocity = cruiseVelocity.in(RotationsPerSecond);
         motorConfiguration.MotionMagic.MotionMagicAcceleration = maxAcceleration.in(RotationsPerSecondPerSecond);
 
@@ -147,7 +176,12 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
     }
 
     @Override
-    public LazyTalonBuilder withMotionMagicConfiguration(double expoV, double expoA, AngularVelocity cruiseVelocity, AngularAcceleration maxAcceleration, double jerk) {
+    public LazyTalonBuilder withMotionMagicConfiguration(
+            double expoV,
+            double expoA,
+            AngularVelocity cruiseVelocity,
+            AngularAcceleration maxAcceleration,
+            double jerk) {
         withMotionMagicConfiguration(expoV, expoA, cruiseVelocity, maxAcceleration);
         motorConfiguration.MotionMagic.MotionMagicJerk = jerk;
 
@@ -162,7 +196,13 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
     }
 
     @Override
-    public LazyTalonBuilder withLimitSwitch(boolean forwardLimitEnable, boolean forwardLimitAutosetPositionEnable, double forwardLimitAutosetPositionValue, boolean reverseLimitEnable, boolean reverseLimitAutosetPositionEnable, double reverseLimitAutosetPositionValue) {
+    public LazyTalonBuilder withLimitSwitch(
+            boolean forwardLimitEnable,
+            boolean forwardLimitAutosetPositionEnable,
+            double forwardLimitAutosetPositionValue,
+            boolean reverseLimitEnable,
+            boolean reverseLimitAutosetPositionEnable,
+            double reverseLimitAutosetPositionValue) {
         motorConfiguration.HardwareLimitSwitch.ForwardLimitEnable = forwardLimitEnable;
         motorConfiguration.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = forwardLimitAutosetPositionEnable;
         motorConfiguration.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = forwardLimitAutosetPositionValue;
@@ -175,7 +215,11 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
     }
 
     @Override
-    public LazyTalonBuilder withSoftLimits(boolean forwardSoftLimitEnable, double forwardSoftLimit, boolean reverseSoftLimitEnable, double reverseSoftLimit) {
+    public LazyTalonBuilder withSoftLimits(
+            boolean forwardSoftLimitEnable,
+            double forwardSoftLimit,
+            boolean reverseSoftLimitEnable,
+            double reverseSoftLimit) {
         motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = forwardSoftLimitEnable;
         motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = forwardSoftLimit;
 
@@ -193,17 +237,16 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
     @Override
     public LazyTalon build() {
         LazyTalon motor = new LazyTalon(
-            motorID,
-            canBus,
-            motorConfiguration,
-            followID,
-            followCanBus,
-            followConfiguration,
-            followerInverted,
-            canCoderID,
-            canCoderCanBus,
-            canCoderConfiguration
-        );
+                motorID,
+                canBus,
+                motorConfiguration,
+                followID,
+                followCanBus,
+                followConfiguration,
+                followerInverted,
+                canCoderID,
+                canCoderCanBus,
+                canCoderConfiguration);
         motor.setBrake();
 
         return motor;

@@ -21,10 +21,10 @@ public class Aim extends Command {
     public void execute() {
         AimBot aquireAim = turret.getTurretAim(true);
         double robotRelativeTurretSetpoint = aquireAim
-            .goal()
-            .getRotation()
-            .minus(aquireAim.robot().getRotation())
-            .getRotations();
+                .goal()
+                .getRotation()
+                .minus(aquireAim.robot().getRotation())
+                .getRotations();
 
         turret.moveTo(Rotations.of(robotRelativeTurretSetpoint));
     }

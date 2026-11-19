@@ -25,12 +25,10 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     public Command shoot() {
         return run(() -> {
             AngularVelocity target = RotationsPerSecond.of(
-                Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters))
-            );
+                    Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
 
             io.setVelocity(target);
-        }
-        );
+        });
     }
 
     /**
@@ -42,10 +40,10 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     public Trigger atTargetVelocity() {
         return new Trigger(() -> {
             AngularVelocity target = RotationsPerSecond.of(
-                Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters))
-            );
+                    Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
 
-            return io.getVelocity().minus(target).abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE.in(RotationsPerSecond);
+            return io.getVelocity().minus(target).abs(RotationsPerSecond)
+                    < Flywheel.VELOCIOTY_TOLERANCE.in(RotationsPerSecond);
         });
     }
 
@@ -57,8 +55,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      */
     public Trigger stopped() {
         return new Trigger(
-            () -> io.getVelocity().abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE.in(RotationsPerSecond)
-        );
+                () -> io.getVelocity().abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE.in(RotationsPerSecond));
     }
 
     /**
@@ -69,8 +66,8 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      */
     public Trigger atManualTargetVelocity() {
         return new Trigger(() -> {
-            return io.getVelocity().minus(this.velocityTarget).abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE
-                .in(RotationsPerSecond);
+            return io.getVelocity().minus(this.velocityTarget).abs(RotationsPerSecond)
+                    < Flywheel.VELOCIOTY_TOLERANCE.in(RotationsPerSecond);
         });
     }
 
