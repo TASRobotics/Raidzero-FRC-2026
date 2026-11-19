@@ -84,7 +84,8 @@ public final class TurretConstants {
         public static final String CAN_BUS_NAME = "canDoAttitude";
         public static final MotorArrangementValue MOTOR_ARRANGEMENT = MotorArrangementValue.Minion_JST;
 
-        public static final double SENSOR_TO_MECHANISM_RATIO = (42.0 / 10.0) * (42.0 / 14.0) * (25.0 / 16.0) * (205.0 / 12.0);
+        public static final double SENSOR_TO_MECHANISM_RATIO =
+                (42.0 / 10.0) * (42.0 / 14.0) * (25.0 / 16.0) * (205.0 / 12.0);
         public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(40.0);

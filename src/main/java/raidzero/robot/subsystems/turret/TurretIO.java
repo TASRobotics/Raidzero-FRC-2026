@@ -66,34 +66,29 @@ public interface TurretIO extends SubsystemIO {
         /** Constructs a real instance of the Turret IO */
         public Real() {
             yaw = new LazyFXSBuilder(
-                Yaw.MOTOR_ID,
-                Superstructure.canDoAttitude,
-                Yaw.MOTOR_ARRANGEMENT,
-                Yaw.SENSOR_TO_MECHANISM_RATIO,
-                Yaw.INVERTED,
-                Yaw.STATOR_CURRENT_LIMIT.in(Amps),
-                Yaw.SUPPLY_CURRENT_LIMIT.in(Amps)
-            )
-                .withPIDFConfiguration(
-                    Yaw.POSITION_P,
-                    Yaw.POSITION_I,
-                    Yaw.POSITION_D,
-                    Yaw.POSITION_S,
-                    Yaw.POSITION_G,
-                    Yaw.POSITION_V,
-                    Yaw.POSITION_A,
-                    Yaw.FF_GRAVITY_TYPE,
-                    Yaw.FF_SIGN,
-                    Yaw.POSITION_SLOT
-                )
-                .withMotionMagicConfiguration(
-                    Yaw.EXPO_V, Yaw.EXPO_A, Yaw.CRUISE_VELOCITY, Yaw.ACCELERATION
-                )
-                .withSoftLimits(
-                    true, Yaw.FORWARD_SOFT_LIMIT.in(Rotations),
-                    true, Yaw.REVERSE_SOFT_LIMIT.in(Rotations)
-                )
-                .build();
+                            Yaw.MOTOR_ID,
+                            Superstructure.canDoAttitude,
+                            Yaw.MOTOR_ARRANGEMENT,
+                            Yaw.SENSOR_TO_MECHANISM_RATIO,
+                            Yaw.INVERTED,
+                            Yaw.STATOR_CURRENT_LIMIT.in(Amps),
+                            Yaw.SUPPLY_CURRENT_LIMIT.in(Amps))
+                    .withPIDFConfiguration(
+                            Yaw.POSITION_P,
+                            Yaw.POSITION_I,
+                            Yaw.POSITION_D,
+                            Yaw.POSITION_S,
+                            Yaw.POSITION_G,
+                            Yaw.POSITION_V,
+                            Yaw.POSITION_A,
+                            Yaw.FF_GRAVITY_TYPE,
+                            Yaw.FF_SIGN,
+                            Yaw.POSITION_SLOT)
+                    .withMotionMagicConfiguration(Yaw.EXPO_V, Yaw.EXPO_A, Yaw.CRUISE_VELOCITY, Yaw.ACCELERATION)
+                    .withSoftLimits(
+                            true, Yaw.FORWARD_SOFT_LIMIT.in(Rotations),
+                            true, Yaw.REVERSE_SOFT_LIMIT.in(Rotations))
+                    .build();
 
             CANcoderConfiguration jmm1Config = new CANcoderConfiguration();
             jmm1Config.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1.0;

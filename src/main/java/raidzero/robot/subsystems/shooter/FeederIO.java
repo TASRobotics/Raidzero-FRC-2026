@@ -46,38 +46,32 @@ public interface FeederIO extends SubsystemIO {
         /** Constructs the real instance of the Feeder IO */
         public Real() {
             motor = new LazyTalonBuilder(
-                Feeder.MOTOR_ID,
-                Superstructure.canDoAttitude,
-                Feeder.SENSOR_TO_MECHANISM_RATIO,
-                Feeder.INVERTED,
-                Feeder.STATOR_CURRENT_LIMIT.in(Amps),
-                Feeder.SUPPLY_CURRENT_LIMIT.in(Amps)
-            )
-                .withPIDFConfiguration(
-                    Feeder.P,
-                    Feeder.I,
-                    Feeder.D,
-                    Feeder.S,
-                    Feeder.G,
-                    Feeder.V,
-                    Feeder.A,
-                    Feeder.FF_GRAVITY_TYPE,
-                    Feeder.FF_SIGN,
-                    0
-                )
-                .withMotionMagicConfiguration(0, 0, Feeder.CRUISE_VELOCITY, Feeder.ACCELERATION)
-                .build();
+                            Feeder.MOTOR_ID,
+                            Superstructure.canDoAttitude,
+                            Feeder.SENSOR_TO_MECHANISM_RATIO,
+                            Feeder.INVERTED,
+                            Feeder.STATOR_CURRENT_LIMIT.in(Amps),
+                            Feeder.SUPPLY_CURRENT_LIMIT.in(Amps))
+                    .withPIDFConfiguration(
+                            Feeder.P,
+                            Feeder.I,
+                            Feeder.D,
+                            Feeder.S,
+                            Feeder.G,
+                            Feeder.V,
+                            Feeder.A,
+                            Feeder.FF_GRAVITY_TYPE,
+                            Feeder.FF_SIGN,
+                            0)
+                    .withMotionMagicConfiguration(0, 0, Feeder.CRUISE_VELOCITY, Feeder.ACCELERATION)
+                    .build();
 
             canrange = new LazyRangeBuilder(Canrange.CAN_ID, Superstructure.canDoAttitude)
-                .withFovParams(
-                    Canrange.FOV_CENTER_X,
-                    Canrange.FOV_CENTER_Y,
-                    Canrange.FOV_RANGE_X,
-                    Canrange.FOV_RANGE_Y
-                )
-                .withProximityParams(Canrange.PROXIMITY_THRESHOLD)
-                .withToFParams(Canrange.UPDATE_MODE, Canrange.UPDATE_FREQUENCY)
-                .build();
+                    .withFovParams(
+                            Canrange.FOV_CENTER_X, Canrange.FOV_CENTER_Y, Canrange.FOV_RANGE_X, Canrange.FOV_RANGE_Y)
+                    .withProximityParams(Canrange.PROXIMITY_THRESHOLD)
+                    .withToFParams(Canrange.UPDATE_MODE, Canrange.UPDATE_FREQUENCY)
+                    .build();
             // Superstructure.orchestra.addInstrument(this.motor.getMotor());
         }
 
