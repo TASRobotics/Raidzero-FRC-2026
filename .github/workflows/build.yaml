@@ -22,7 +22,7 @@ jobs:
 
       - name: compile
         if: ${{ !cancelled() }}
-        run: ./gradlew compileJava compileTestJava
+        run: ./gradlew assemble compileTestJava
 
       - name: tests
         if: ${{ !cancelled() }}
