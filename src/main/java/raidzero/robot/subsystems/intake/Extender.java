@@ -44,13 +44,13 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      */
     public Command autoAgitate() {
         return run(() -> io.agitateL1())
-            .withTimeout(0.5)
-            .andThen(run(() -> io.extend()).withTimeout(0.5))
-            .andThen(run(() -> io.agitateL2()).withTimeout(0.5))
-            .andThen(run(() -> io.agitateL1()).withTimeout(0.5))
-            .andThen(run(() -> io.agitateL3()).withTimeout(0.5))
-            .andThen(run(() -> io.agitateL2()).withTimeout(0.5))
-            .andThen(run(() -> io.extend()).withTimeout(0.3));
+                .withTimeout(0.5)
+                .andThen(run(() -> io.extend()).withTimeout(0.5))
+                .andThen(run(() -> io.agitateL2()).withTimeout(0.5))
+                .andThen(run(() -> io.agitateL1()).withTimeout(0.5))
+                .andThen(run(() -> io.agitateL3()).withTimeout(0.5))
+                .andThen(run(() -> io.agitateL2()).withTimeout(0.5))
+                .andThen(run(() -> io.extend()).withTimeout(0.3));
     }
 
     /**
@@ -146,10 +146,8 @@ public class Extender extends R0Subsystem<ExtenderIO> {
      */
     public static Extender system() {
         if (system == null) {
-            if (com.ctre.phoenix6.Utils.isSimulation())
-                system = new Extender(new ExtenderIO.Sim());
-            else
-                system = new Extender(new ExtenderIO.Real());
+            if (com.ctre.phoenix6.Utils.isSimulation()) system = new Extender(new ExtenderIO.Sim());
+            else system = new Extender(new ExtenderIO.Real());
         }
         return system;
     }

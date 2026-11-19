@@ -23,15 +23,12 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      * @return A {@link Command} that runs the shooter at the target speed
      */
     public Command shoot() {
-        return run(
-            () -> {
-                AngularVelocity target = RotationsPerSecond.of(
-                    Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters))
-                );
+        return run(() -> {
+            AngularVelocity target = RotationsPerSecond.of(
+                    Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
 
-                io.setVelocity(target);
-            }
-        );
+            io.setVelocity(target);
+        });
     }
 
     /**
@@ -41,15 +38,13 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      * @return a {@link Trigger}
      */
     public Trigger atTargetVelocity() {
-        return new Trigger(
-            () -> {
-                AngularVelocity target = RotationsPerSecond.of(
-                    Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters))
-                );
+        return new Trigger(() -> {
+            AngularVelocity target = RotationsPerSecond.of(
+                    Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
 
-                return io.getVelocity().minus(target).abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE.in(RotationsPerSecond);
-            }
-        );
+            return io.getVelocity().minus(target).abs(RotationsPerSecond)
+                    < Flywheel.VELOCIOTY_TOLERANCE.in(RotationsPerSecond);
+        });
     }
 
     /**
@@ -60,8 +55,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      */
     public Trigger stopped() {
         return new Trigger(
-            () -> io.getVelocity().abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE.in(RotationsPerSecond)
-        );
+                () -> io.getVelocity().abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE.in(RotationsPerSecond));
     }
 
     /**
@@ -71,12 +65,10 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      * @return A {@link Trigger} that activates when the shooter is at its target velocity
      */
     public Trigger atManualTargetVelocity() {
-        return new Trigger(
-            () -> {
-                return io.getVelocity().minus(this.velocityTarget).abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE
-                    .in(RotationsPerSecond);
-            }
-        );
+        return new Trigger(() -> {
+            return io.getVelocity().minus(this.velocityTarget).abs(RotationsPerSecond)
+                    < Flywheel.VELOCIOTY_TOLERANCE.in(RotationsPerSecond);
+        });
     }
 
     /**

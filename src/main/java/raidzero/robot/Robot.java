@@ -26,7 +26,8 @@ public class Robot extends TimedRobot {
     private boolean alreadyEnabled;
 
     /* log and replay timestamp and joystick data */
-    private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay().withTimestampReplay().withJoystickReplay();
+    private final HootAutoReplay m_timeAndJoystickReplay =
+            new HootAutoReplay().withTimestampReplay().withJoystickReplay();
 
     public Robot() {
         m_robotContainer = new RobotContainer();
@@ -72,10 +73,9 @@ public class Robot extends TimedRobot {
         Elastic.initAuton();
         Superstructure.getLimelight().setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
         Superstructure.getSwerve()
-            .seedFieldCentric(
-                Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
-                    .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
-            );
+                .seedFieldCentric(
+                        Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
+                                .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg));
     }
 
     @Override
@@ -96,10 +96,9 @@ public class Robot extends TimedRobot {
         Superstructure.getLimelight().setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
 
         Superstructure.getSwerve()
-            .seedFieldCentric(
-                Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
-                    .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
-            );
+                .seedFieldCentric(
+                        Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
+                                .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg));
     }
 
     @Override
