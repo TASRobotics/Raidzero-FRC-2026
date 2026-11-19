@@ -26,7 +26,7 @@ jobs:
 
       - name: tests
         if: ${{ !cancelled() }}
-        run: ./gradlew tests
+        run: ./gradlew test
       
       - name: check javadoc
         if: ${{ !cancelled() }}
