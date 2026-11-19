@@ -30,16 +30,19 @@ public class Feeder extends R0Subsystem<FeederIO> {
     }
 
     /**
-     * Returns a {@link Trigger} that activates when the feeder is at its target
-     * velocity from the configured speed
+     * Returns a {@link Trigger} that activates when the feeder is at its target velocity from the
+     * configured speed
      *
      * @return a {@link Trigger}
      */
     public Trigger atTargetVelocity() {
-        return new Trigger(() -> {
-            return io.getVelocity().minus(ShooterConstants.Feeder.FEEDER_SPEED)
-                .abs(RotationsPerSecond) < ShooterConstants.Feeder.VELOCITY_TOLERANCE.in(RotationsPerSecond);
-        });
+        return new Trigger(
+            () -> {
+                return io.getVelocity()
+                    .minus(ShooterConstants.Feeder.FEEDER_SPEED)
+                    .abs(RotationsPerSecond) < ShooterConstants.Feeder.VELOCITY_TOLERANCE.in(RotationsPerSecond);
+            }
+        );
     }
 
     /**
@@ -56,7 +59,6 @@ public class Feeder extends R0Subsystem<FeederIO> {
      *
      * @return true if a ball has been detected within the detection window
      */
-
     public Trigger ballDetected() {
         return new Trigger(() -> io.ballDetected());
     }
@@ -96,5 +98,4 @@ public class Feeder extends R0Subsystem<FeederIO> {
         // io.getVelocity().in(RotationsPerSecond));
         SmartDashboard.putBoolean("Ball detected", io.ballDetected());
     }
-
 }

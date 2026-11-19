@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  build: 
+  ci-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,4 +16,18 @@ jobs:
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x gradlew
-      - run: ./gradlew build
+
+      - name: code formatting
+        run: ./gradlew spotlessCheck
+
+      - name: compile
+        if: ${{ !cancelled() }}
+        run: ./gradlew assemble compileTestJava
+
+      - name: tests
+        if: ${{ !cancelled() }}
+        run: ./gradlew test
+      
+      - name: check javadoc
+        if: ${{ !cancelled() }}
+        run: ./gradlew checkstyleMain checkstyleTest -Pmain=true

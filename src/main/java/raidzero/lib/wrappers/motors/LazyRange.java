@@ -11,8 +11,8 @@ public class LazyRange {
     /**
      * Constructs a LazyRange instance with the specified configuration.
      *
-     * @param rangeID       the device id of the CANrange sensor
-     * @param canBus        the name of the CAN bus
+     * @param rangeID the device id of the CANrange sensor
+     * @param canBus the name of the CAN bus
      * @param configuration the CANrangeConfiguration to apply
      */
     public LazyRange(int rangeID, CANBus canBus, CANrangeConfiguration configuration) {
@@ -30,8 +30,7 @@ public class LazyRange {
     }
 
     /**
-     * Returns whether the CANrange sensor detects an object within the proximity
-     * threshold.
+     * Returns whether the CANrange sensor detects an object within the proximity threshold.
      *
      * @return true if an object is detected, false otherwise
      */
@@ -48,8 +47,6 @@ public class LazyRange {
         return canRange;
     }
 
-    /**
-     * Updates the telemetry for the CANrange sensor.
-     */
+    /** Updates the telemetry for the CANrange sensor. */
     public void updateTelemetry() {}
 }

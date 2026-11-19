@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "com.diffplug.spotless" version "6.20.0"
+    id "com.diffplug.spotless" version "7.0.2"
     id "edu.wpi.first.GradleRIO" version "2026.2.1"
     id "net.ltgt.errorprone" version "4.0.1"
     id "checkstyle"
@@ -119,6 +119,7 @@ deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
 
+// RZ javadoc and checkstyle tasks
 tasks.named('checkstyleMain') {
     onlyIf { getProjectBooleanProperty('main') }
 }
@@ -140,13 +141,15 @@ tasks.withType(Checkstyle) {
 }
 
 // Configure string concat to always inline compile
+// error prone checks for common bugs/errors in code (i.e. immutable object changed)
 tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
-    options.errorprone.errorproneArgs.add '-XepExcludedPaths:(.*/raidzero/lib/.*)'
+    options.errorprone.errorproneArgs.add '-XepExcludedPaths:(.*/(LimelightHelpers|TunerConstants|Telemetry)\\.java)'
     options.errorprone.disableWarningsInGeneratedCode = true
     options.errorprone.errorproneArgs.add '-Xep:InconsistentCapitalization:OFF'
 }
 
+// RZ spotless setup
 spotless {
     format "misc", {
         target "*"
@@ -158,20 +161,28 @@ spotless {
     }
 
     java {
+        target "src/**/*.java"
+        targetExclude "**/TunerConstants.java", "**/Telemetry.java", "**/LimelightHelpers.java"
         importOrder()
-        targetExclude "**/TunerConstants.java", "**/Telemetry.java", "**/LimelightHelpers.java",
-                    "**/Elastic.java"
+        removeUnusedImports()
         eclipse().configFile rootProject.file("eclipse-formatter.xml")
+        endWithNewline()
         toggleOffOn()
         trimTrailingWhitespace()
     }
 }
 
-tasks.named("build") {
-    dependsOn("spotlessApply")
+// don't apply on CI build so build fails if not applied
+if(System.getenv("CI") == null) {
+    tasks.named("build") {
+        dependsOn("spotlessApply")
+    }
 }
+
+// apply spotless on deploy
 tasks.named("deploy") {
     dependsOn("spotlessApply")
 }
+
 
 spotlessCheck.mustRunAfter(compileJava)

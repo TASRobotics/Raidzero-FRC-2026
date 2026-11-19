@@ -7,9 +7,7 @@ import raidzero.robot.Robot;
 public class AutomatedTestRobot extends Robot {
     private static AutomatedTestRobot instance = null;
 
-    /**
-     * Constructs a new {@link AutomatedTestRobot} instance
-     */
+    /** Constructs a new {@link AutomatedTestRobot} instance */
     private AutomatedTestRobot() {
         System.out.println("Robot type: Automated test");
     }
@@ -40,9 +38,7 @@ public class AutomatedTestRobot extends Robot {
         new Thread(this::runTest).start();
     }
 
-    /**
-     * Runs the test
-     */
+    /** Runs the test */
     private void runTest() {
         System.out.println("Waiting two seconds for robot to finish startup");
         sleep(2000);

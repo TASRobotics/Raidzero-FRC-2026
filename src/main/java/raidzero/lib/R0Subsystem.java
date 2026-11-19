@@ -7,7 +7,7 @@ public abstract class R0Subsystem<T extends SubsystemIO> extends SubsystemBase {
 
     /**
      * Creates a new instance of this subsystem
-
+     *
      * @param io the hardware IO to use
      */
     protected R0Subsystem(T io) {

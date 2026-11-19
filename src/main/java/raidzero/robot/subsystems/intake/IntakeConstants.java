@@ -49,7 +49,7 @@ public final class IntakeConstants {
         public static final double A_1 = 5.0;
 
         public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Elevator_Static; // * Note: no gravity
-                                                                                                 // (yippee!)
+        // (yippee!)
         public static final StaticFeedforwardSignValue FF_SIGN = StaticFeedforwardSignValue.UseVelocitySign;
 
         public static final int VELOCITY_SLOT = 0;

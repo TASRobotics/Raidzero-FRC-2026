@@ -24,25 +24,20 @@ public interface HoodIO extends SubsystemIO {
      */
     public Angle getPitch();
 
-    /**
-     * Sets the startup angle for the hood
-     */
+    /** Sets the startup angle for the hood */
     public void setStartupAngle();
 
-    /**
-     * Stops the hood motor
-     */
+    /** Stops the hood motor */
     public void stop();
 
     public class Real implements HoodIO {
         LazyFXS pitch;
 
-        /**
-         * Constructs a real instance of the Hood IO
-         */
+        /** Constructs a real instance of the Hood IO */
         public Real() {
             pitch = new LazyFXSBuilder(
-                Pitch.MOTOR_ID, Superstructure.canDoAttitude,
+                Pitch.MOTOR_ID,
+                Superstructure.canDoAttitude,
                 Pitch.MOTOR_ARRANGEMENT,
                 Pitch.SENSOR_TO_MECHANISM_RATIO,
                 Pitch.INVERTED,
@@ -50,16 +45,19 @@ public interface HoodIO extends SubsystemIO {
                 Pitch.SUPPLY_CURRENT_LIMIT.in(Amps)
             )
                 .withPIDFConfiguration(
-                    Pitch.P, Pitch.I, Pitch.D,
-                    Pitch.S, Pitch.G, Pitch.V, Pitch.A,
+                    Pitch.P,
+                    Pitch.I,
+                    Pitch.D,
+                    Pitch.S,
+                    Pitch.G,
+                    Pitch.V,
+                    Pitch.A,
                     Pitch.FF_GRAVITY_TYPE,
                     Pitch.FF_SIGN,
                     Pitch.POSITION_SLOT
                 )
                 .withMotionMagicConfiguration(
-                    Pitch.EXPO_V, Pitch.EXPO_A,
-                    Pitch.CRUISE_VELOCITY,
-                    Pitch.ACCELERATION
+                    Pitch.EXPO_V, Pitch.EXPO_A, Pitch.CRUISE_VELOCITY, Pitch.ACCELERATION
                 )
                 .build();
 
@@ -93,5 +91,4 @@ public interface HoodIO extends SubsystemIO {
     }
 
     public class Sim extends Real {}
-
 }

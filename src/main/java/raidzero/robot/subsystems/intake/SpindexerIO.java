@@ -18,9 +18,7 @@ public interface SpindexerIO extends SubsystemIO {
      */
     void go(AngularVelocity speed);
 
-    /**
-     * Stops the spindexer motor
-     */
+    /** Stops the spindexer motor */
     void stop();
 
     /**
@@ -33,26 +31,29 @@ public interface SpindexerIO extends SubsystemIO {
     public class Real implements SpindexerIO {
         LazyTalon motor;
 
-        /**
-         * Constructs a real instance of the Spindexer IO
-         */
+        /** Constructs a real instance of the Spindexer IO */
         public Real() {
             motor = new LazyTalonBuilder(
-                Spindexer.MOTOR_ID, Superstructure.canDoAttitude,
-                Spindexer.SENSOR_TO_MECHANISM_RATIO, Spindexer.INVERTED,
-                Spindexer.STATOR_CURRENT_LIMIT.in(Amps), Spindexer.SUPPLY_CURRENT_LIMIT.in(Amps)
+                Spindexer.MOTOR_ID,
+                Superstructure.canDoAttitude,
+                Spindexer.SENSOR_TO_MECHANISM_RATIO,
+                Spindexer.INVERTED,
+                Spindexer.STATOR_CURRENT_LIMIT.in(Amps),
+                Spindexer.SUPPLY_CURRENT_LIMIT.in(Amps)
             )
                 .withPIDFConfiguration(
-                    Spindexer.P, Spindexer.I, Spindexer.D,
-                    Spindexer.S, Spindexer.G, Spindexer.V, Spindexer.A,
-                    Spindexer.FF_GRAVITY_TYPE, Spindexer.FF_SIGN,
+                    Spindexer.P,
+                    Spindexer.I,
+                    Spindexer.D,
+                    Spindexer.S,
+                    Spindexer.G,
+                    Spindexer.V,
+                    Spindexer.A,
+                    Spindexer.FF_GRAVITY_TYPE,
+                    Spindexer.FF_SIGN,
                     0
                 )
-                .withMotionMagicConfiguration(
-                    0, 0,
-                    Spindexer.CRUISE_VELOCITY,
-                    Spindexer.ACCELERATION
-                )
+                .withMotionMagicConfiguration(0, 0, Spindexer.CRUISE_VELOCITY, Spindexer.ACCELERATION)
                 .build();
 
             // Superstructure.orchestra.addInstrument(this.motor.getMotor());
@@ -77,7 +78,6 @@ public interface SpindexerIO extends SubsystemIO {
         public void updateTelemetry() {
             motor.updateTelemetry(Spindexer.TELEMETRY);
         }
-
     }
 
     public class Sim extends Real {}
