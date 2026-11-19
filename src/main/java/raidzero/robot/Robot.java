@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import raidzero.lib.LimelightState.IMU_MODE;
-import raidzero.lib.LimelightState.PIPELINE;
 import raidzero.lib.Util;
 
 public class Robot extends TimedRobot {
@@ -27,9 +26,7 @@ public class Robot extends TimedRobot {
     private boolean alreadyEnabled;
 
     /* log and replay timestamp and joystick data */
-    private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
-        .withTimestampReplay()
-        .withJoystickReplay();
+    private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay().withTimestampReplay().withJoystickReplay();
 
     public Robot() {
         m_robotContainer = new RobotContainer();
@@ -74,10 +71,11 @@ public class Robot extends TimedRobot {
         alreadyEnabled = true;
         Elastic.initAuton();
         Superstructure.getLimelight().setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
-        Superstructure.getSwerve().seedFieldCentric(
-            Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
-                .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
-        );
+        Superstructure.getSwerve()
+            .seedFieldCentric(
+                Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
+                    .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
+            );
     }
 
     @Override
@@ -97,10 +95,11 @@ public class Robot extends TimedRobot {
         Superstructure.getHood().setDefaultCommand(Superstructure.getHood().aim(Degrees.of(10)));
         Superstructure.getLimelight().setImuMode(IMU_MODE.INTERNAL_EXTERNAL_ASSIST);
 
-        Superstructure.getSwerve().seedFieldCentric(
-            Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
-                .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
-        );
+        Superstructure.getSwerve()
+            .seedFieldCentric(
+                Rotation2d.fromDegrees(Superstructure.getLimelight().getAverageHeading())
+                    .plus(Util.isBlueAlliance() ? Rotation2d.kZero : Rotation2d.k180deg)
+            );
     }
 
     @Override

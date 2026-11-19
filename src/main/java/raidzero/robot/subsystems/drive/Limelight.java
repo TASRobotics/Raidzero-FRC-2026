@@ -40,9 +40,7 @@ public class Limelight {
     private Hood hood = Hood.system();
     private static Limelight instance = null;
 
-    /**
-     * Constructs a {@link Limelight} subsytem instance
-     */
+    /** Constructs a {@link Limelight} subsytem instance */
     private Limelight() {
         headingReadings = new ArrayList<Double>();
         seededPigeon = false;
@@ -101,7 +99,6 @@ public class Limelight {
      * Sets the IMU mode for all limelights
      *
      * @implNote This is only supported for Limelight 4
-     *
      * @param imuMode The {@link LimelightState.IMU_MODE} to set for all limelights
      */
     public void setImuMode(LimelightState.IMU_MODE imuMode) {
@@ -110,9 +107,7 @@ public class Limelight {
         }
     }
 
-    /**
-     * Toggles whether to ignore all limelight pose estimates
-     */
+    /** Toggles whether to ignore all limelight pose estimates */
     public void toggleLimelights() {
         ignoreAllLimes = !ignoreAllLimes;
     }
@@ -149,7 +144,8 @@ public class Limelight {
     /**
      * Gets the average Z height of all limelight pose estimates that are not null or being ignored
      *
-     * @return The average Z height of all limelight pose estimates that are not null or being ignored, or {@link Double#NaN} if there are no valid estimates
+     * @return The average Z height of all limelight pose estimates that are not null or being
+     *     ignored, or {@link Double#NaN} if there are no valid estimates
      */
     public double getAverageZ() {
         return limes.stream()
@@ -160,9 +156,7 @@ public class Limelight {
             .orElse(Double.NaN);
     }
 
-    /**
-     * Manually resets the seeding process
-     */
+    /** Manually resets the seeding process */
     public void resetSeed() {
         ElasticLib.sendNotification(new Notification(NotificationLevel.WARNING, "LL", "RESET CALLED"));
 
@@ -192,9 +186,7 @@ public class Limelight {
         this.manualSeed = manualSeed;
     }
 
-    /**
-     * The main loop of the Limelight odometry thread
-     */
+    /** The main loop of the Limelight odometry thread */
     public void loop() {
         if (Math.abs(swerve.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720) {
             ignoreAllLimes = true;

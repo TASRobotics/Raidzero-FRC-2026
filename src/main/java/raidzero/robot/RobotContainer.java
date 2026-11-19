@@ -7,9 +7,7 @@ package raidzero.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class RobotContainer {
-    /**
-     * Constructs a {@link RobotContainer} instance
-     */
+    /** Constructs a {@link RobotContainer} instance */
     public RobotContainer() {
         Superstructure.runSubsystemInitRoutines();
         Superstructure.applyDefaultCommands();

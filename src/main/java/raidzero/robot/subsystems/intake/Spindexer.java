@@ -29,50 +29,37 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
     }
 
     /**
-     * Runs the spindexer at the anti-jam speed for a short duration to attempt to
-     * clear jams
+     * Runs the spindexer at the anti-jam speed for a short duration to attempt to clear jams
      *
-     * @return A {@link Command} that runs the spindexer at the anti-jam speed for a
-     *         short duration
+     * @return A {@link Command} that runs the spindexer at the anti-jam speed for a short duration
      */
     public Command antiJam() {
-        return run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
-            .withTimeout(0.1);
+        return run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED)).withTimeout(0.1);
     }
 
     /**
-     * Runs the spindexer at the anti-jam speed for a longer duration to attempt to
-     * clear more severe jams
+     * Runs the spindexer at the anti-jam speed for a longer duration to attempt to clear more severe
+     * jams
      *
-     * @return A {@link Command} that runs the spindexer at the anti-jam speed for a
-     *         longer duration
+     * @return A {@link Command} that runs the spindexer at the anti-jam speed for a longer duration
      */
     public Command antiJamBig() {
         return run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
             .withTimeout(0.2)
-            .andThen(
-                run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED)).withTimeout(0.3)
-            )
+            .andThen(run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED)).withTimeout(0.3))
             .repeatedly();
     }
 
     /**
      * AntiJam for Auto
      *
-     * @return A {@link Command} that runs the spindexer at the anti-jam speed for a
-     *         longer duration
+     * @return A {@link Command} that runs the spindexer at the anti-jam speed for a longer duration
      */
     public Command antiJamAuto() {
         return run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED))
             .withTimeout(1)
-            .andThen(
-                run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED))
-                    .withTimeout(1)
-            )
-            .andThen(
-                run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED))
-                    .withTimeout(1)
-            )
+            .andThen(run(() -> io.go(IntakeConstants.Spindexer.ANTIJAM_SPEED)).withTimeout(1))
+            .andThen(run(() -> io.go(IntakeConstants.Spindexer.INDEX_SPEED)).withTimeout(1))
             .repeatedly();
     }
 
@@ -95,8 +82,8 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
     }
 
     /**
-     * Creates a {@link Trigger} that is active when the spindexer is at the target
-     * velocity (index speed)
+     * Creates a {@link Trigger} that is active when the spindexer is at the target velocity (index
+     * speed)
      *
      * @return a {@link Trigger}
      */
@@ -114,8 +101,7 @@ public class Spindexer extends R0Subsystem<SpindexerIO> {
      */
     public Trigger stopped() {
         return new Trigger(
-            () -> io.getVelocity().abs(RotationsPerSecond) < IntakeConstants.Spindexer.VELOCITY_TOLERANCE
-                .in(RotationsPerSecond)
+            () -> io.getVelocity().abs(RotationsPerSecond) < IntakeConstants.Spindexer.VELOCITY_TOLERANCE.in(RotationsPerSecond)
         );
     }
 

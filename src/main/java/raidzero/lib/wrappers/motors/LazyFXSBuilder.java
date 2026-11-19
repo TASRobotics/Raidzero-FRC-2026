@@ -20,11 +20,13 @@ import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 
-public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbackSensorSourceValue> {
+public class LazyFXSBuilder
+    implements LazyCTREBuilder<TalonFXS, ExternalFeedbackSensorSourceValue> {
     private MotorArrangementValue motorArrangement;
     private int motorID, followID, canCoderID;
-    private CANBus canBus = CANBus.roboRIO(), followCanBus = CANBus.roboRIO(), canCoderCanBus = CANBus.roboRIO();
-
+    private CANBus canBus = CANBus.roboRIO(),
+        followCanBus = CANBus.roboRIO(),
+        canCoderCanBus = CANBus.roboRIO();
     private TalonFXSConfiguration motorConfiguration = null, followConfiguration = null;
     private CANcoderConfiguration canCoderConfiguration = null;
 
@@ -36,7 +38,8 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
      * @param motorID The device id of the motor controller
      * @param canBus The CAN bus the motor controller is on
      * @param motorArrangement What type of motor the FXS is connected to
-     * @param sensorToMechanismRatio The gear ratio of the sensor to the mechanism (tell the mech team (driven /
+     * @param sensorToMechanismRatio The gear ratio of the sensor to the mechanism (tell the mech team
+     *     (driven /
      * @param invertedValue What direction that is positive for the motor
      * @param statorCurrentLimit The maximum stator current
      * @param supplyCurrentLimit The maximum supply current
@@ -201,8 +204,16 @@ public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbac
     @Override
     public LazyFXS build() {
         LazyFXS motor = new LazyFXS(
-            motorID, canBus, motorConfiguration, followID, followCanBus, followConfiguration,
-            followerInverted, canCoderID, canCoderCanBus, canCoderConfiguration
+            motorID,
+            canBus,
+            motorConfiguration,
+            followID,
+            followCanBus,
+            followConfiguration,
+            followerInverted,
+            canCoderID,
+            canCoderCanBus,
+            canCoderConfiguration
         );
         motor.setBrake();
 

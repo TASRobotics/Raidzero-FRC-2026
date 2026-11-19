@@ -48,7 +48,8 @@ public class LimelightState {
      * @param pipeline The initial pipeline to set for the Limelight
      * @param robotYawSupplier A {@link Supplier} that provides the robot's yaw
      * @param robotYawRateSupplier A {@link Supplier} that provides the robot's yaw rate
-     * @param addVisionMeasurementConsumer A {@link VisionMeasurementConsumer} callback that adds vision measurements into the swerve pose estimator
+     * @param addVisionMeasurementConsumer A {@link VisionMeasurementConsumer} callback that adds
+     *     vision measurements into the swerve pose estimator
      */
     public LimelightState(String limelightName, PIPELINE pipeline, Supplier<Double> robotYawSupplier, Supplier<Double> robotYawRateSupplier, VisionMeasurementConsumer addVisionMeasurementConsumer) {
         this.limelightName = limelightName;
@@ -68,7 +69,8 @@ public class LimelightState {
     /**
      * Sets the hood angle supplier for adjusting the vision measurement standard deviations
      *
-     * @param hoodAngleSupplier A {@link Supplier} that provides the current hood angle in degrees as a double
+     * @param hoodAngleSupplier A {@link Supplier} that provides the current hood angle in degrees as
+     *     a double
      */
     public void setHoodSupplier(Supplier<Double> hoodAngleSupplier) {
         this.hoodAngleSupplier = hoodAngleSupplier;
@@ -87,7 +89,6 @@ public class LimelightState {
      * Sets the IMU mode for the Limelight
      *
      * @implNote This is only supported for Limelight 4
-     *
      * @param imuMode The {@link IMU_MODE} to set
      */
     public void setIMUMode(IMU_MODE imuMode) {
@@ -136,7 +137,7 @@ public class LimelightState {
      * Updates the limelight state
      *
      * @param ignoreAll Whether to ignore all measurements
-     * @param useMt2    Whether to use the MetaTag2 pose estimation method
+     * @param useMt2 Whether to use the MetaTag2 pose estimation method
      */
     public void update(boolean ignoreAll, boolean useMt2, Pose2d robotPose) {
         update(ignoreAll, 0.5, 0.5, Units.degreesToRadians(10), useMt2, robotPose);
@@ -146,9 +147,9 @@ public class LimelightState {
      * Updates the limelight state
      *
      * @param ignoreAll Whether to ignore all measurements
-     * @param stdevX    The standard deviation in the X direction in meters
-     * @param stdevY    The standard deviation in the Y direction in meters
-     * @param useMt2    Whether to use the MetaTag2 pose estimation method
+     * @param stdevX The standard deviation in the X direction in meters
+     * @param stdevY The standard deviation in the Y direction in meters
+     * @param useMt2 Whether to use the MetaTag2 pose estimation method
      */
     public void update(boolean ignoreAll, double stdevX, double stdevY, boolean useMt2, Pose2d robotPose) {
         update(ignoreAll, stdevX, stdevY, Units.degreesToRadians(10), useMt2, robotPose);
@@ -158,8 +159,8 @@ public class LimelightState {
      * Updates the limelight state
      *
      * @param ignoreAll Whether to ignore all measurements
-     * @param stdevRot  The standard deviation for rotations in radians
-     * @param useMt2    Whether to use the MetaTag2 pose estimation method
+     * @param stdevRot The standard deviation for rotations in radians
+     * @param useMt2 Whether to use the MetaTag2 pose estimation method
      */
     public void update(boolean ignoreAll, double stdevRot, boolean useMt2, Pose2d robotPose) {
         update(ignoreAll, 0.5, 0.5, stdevRot, useMt2, robotPose);
@@ -169,10 +170,10 @@ public class LimelightState {
      * Updates the limelight state
      *
      * @param ignoreAll Whether to ignore all measurements
-     * @param stdevX    The standard deviation in the X direction in meters
-     * @param stdevY    The standard deviation in the Y direction in meters
-     * @param stdevRot  The standard deviation for rotations in radians
-     * @param useMt2    Whether to use the MetaTag2 pose estimation method
+     * @param stdevX The standard deviation in the X direction in meters
+     * @param stdevY The standard deviation in the Y direction in meters
+     * @param stdevRot The standard deviation for rotations in radians
+     * @param useMt2 Whether to use the MetaTag2 pose estimation method
      */
     public void update(boolean ignoreAll, double stdevX, double stdevY, double stdevRot, boolean useMt2, Pose2d robotPose) {
         if (pipeline != PIPELINE.TAG) {
@@ -180,13 +181,7 @@ public class LimelightState {
         }
 
         LimelightHelpers.SetRobotOrientation(
-            limelightName,
-            robotYawSupplier.get(),
-            robotYawRateSupplier.get(),
-            0,
-            0,
-            0,
-            0
+            limelightName, robotYawSupplier.get(), robotYawRateSupplier.get(), 0, 0, 0, 0
         );
 
         currEstimate = useMt2 ? LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName) :
@@ -217,10 +212,7 @@ public class LimelightState {
         }
 
         if (imuData != null) {
-            SmartDashboard.putNumber(
-                limelightName.split("-")[1] + "RYaw",
-                imuData.robotYaw
-            );
+            SmartDashboard.putNumber(limelightName.split("-")[1] + "RYaw", imuData.robotYaw);
         }
 
         SmartDashboard.putBoolean(limelightName.split("-")[1] + "Pose", !ignore && !ignoreAll);
@@ -229,7 +221,8 @@ public class LimelightState {
     /**
      * Returns the yaw of the current pose estimate if not null
      *
-     * @return A {@link Rotation2d} of the current pose estimate, or null if the estimate is null or being ignored
+     * @return A {@link Rotation2d} of the current pose estimate, or null if the estimate is null or
+     *     being ignored
      */
     public Rotation2d getYaw() {
         LimelightHelpers.PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
@@ -239,7 +232,8 @@ public class LimelightState {
     /**
      * Returns the Z height of the current pose estimate if not null or not being ignored
      *
-     * @return A {@link Double} of the Z height of the current pose estimate, or {@link Double#NaN} if the estimate is null or being ignored
+     * @return A {@link Double} of the Z height of the current pose estimate, or {@link Double#NaN} if
+     *     the estimate is null or being ignored
      */
     public double getZ() {
         Pose3d pose = LimelightHelpers.getBotPose3d_wpiBlue(limelightName);
@@ -248,23 +242,18 @@ public class LimelightState {
     }
 
     private boolean checkIgnore(Pose2d robotPose) {
-        return !poseInField(currEstimate.pose) ||
-            (Math.abs(LimelightHelpers.getBotPose3d_wpiBlue(limelightName).getZ()) > 0.4) ||
+        return !poseInField(currEstimate.pose) || (Math.abs(LimelightHelpers.getBotPose3d_wpiBlue(limelightName).getZ()) > 0.4) ||
             (LimelightHelpers.getTA(limelightName) < 0.1) ||
             (prevEstimate != null && (currEstimate.pose.getTranslation().getDistance(prevEstimate.pose.getTranslation()) /
-                (currEstimate.timestampSeconds - prevEstimate.timestampSeconds)) > TunerConstants.kSpeedAt12Volts
-                    .baseUnitMagnitude()) ||
+                (currEstimate.timestampSeconds - prevEstimate.timestampSeconds)) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude()) ||
             (prevEstimate != null && (currEstimate.pose.getTranslation()
-                .getDistance(
-                    prevEstimate.pose
-                        .getTranslation()
-                ) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
-            (seededRobot && currEstimate != null && (currEstimate.pose.getTranslation()
-                .getDistance(robotPose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.2) &&
-                (lastValidPose <= 0.0 ||
-                    currEstimate.pose.getTranslation()
-                        .getDistance(robotPose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() *
-                            (Timer.getTimestamp() - lastValidPose) * RECOVERY_FACTOR)) ||
+                .getDistance(prevEstimate.pose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.02)) ||
+            (seededRobot && currEstimate != null &&
+                (currEstimate.pose.getTranslation()
+                    .getDistance(robotPose.getTranslation()) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * 0.2) &&
+                (lastValidPose <= 0.0 || currEstimate.pose.getTranslation().getDistance(
+                    robotPose.getTranslation()
+                ) > TunerConstants.kSpeedAt12Volts.baseUnitMagnitude() * (Timer.getTimestamp() - lastValidPose) * RECOVERY_FACTOR)) ||
             (currEstimate.rawFiducials.length > 0 && currEstimate.rawFiducials[0].ambiguity > 0.5 &&
                 currEstimate.rawFiducials[0].distToCamera > 5.5) ||
             currEstimate.pose.equals(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
@@ -277,9 +266,7 @@ public class LimelightState {
      * @return True if the pose is inside the field dimensions, false otherwise
      */
     private boolean poseInField(Pose2d pose) {
-        return pose.getTranslation().getX() > 0 &&
-            pose.getTranslation().getX() < 16.54 &&
-            pose.getTranslation().getY() > 0 &&
+        return pose.getTranslation().getX() > 0 && pose.getTranslation().getX() < 16.54 && pose.getTranslation().getY() > 0 &&
             pose.getTranslation().getY() < 8.07;
     }
 }

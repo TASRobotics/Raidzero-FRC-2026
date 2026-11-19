@@ -15,7 +15,6 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -115,9 +114,7 @@ public class Turret extends R0Subsystem<TurretIO> {
         return io.getYaw();
     }
 
-    /**
-     * Sets the startup angle of the turret
-     */
+    /** Sets the startup angle of the turret */
     public void setStartupAngle() {
         Angle startupYaw = JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading());
         io.setStartupYaw(startupYaw);
@@ -126,10 +123,8 @@ public class Turret extends R0Subsystem<TurretIO> {
     /**
      * Gets the distance from the hub april tag to the turret
      *
-     * @param kineticLead whether or not to use kinetic leading for
-     *                    shoot-on-the-move
-     * @return the distance from the hub april tag to the turret as a
-     *         {@link Distance}
+     * @param kineticLead whether or not to use kinetic leading for shoot-on-the-move
+     * @return the distance from the hub april tag to the turret as a {@link Distance}
      */
     public Distance getHubDistance(boolean kineticLead) {
         return Meters.of(
@@ -160,7 +155,7 @@ public class Turret extends R0Subsystem<TurretIO> {
     /**
      * Calculates the absolute turret angle using the Jared Modulo Magic Method
      *
-     * @param readingOnFirst  the reading from the first Jared modulo method sensor
+     * @param readingOnFirst the reading from the first Jared modulo method sensor
      * @param readingOnSecond the reading from the second Jared modulo method sensor
      * @return the calculated absolute turret angle as an {@link Angle}
      */
@@ -183,8 +178,7 @@ public class Turret extends R0Subsystem<TurretIO> {
                 // SmartDashboard.putNumber("JMM Raw Angle", turret_rotations);
 
                 if (turret_rotations > Yaw.FORWARD_SOFT_LIMIT.in(Rotations)) {
-                    return Rotations
-                        .of(turret_rotations - 2.278);
+                    return Rotations.of(turret_rotations - 2.278);
                 }
 
                 return Rotations.of(turret_rotations);
@@ -225,8 +219,7 @@ public class Turret extends R0Subsystem<TurretIO> {
         );
 
         staticAimBot = staticAimBot.adjustStaticAim(
-            swerve.getState().Pose, new Rotation2d(getCurrentYaw()),
-            allianceTargetFieldPose
+            swerve.getState().Pose, new Rotation2d(getCurrentYaw()), allianceTargetFieldPose
         );
 
         kineticAimBot = staticAimBot.adjustKineticLead(filteredSpeeds);
@@ -238,8 +231,7 @@ public class Turret extends R0Subsystem<TurretIO> {
 
         // SmartDashboard.putNumber("Turret Angle", io.getYaw().in(Rotations));
         SmartDashboard.putNumber(
-            "Jmm Value",
-            this.JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()).in(Rotations)
+            "Jmm Value", this.JaredModuloMagic(io.getJMM1Reading(), io.getJMM2Reading()).in(Rotations)
         );
 
         // SmartDashboard.putBoolean("Hub LOS", io.hasHubLOS());
@@ -280,8 +272,7 @@ public class Turret extends R0Subsystem<TurretIO> {
     }
 
     /**
-     * Gets the singleton instance of the Turret subsystem, creating it if it
-     * doesn't exist
+     * Gets the singleton instance of the Turret subsystem, creating it if it doesn't exist
      *
      * @return the singleton instance of the Turret subsystem
      */
@@ -295,5 +286,4 @@ public class Turret extends R0Subsystem<TurretIO> {
         }
         return system;
     }
-
 }

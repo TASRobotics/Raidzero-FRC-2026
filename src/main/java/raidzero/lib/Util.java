@@ -15,9 +15,11 @@ public class Util {
     }
 
     /**
-     * Checks if the current alliance is Red. If the alliance is not yet determined, returns false by default.
+     * Checks if the current alliance is Red. If the alliance is not yet determined, returns false by
+     * default.
      *
-     * @return True if the current alliance is Red, false otherwise (including if the alliance is not yet determined)
+     * @return True if the current alliance is Red, false otherwise (including if the alliance is not
+     *     yet determined)
      */
     public static boolean isRedAlliance() {
         Optional<Alliance> alliance = DriverStation.getAlliance();

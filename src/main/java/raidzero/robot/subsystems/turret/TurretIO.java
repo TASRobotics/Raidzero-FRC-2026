@@ -42,9 +42,7 @@ public interface TurretIO extends SubsystemIO {
      */
     void runYawPercent(double percent);
 
-    /**
-     * Stops the yaw motor
-     */
+    /** Stops the yaw motor */
     void stop();
 
     /**
@@ -65,12 +63,11 @@ public interface TurretIO extends SubsystemIO {
         private LazyFXS yaw;
         private CANcoder jmm1, jmm2;
 
-        /**
-         * Constructs a real instance of the Turret IO
-         */
+        /** Constructs a real instance of the Turret IO */
         public Real() {
             yaw = new LazyFXSBuilder(
-                Yaw.MOTOR_ID, Superstructure.canDoAttitude,
+                Yaw.MOTOR_ID,
+                Superstructure.canDoAttitude,
                 Yaw.MOTOR_ARRANGEMENT,
                 Yaw.SENSOR_TO_MECHANISM_RATIO,
                 Yaw.INVERTED,
@@ -78,16 +75,19 @@ public interface TurretIO extends SubsystemIO {
                 Yaw.SUPPLY_CURRENT_LIMIT.in(Amps)
             )
                 .withPIDFConfiguration(
-                    Yaw.POSITION_P, Yaw.POSITION_I, Yaw.POSITION_D,
-                    Yaw.POSITION_S, Yaw.POSITION_G, Yaw.POSITION_V, Yaw.POSITION_A,
+                    Yaw.POSITION_P,
+                    Yaw.POSITION_I,
+                    Yaw.POSITION_D,
+                    Yaw.POSITION_S,
+                    Yaw.POSITION_G,
+                    Yaw.POSITION_V,
+                    Yaw.POSITION_A,
                     Yaw.FF_GRAVITY_TYPE,
                     Yaw.FF_SIGN,
                     Yaw.POSITION_SLOT
                 )
                 .withMotionMagicConfiguration(
-                    Yaw.EXPO_V, Yaw.EXPO_A,
-                    Yaw.CRUISE_VELOCITY,
-                    Yaw.ACCELERATION
+                    Yaw.EXPO_V, Yaw.EXPO_A, Yaw.CRUISE_VELOCITY, Yaw.ACCELERATION
                 )
                 .withSoftLimits(
                     true, Yaw.FORWARD_SOFT_LIMIT.in(Rotations),
@@ -147,9 +147,7 @@ public interface TurretIO extends SubsystemIO {
             return jmm2.getAbsolutePosition().getValueAsDouble() * Yaw.JARED_TEETH_2;
         }
 
-        /**
-         * Updates the SmartDashboard with telemetry values for the turret
-         */
+        /** Updates the SmartDashboard with telemetry values for the turret */
         public void updateTelemetry() {
             // @Override
             // yaw.updateTelemetry(Yaw.TELEMETRY);
@@ -157,5 +155,4 @@ public interface TurretIO extends SubsystemIO {
     }
 
     public class Sim extends Real {}
-
 }

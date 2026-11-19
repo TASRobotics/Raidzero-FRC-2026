@@ -37,7 +37,7 @@ public final class ShooterConstants {
         public static final double TORQUE_FF_A = 15.0;
 
         public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Elevator_Static; // * Note: no gravity
-                                                                                                 // (yippee!)
+        // (yippee!)
         public static final StaticFeedforwardSignValue FF_SIGN = StaticFeedforwardSignValue.UseVelocitySign;
 
         public static final int VELOCITY_SLOT = 0;
@@ -74,7 +74,7 @@ public final class ShooterConstants {
         public static final double A = 0.0;
 
         public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Elevator_Static; // * Note: no gravity
-                                                                                                 // (yippee!)
+        // (yippee!)
         public static final StaticFeedforwardSignValue FF_SIGN = StaticFeedforwardSignValue.UseVelocitySign;
 
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(43.3);
@@ -104,5 +104,4 @@ public final class ShooterConstants {
 
         public static final double DETECTION_WINDOW = 0.25;
     }
-
 }

@@ -32,9 +32,7 @@ public interface ShooterIO extends SubsystemIO {
      */
     void setPercent(double speedPercent);
 
-    /**
-     * Stops the flywheel
-     */
+    /** Stops the flywheel */
     void stop();
 
     public class Real implements ShooterIO {
@@ -42,21 +40,29 @@ public interface ShooterIO extends SubsystemIO {
 
         Real() {
             flywheel = new LazyTalonBuilder(
-                Flywheel.MOTOR_ID, Superstructure.canDoAttitude,
-                Flywheel.SENSOR_TO_MECHANISM_RATIO, Flywheel.INVERTED,
+                Flywheel.MOTOR_ID,
+                Superstructure.canDoAttitude,
+                Flywheel.SENSOR_TO_MECHANISM_RATIO,
+                Flywheel.INVERTED,
                 Flywheel.STATOR_CURRENT_LIMIT.in(Amps),
                 Flywheel.SUPPLY_CURRENT_LIMIT.in(Amps)
             )
                 .withPIDFConfiguration(
-                    Flywheel.P, Flywheel.I, Flywheel.D,
-                    Flywheel.S, Flywheel.G, Flywheel.V, Flywheel.A,
-                    Flywheel.FF_GRAVITY_TYPE, Flywheel.FF_SIGN, Flywheel.VELOCITY_SLOT
+                    Flywheel.P,
+                    Flywheel.I,
+                    Flywheel.D,
+                    Flywheel.S,
+                    Flywheel.G,
+                    Flywheel.V,
+                    Flywheel.A,
+                    Flywheel.FF_GRAVITY_TYPE,
+                    Flywheel.FF_SIGN,
+                    Flywheel.VELOCITY_SLOT
                 )
-                .withMotionMagicConfiguration(
-                    0, 0, Flywheel.CRUISE_VELOCITY,
-                    Flywheel.ACCELERATION
+                .withMotionMagicConfiguration(0, 0, Flywheel.CRUISE_VELOCITY, Flywheel.ACCELERATION)
+                .withFollower(
+                    Flywheel.FOLLOW_ID, Superstructure.canDoAttitude, Flywheel.FOLLOWER_INVERTED
                 )
-                .withFollower(Flywheel.FOLLOW_ID, Superstructure.canDoAttitude, Flywheel.FOLLOWER_INVERTED)
                 .build();
 
             flywheel.setCoast();
@@ -86,9 +92,7 @@ public interface ShooterIO extends SubsystemIO {
         public void updateTelemetry() {
             flywheel.updateTelemetry(Flywheel.TELEMETRY);
         }
-
     }
 
     public class Sim extends Real {}
-
 }

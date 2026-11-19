@@ -32,7 +32,8 @@ public class LazyFXS implements LazyCTRE {
      * @param followID The CAN ID of the follower motor
      * @param followCanBus The CAN bus the follower motor is on
      * @param followConfiguration The configuration to apply to the follower motor
-     * @param followerInverted The inversion of the follower motor relative to the leader motor as a {@link MotorAlignmentValue}
+     * @param followerInverted The inversion of the follower motor relative to the leader motor as a
+     *     {@link MotorAlignmentValue}
      * @param canCoderID The CAN ID of the CANCoder
      * @param canCoderCanBus The CAN bus the CANCoder is on
      * @param canCoderConfiguration The configuration to apply to the CANCoder
@@ -55,32 +56,44 @@ public class LazyFXS implements LazyCTRE {
 
     @Override
     public void setMMPositionTarget(Angle setpoint, int slot) {
-        this.motor.setControl(new MotionMagicVoltage(setpoint).withEnableFOC(this.enableFOC).withSlot(slot));
+        this.motor.setControl(
+            new MotionMagicVoltage(setpoint).withEnableFOC(this.enableFOC).withSlot(slot)
+        );
     }
 
     @Override
     public void setMMExpoTarget(Angle setpoint, int slot) {
-        this.motor.setControl(new MotionMagicExpoVoltage(setpoint).withEnableFOC(this.enableFOC).withSlot(slot));
+        this.motor.setControl(
+            new MotionMagicExpoVoltage(setpoint).withEnableFOC(this.enableFOC).withSlot(slot)
+        );
     }
 
     @Override
     public void setMMVelocityTarget(AngularVelocity velocity, int slot) {
-        this.motor.setControl(new MotionMagicVelocityVoltage(velocity).withEnableFOC(this.enableFOC).withSlot(slot));
+        this.motor.setControl(
+            new MotionMagicVelocityVoltage(velocity).withEnableFOC(this.enableFOC).withSlot(slot)
+        );
     }
 
     @Override
     public void setPIDPositionTarget(Angle setpoint, int slot) {
-        this.motor.setControl(new PositionVoltage(setpoint).withEnableFOC(this.enableFOC).withSlot(slot));
+        this.motor.setControl(
+            new PositionVoltage(setpoint).withEnableFOC(this.enableFOC).withSlot(slot)
+        );
     }
 
     @Override
     public void setPIDVelocityTarget(AngularVelocity velocity, int slot) {
-        this.motor.setControl(new VelocityVoltage(velocity).withEnableFOC(this.enableFOC).withSlot(slot));
+        this.motor.setControl(
+            new VelocityVoltage(velocity).withEnableFOC(this.enableFOC).withSlot(slot)
+        );
     }
 
     @Override
     public void setVelocityTorqueCurrentTarget(AngularVelocity velocity, double current, int slot) {
-        this.motor.setControl(new VelocityTorqueCurrentFOC(velocity).withFeedForward(current).withSlot(slot));
+        this.motor.setControl(
+            new VelocityTorqueCurrentFOC(velocity).withFeedForward(current).withSlot(slot)
+        );
     }
 
     @Override

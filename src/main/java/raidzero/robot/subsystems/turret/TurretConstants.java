@@ -57,7 +57,7 @@ public final class TurretConstants {
         public static final double POSITION_A = 0.0;
 
         public static final GravityTypeValue FF_GRAVITY_TYPE = GravityTypeValue.Elevator_Static; // * Note: no gravity
-                                                                                                 // (yippee!)
+        // (yippee!)
         public static final StaticFeedforwardSignValue FF_SIGN = StaticFeedforwardSignValue.UseVelocitySign;
 
         public static final int POSITION_SLOT = 0;
@@ -192,5 +192,4 @@ public final class TurretConstants {
             TOF_TABLE.put(4.5, 1.654);
         }
     }
-
 }

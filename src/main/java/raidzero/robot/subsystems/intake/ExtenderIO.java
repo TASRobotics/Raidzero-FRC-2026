@@ -12,49 +12,31 @@ import raidzero.robot.Superstructure;
 
 public interface ExtenderIO extends SubsystemIO {
 
-    /**
-     * Extends the intake outwards
-     */
+    /** Extends the intake outwards */
     void extend();
 
-    /**
-     * Retracts the intake inwards
-     */
+    /** Retracts the intake inwards */
     void retract();
 
-    /**
-     * Agitates the intake at level 1
-     */
+    /** Agitates the intake at level 1 */
     void agitateL1();
 
-    /**
-     * Agitates the intake at level 2
-     */
+    /** Agitates the intake at level 2 */
     void agitateL2();
 
-    /**
-     * Agitates the intake at level 3
-     */
+    /** Agitates the intake at level 3 */
     void agitateL3();
 
-    /**
-     * Stops the intake extension motor
-     */
+    /** Stops the intake extension motor */
     void stop();
 
-    /**
-     * Sets the starting angle for the intake
-     */
+    /** Sets the starting angle for the intake */
     void setStartupAngle();
 
-    /**
-     * Increases the agitation of the extender
-     */
+    /** Increases the agitation of the extender */
     void increaseAgitate();
 
-    /**
-     * Decreases the agitation of the extender
-     */
+    /** Decreases the agitation of the extender */
     void decreaseAgitate();
 
     /**
@@ -74,27 +56,34 @@ public interface ExtenderIO extends SubsystemIO {
     public class Real implements ExtenderIO {
         LazyTalon motor;
 
-        /**
-         * Constructs a real instance of the Extender IO
-         */
+        /** Constructs a real instance of the Extender IO */
         public Real() {
             motor = new LazyTalonBuilder(
-                Extender.MOTOR_ID, Superstructure.canDoAttitude,
-                Extender.SENSOR_TO_MECHANISM_RATIO, Extender.INVERTED,
-                Extender.STATOR_CURRENT_LIMIT.in(Amps), Extender.SUPPLY_CURRENT_LIMIT.in(Amps)
+                Extender.MOTOR_ID,
+                Superstructure.canDoAttitude,
+                Extender.SENSOR_TO_MECHANISM_RATIO,
+                Extender.INVERTED,
+                Extender.STATOR_CURRENT_LIMIT.in(Amps),
+                Extender.SUPPLY_CURRENT_LIMIT.in(Amps)
             )
                 .withPIDFConfiguration(
-                    Extender.P, Extender.I, Extender.D,
-                    Extender.S, Extender.G, Extender.V, Extender.A,
-                    Extender.FF_GRAVITY_TYPE, Extender.FF_SIGN,
+                    Extender.P,
+                    Extender.I,
+                    Extender.D,
+                    Extender.S,
+                    Extender.G,
+                    Extender.V,
+                    Extender.A,
+                    Extender.FF_GRAVITY_TYPE,
+                    Extender.FF_SIGN,
                     0
                 )
                 .withMotionMagicConfiguration(
-                    Extender.EXPO_V, Extender.EXPO_A,
-                    Extender.CRUISE_VELOCITY,
-                    Extender.ACCELERATION
+                    Extender.EXPO_V, Extender.EXPO_A, Extender.CRUISE_VELOCITY, Extender.ACCELERATION
                 )
-                .withFollower(Extender.FOLLOW_ID, Superstructure.canDoAttitude, Extender.FOLLOW_ALIGNMENT)
+                .withFollower(
+                    Extender.FOLLOW_ID, Superstructure.canDoAttitude, Extender.FOLLOW_ALIGNMENT
+                )
                 .withSoftLimits(
                     Extender.ENALBE_FORWARD_SOFT_LIMIT, Extender.FORWARD_SOFT_LIMIT.in(Rotations),
                     Extender.ENABLE_REVERSE_SOFT_LIMIT, Extender.REVERSE_SOFT_LIMIT.in(Rotations)

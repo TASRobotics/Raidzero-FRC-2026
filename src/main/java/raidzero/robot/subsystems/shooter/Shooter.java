@@ -23,34 +23,38 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      * @return A {@link Command} that runs the shooter at the target speed
      */
     public Command shoot() {
-        return run(() -> {
-            AngularVelocity target = RotationsPerSecond
-                .of(Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
+        return run(
+            () -> {
+                AngularVelocity target = RotationsPerSecond.of(
+                    Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters))
+                );
 
-            io.setVelocity(target);
-        });
+                io.setVelocity(target);
+            }
+        );
     }
 
     /**
-     * Returns a {@link Trigger} that activates when the shooter is at it's target
-     * velocity from the RPS interpolating table
+     * Returns a {@link Trigger} that activates when the shooter is at it's target velocity from the
+     * RPS interpolating table
      *
      * @return a {@link Trigger}
      */
     public Trigger atTargetVelocity() {
-        return new Trigger(() -> {
-            AngularVelocity target = RotationsPerSecond
-                .of(Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
+        return new Trigger(
+            () -> {
+                AngularVelocity target = RotationsPerSecond.of(
+                    Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters))
+                );
 
-            return io.getVelocity().minus(target).abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE
-                .in(RotationsPerSecond);
-        });
+                return io.getVelocity().minus(target).abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE.in(RotationsPerSecond);
+            }
+        );
     }
 
     /**
-     * Returns a {@link Trigger} that activates when the shooter's velocity is less
-     * than the velocity tolerance
-     * stopped
+     * Returns a {@link Trigger} that activates when the shooter's velocity is less than the velocity
+     * tolerance stopped
      *
      * @return A {@link Trigger}
      */
@@ -61,28 +65,25 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     }
 
     /**
-     * Returns a {@link Trigger} that activates when the shooter is at its target
-     * velocity
+     * Returns a {@link Trigger} that activates when the shooter is at its target velocity
      *
      * @see {@link #incrementVelocitySetpoint(AngularVelocity)}
-     *
-     * @return A {@link Trigger} that activates when the shooter is at its target
-     *         velocity
+     * @return A {@link Trigger} that activates when the shooter is at its target velocity
      */
     public Trigger atManualTargetVelocity() {
-        return new Trigger(() -> {
-            return io.getVelocity().minus(this.velocityTarget).abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE
-                .in(RotationsPerSecond);
-        });
+        return new Trigger(
+            () -> {
+                return io.getVelocity().minus(this.velocityTarget).abs(RotationsPerSecond) < Flywheel.VELOCIOTY_TOLERANCE
+                    .in(RotationsPerSecond);
+            }
+        );
     }
 
     /**
      * Runs the shooter at the velocity at its target velocity
      *
      * @see {@link #incrementVelocitySetpoint(AngularVelocity)}
-     *
-     * @return A {@link Command} that runs the shooter at the velocity at its target
-     *         velocity
+     * @return A {@link Command} that runs the shooter at the velocity at its target velocity
      */
     public Command manualShoot() {
         return run(() -> io.setVelocity(velocityTarget));
@@ -92,8 +93,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      * Increments the velocity setpoint by the specified amount
      *
      * @param speed The amount to increment the velocity setpoint by
-     * @return A {@link Command} that increments the velocity setpoint by the
-     *         specified amount
+     * @return A {@link Command} that increments the velocity setpoint by the specified amount
      */
     public Command incrementVelocitySetpoint(AngularVelocity speed) {
         return runOnce(() -> velocityTarget = velocityTarget.plus(speed));
@@ -114,8 +114,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
      * Sets the shooter speed to the specified percentage
      *
      * @param percent The shooter speed in percent
-     * @return A {@link Command} that sets the shooter speed to the specified
-     *         percentage
+     * @return A {@link Command} that sets the shooter speed to the specified percentage
      */
     public Command setSpeed(double percent) {
         return run(() -> io.setPercent(percent));
@@ -159,13 +158,7 @@ public class Shooter extends R0Subsystem<ShooterIO> {
     @Override
     public void periodic() {
         super.periodic();
-        SmartDashboard.putNumber(
-            "Shooter speed",
-            io.getVelocity().in(RotationsPerSecond)
-        );
-        SmartDashboard.putNumber(
-            "Shooter target speed",
-            velocityTarget.in(RotationsPerSecond)
-        );
+        SmartDashboard.putNumber("Shooter speed", io.getVelocity().in(RotationsPerSecond));
+        SmartDashboard.putNumber("Shooter target speed", velocityTarget.in(RotationsPerSecond));
     }
 }

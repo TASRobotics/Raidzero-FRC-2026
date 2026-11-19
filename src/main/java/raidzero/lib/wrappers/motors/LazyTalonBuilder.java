@@ -19,8 +19,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSensorSourceValue> {
     private int motorID, followID, canCoderID;
-    private CANBus canBus = CANBus.roboRIO(), followCanBus = CANBus.roboRIO(), canCoderCanBus = CANBus.roboRIO();
-
+    private CANBus canBus = CANBus.roboRIO(),
+        followCanBus = CANBus.roboRIO(),
+        canCoderCanBus = CANBus.roboRIO();
     private TalonFXConfiguration motorConfiguration = null, followConfiguration = null;
     private CANcoderConfiguration canCoderConfiguration = null;
 
@@ -29,10 +30,11 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
     /**
      * Constructs a LazyTalon instance with the specified motor identifier, CAN bus, and
      *
-     * @param motorID              The device id of the motor controller
-     * @param canBus               The name of the CAN bus the motor controller is on
-     * @param sensorToMechanismRatio The gear ratio of the sensor to the mechanism (tell the mech team (driven / driving) *
-     * @param invertedValue       What direction that is positive for the motor
+     * @param motorID The device id of the motor controller
+     * @param canBus The name of the CAN bus the motor controller is on
+     * @param sensorToMechanismRatio The gear ratio of the sensor to the mechanism (tell the mech team
+     *     (driven / driving) *
+     * @param invertedValue What direction that is positive for the motor
      * @param statorCurrentLimit The maximum stator current
      * @param supplyCurrentLimit
      */
@@ -193,8 +195,16 @@ public class LazyTalonBuilder implements LazyCTREBuilder<LazyTalon, FeedbackSens
     @Override
     public LazyTalon build() {
         LazyTalon motor = new LazyTalon(
-            motorID, canBus, motorConfiguration, followID, followCanBus, followConfiguration,
-            followerInverted, canCoderID, canCoderCanBus, canCoderConfiguration
+            motorID,
+            canBus,
+            motorConfiguration,
+            followID,
+            followCanBus,
+            followConfiguration,
+            followerInverted,
+            canCoderID,
+            canCoderCanBus,
+            canCoderConfiguration
         );
         motor.setBrake();
 

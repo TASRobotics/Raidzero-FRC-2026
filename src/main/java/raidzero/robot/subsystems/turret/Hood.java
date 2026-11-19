@@ -43,18 +43,21 @@ public class Hood extends R0Subsystem<HoodIO> {
     }
 
     /**
-    * Aims to the angle from the RPS interpolating table based on the distance to the hub
-    *
-    * @return A {@link Command} that aims to the angle from the RPS interpolating table based on the distance to the hub
-    */
+     * Aims to the angle from the RPS interpolating table based on the distance to the hub
+     *
+     * @return A {@link Command} that aims to the angle from the RPS interpolating table based on the
+     *     distance to the hub
+     */
     public Command aim() {
-        return run(() -> {
-            Angle target = Degrees.of(Kinetics.PITCH_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
+        return run(
+            () -> {
+                Angle target = Degrees.of(Kinetics.PITCH_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
 
-            SmartDashboard.putNumber("Target pitch", target.in(Degrees));
+                SmartDashboard.putNumber("Target pitch", target.in(Degrees));
 
-            io.moveTo(target);
-        });
+                io.moveTo(target);
+            }
+        );
     }
 
     /**
@@ -66,9 +69,7 @@ public class Hood extends R0Subsystem<HoodIO> {
         return run(() -> io.stop());
     }
 
-    /**
-     * Sets the startup angle
-     */
+    /** Sets the startup angle */
     public void setStartupAngle() {
         io.setStartupAngle();
     }
@@ -77,8 +78,7 @@ public class Hood extends R0Subsystem<HoodIO> {
      * Increments the target setpoint for manual aiming
      *
      * @param angle the {@link Angle} increment
-     * @return A {@link Command} that increments the target setpoint for manual
-     *         aiming
+     * @return A {@link Command} that increments the target setpoint for manual aiming
      */
     public Command incrementPitch(Angle angle) {
         return runOnce(() -> angleTarget = angleTarget.plus(angle));
@@ -117,5 +117,4 @@ public class Hood extends R0Subsystem<HoodIO> {
 
         return system;
     }
-
 }
