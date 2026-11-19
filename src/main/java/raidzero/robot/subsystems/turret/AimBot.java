@@ -10,7 +10,8 @@ import raidzero.robot.subsystems.turret.TurretConstants.Kinetics;
 /** All field centic poses */
 public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
 
-    public static final double CODE_LOOP_LATENCY = 0.03;
+// where is turret angle from field zero (+x axis)
+Rotation2d fieldRelativeTurretAngle=robotPose.getRotation().plus(currentTurretYaw);Pose2d fieldRelativeTurretPose=new Pose2d(fieldRelativeTurret,fieldRelativeTurretAngle);
 
     /**
      * Adjusts the turret aim to the static goal location without kinetic lead
@@ -24,35 +25,35 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
         Translation2d turretOffsetVectorFieldCentric = Kinetics.TURRET_MOUNT_OFFSET.rotateBy(robotPose.getRotation());
         Translation2d fieldRelativeTurret = robotPose.getTranslation().plus(turretOffsetVectorFieldCentric);
 
-        // where is turret angle from field zero (+x axis)
-        Rotation2d fieldRelativeTurretAngle = robotPose.getRotation().plus(currentTurretYaw);
-        Pose2d fieldRelativeTurretPose = new Pose2d(fieldRelativeTurret, fieldRelativeTurretAngle);
+return new AimBot(robotPose,fieldRelativeTurretPose,fieldRelativeGoalPose);}
 
-        // what field angle should the turret be at to point at the goal
-        Translation2d turretToGoalVector = allianceGoalLocation.minus(fieldRelativeTurretPose.getTranslation());
-        Pose2d fieldRelativeGoalPose = new Pose2d(allianceGoalLocation, turretToGoalVector.getAngle());
+/**
+ * Adjusts the turret aim for the current robot movement
+ *
+ * @param robotSpeeds the current robot speeds
+ * @return the adjusted turret aim with kinetic lead
+ */
+public AimBot adjustKineticLead(ChassisSpeeds robotSpeeds){Pose2d kineticRobotPose=calculateKineticRobotPose(robotSpeeds,robot);
 
-        return new AimBot(robotPose, fieldRelativeTurretPose, fieldRelativeGoalPose);
-    }
+Translation2d turretOffsetRotated=Kinetics.TURRET_MOUNT_OFFSET.rotateBy(kineticRobotPose.getRotation());Pose2d kineticTurretPose=new Pose2d(kineticRobotPose.getTranslation().plus(turretOffsetRotated),turret.getRotation());
 
-    /**
-     * Adjusts the turret aim for the current robot movement
-     *
-     * @param robotSpeeds the current robot speeds
-     * @return the adjusted turret aim with kinetic lead
-     */
-    public AimBot adjustKineticLead(ChassisSpeeds robotSpeeds) {
-        Pose2d kineticRobotPose = calculateKineticRobotPose(robotSpeeds, robot);
+var whipSpeeds=calculateWhip(robotSpeeds,kineticRobotPose);Pose2d kineticGoalPose=calculateKineticGoal(whipSpeeds,kineticTurretPose,goal);
 
         Translation2d turretOffsetRotated = Kinetics.TURRET_MOUNT_OFFSET.rotateBy(kineticRobotPose.getRotation());
         Pose2d kineticTurretPose =
                 new Pose2d(kineticRobotPose.getTranslation().plus(turretOffsetRotated), turret.getRotation());
 
-        var whipSpeeds = calculateWhip(robotSpeeds, kineticRobotPose);
-        Pose2d kineticGoalPose = calculateKineticGoal(whipSpeeds, kineticTurretPose, goal);
+/**
+ * add in code latency to next motor update to account for vel added to ball turret omega cancels
+ * out as it is counter to robot omega
+ *
+ * @param currentSpeeds current robot chasis speeds
+ * @param currentPose current robot pose
+ * @return kinetic turret pose
+ */
+private Pose2d calculateKineticRobotPose(ChassisSpeeds currentSpeeds,Pose2d currentPose){double dx=currentSpeeds.vxMetersPerSecond*CODE_LOOP_LATENCY;double dy=currentSpeeds.vyMetersPerSecond*CODE_LOOP_LATENCY;double dTheta=currentSpeeds.omegaRadiansPerSecond*CODE_LOOP_LATENCY;
 
-        return new AimBot(kineticRobotPose, kineticTurretPose, kineticGoalPose);
-    }
+Pose2d robotFuture=currentPose.exp(new Twist2d(dx,dy,dTheta));return robotFuture;}
 
     /**
      * add in code latency to next motor update to account for vel added to ball turret omega cancels
@@ -67,9 +68,15 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
         double dy = currentSpeeds.vyMetersPerSecond * CODE_LOOP_LATENCY;
         double dTheta = currentSpeeds.omegaRadiansPerSecond * CODE_LOOP_LATENCY;
 
-        Pose2d robotFuture = currentPose.exp(new Twist2d(dx, dy, dTheta));
-        return robotFuture;
-    }
+/**
+ * Calculates the pose of the goal with a kinetic lead for SOTM
+ *
+ * @param whipSpeeds the whip speeds of the robot
+ * @param kineticTurret the kinetic pose of the turret
+ * @param staticGoal the static pose of the goal
+ * @return the {@link Pose2d} of the goal with a kinetic lead
+ */
+private Pose2d calculateKineticGoal(ChassisSpeeds whipSpeeds,Pose2d kineticTurret,Pose2d staticGoal){Translation2d virtualGoalTranslation=staticGoal.getTranslation();double turretToGoalDist=kineticTurret.getTranslation().getDistance(virtualGoalTranslation);
 
     /**
      * because turret isnt in center of robot rotation robot omega will cause tangential velocity at
@@ -100,7 +107,7 @@ public record AimBot(Pose2d robot, Pose2d turret, Pose2d goal) {
         Translation2d virtualGoalTranslation = staticGoal.getTranslation();
         double turretToGoalDist = kineticTurret.getTranslation().getDistance(virtualGoalTranslation);
 
-        double currentDistanceTOF = Kinetics.TOF_TABLE.get(turretToGoalDist);
+turretToGoalDist=kineticTurret.getTranslation().getDistance(virtualGoalTranslation);currentDistanceTOF=Kinetics.TOF_TABLE.get(turretToGoalDist);}
 
         for (int i = 0; i < 7; i++) {
             double virtualGoalx = staticGoal.getX() - currentDistanceTOF * whipSpeeds.vxMetersPerSecond;

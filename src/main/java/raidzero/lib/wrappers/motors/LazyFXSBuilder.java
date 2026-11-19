@@ -20,7 +20,8 @@ import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 
-public class LazyFXSBuilder implements LazyCTREBuilder<TalonFXS, ExternalFeedbackSensorSourceValue> {
+public class LazyFXSBuilder
+    implements LazyCTREBuilder<TalonFXS, ExternalFeedbackSensorSourceValue> {
     private MotorArrangementValue motorArrangement;
     private int motorID, followID, canCoderID;
     private CANBus canBus = CANBus.roboRIO(), followCanBus = CANBus.roboRIO(), canCoderCanBus = CANBus.roboRIO();

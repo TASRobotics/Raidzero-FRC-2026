@@ -256,14 +256,16 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         m_lastSimTime = Utils.getCurrentTimeSeconds();
 
         /* Run simulation at a faster rate so PID gains behave more reasonably */
-        m_simNotifier = new Notifier(() -> {
-            final double currentTime = Utils.getCurrentTimeSeconds();
-            double deltaTime = currentTime - m_lastSimTime;
-            m_lastSimTime = currentTime;
+        m_simNotifier = new Notifier(
+            () -> {
+                final double currentTime = Utils.getCurrentTimeSeconds();
+                double deltaTime = currentTime - m_lastSimTime;
+                m_lastSimTime = currentTime;
 
-            /* use the measured time delta, get battery voltage from WPILib */
-            updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        });
+                /* use the measured time delta, get battery voltage from WPILib */
+                updateSimState(deltaTime, RobotController.getBatteryVoltage());
+            }
+        );
         m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
 
@@ -330,12 +332,13 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
      * @return A {@link Command} to pathfind to the specified pose
      */
     public Command goToPoseAuto(Pose2d pose, LinearVelocity goalEndVelocity) {
-        return defer(() -> {
-            Pose2d targetPose = pose;
+        return defer(
+            () -> {
+                Pose2d targetPose = pose;
 
-            if (Util.isRedAlliance()) {
-                double fieldLength = 17.548;
-                double fieldWidth = 8.052;
+                if (Util.isRedAlliance()) {
+                    double fieldLength = 17.548;
+                    double fieldWidth = 8.052;
 
                 targetPose = new Pose2d(
                         fieldLength - pose.getX(),
@@ -373,7 +376,9 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                     () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
                     this);
         } catch (Exception e) {
-            DriverStation.reportError("Failed to load PathPlanner config and configure Autobuilder", e.getStackTrace());
+            DriverStation.reportError(
+                "Failed to load PathPlanner config and configure Autobuilder", e.getStackTrace()
+            );
         }
     }
 

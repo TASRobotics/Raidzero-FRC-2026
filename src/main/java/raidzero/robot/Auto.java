@@ -68,7 +68,9 @@ public class Auto {
             try {
                 pathCache.put(name, PathPlannerPath.fromChoreoTrajectory(name));
             } catch (Exception e) {
-                DriverStation.reportError("Auto: Failed to load " + name + ": " + e.getMessage(), e.getStackTrace());
+                DriverStation.reportError(
+                    "Auto: Failed to load " + name + ": " + e.getMessage(), e.getStackTrace()
+                );
             }
         }
     }

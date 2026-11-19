@@ -95,61 +95,81 @@ public class Superstructure {
     private static SendableChooser<Command> autoChooser;
 
     // TODO: Scale zone based on ChassisSpeeds (x vel)
-    private static Trigger apprTrench = new Trigger(() -> {
-        Pose2d pose = turret.getTurretPose();
+    private static Trigger apprTrench = new Trigger(
+        () -> {
+            Pose2d pose = turret.getTurretPose();
 
-        boolean posX = ((pose.getX() > 3.5 && pose.getX() < 4.6) || (pose.getX() > 10.4 && pose.getX() < 11.9));
-        boolean negX = ((pose.getX() > 4.6 && pose.getX() < 6.1) || (pose.getX() > 11.9 && pose.getX() < 12.7));
+            boolean posX = ((pose.getX() > 3.5 && pose.getX() < 4.6) || (pose.getX() > 10.4 && pose.getX() < 11.9));
+            boolean negX = ((pose.getX() > 4.6 && pose.getX() < 6.1) || (pose.getX() > 11.9 && pose.getX() < 12.7));
 
-        return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
-    });
+            return (posX || negX) && ((pose.getY() < 1.4) || (pose.getY() > 6.67));
+        }
+    );
 
-    private static Trigger passingArea1 = new Trigger(() -> {
-        Pose2d pose = swerve.getState().Pose;
+    private static Trigger passingArea1 = new Trigger(
+        () -> {
+            Pose2d pose = swerve.getState().Pose;
 
-        boolean inX = pose.getX() > 6.3 && pose.getX() < 10.8;
-        boolean inY = pose.getY() > 0.28 && pose.getY() < 3.4;
+            boolean inX = pose.getX() > 6.3 && pose.getX() < 10.8;
+            boolean inY = pose.getY() > 0.28 && pose.getY() < 3.4;
 
-        return inX && inY;
-    });
+            return inX && inY;
+        }
+    );
 
-    private static Trigger passingArea2 = new Trigger(() -> {
-        Pose2d pose = swerve.getState().Pose;
+    private static Trigger passingArea2 = new Trigger(
+        () -> {
+            Pose2d pose = swerve.getState().Pose;
 
-        boolean inX = pose.getX() > 6.3 && pose.getX() < 10.8;
-        boolean inY = pose.getY() > 4.6 && pose.getY() < 7.72;
+            boolean inX = pose.getX() > 6.3 && pose.getX() < 10.8;
+            boolean inY = pose.getY() > 4.6 && pose.getY() < 7.72;
 
-        return inX && inY;
-    });
+            return inX && inY;
+        }
+    );
 
-    public static Trigger inAutonShootingZone = new Trigger(() -> {
-        Pose2d pose = swerve.getState().Pose;
-        boolean inAllianceZone = (pose.getX() < 3.5 && pose.getX() > 3) || (pose.getX() > 12.7 && pose.getX() < 13.5);
-        return inAllianceZone && DriverStation.isAutonomousEnabled();
-    });
+    public static Trigger inAutonShootingZone = new Trigger(
+        () -> {
+            Pose2d pose = swerve.getState().Pose;
+            boolean inAllianceZone = (pose.getX() < 3.5 && pose.getX() > 3) || (pose.getX() > 12.7 && pose.getX() < 13.5);
+            return inAllianceZone && DriverStation.isAutonomousEnabled();
+        }
+    );
 
-    public static Trigger inAutonReverseZone = new Trigger(() -> {
-        Pose2d pose = swerve.getState().Pose;
-        boolean inAllianceZone = (pose.getX() > 3.5 && pose.getX() < 5.1) || (pose.getX() > 12.7 && pose.getX() < 11.2);
-        return inAllianceZone && DriverStation.isAutonomousEnabled();
-    });
+    public static Trigger inAutonReverseZone = new Trigger(
+        () -> {
+            Pose2d pose = swerve.getState().Pose;
+            boolean inAllianceZone = (pose.getX() > 3.5 && pose.getX() < 5.1) || (pose.getX() > 12.7 && pose.getX() < 11.2);
+            return inAllianceZone && DriverStation.isAutonomousEnabled();
+        }
+    );
 
     // 1:55 1:30 1:05 0:40
-    public static Trigger timestampOne = new Trigger(() -> {
-        return DriverStation.getMatchTime() <= 118;
-    });
-    public static Trigger timestampTwo = new Trigger(() -> {
-        return DriverStation.getMatchTime() <= 93;
-    });
-    public static Trigger timestampThree = new Trigger(() -> {
-        return DriverStation.getMatchTime() <= 68;
-    });
-    public static Trigger timestampFour = new Trigger(() -> {
-        return DriverStation.getMatchTime() <= 43;
-    });
-    public static Trigger timestampFive = new Trigger(() -> {
-        return DriverStation.getMatchTime() <= 12;
-    });
+    public static Trigger timestampOne = new Trigger(
+        () -> {
+            return DriverStation.getMatchTime() <= 118;
+        }
+    );
+    public static Trigger timestampTwo = new Trigger(
+        () -> {
+            return DriverStation.getMatchTime() <= 93;
+        }
+    );
+    public static Trigger timestampThree = new Trigger(
+        () -> {
+            return DriverStation.getMatchTime() <= 68;
+        }
+    );
+    public static Trigger timestampFour = new Trigger(
+        () -> {
+            return DriverStation.getMatchTime() <= 43;
+        }
+    );
+    public static Trigger timestampFive = new Trigger(
+        () -> {
+            return DriverStation.getMatchTime() <= 12;
+        }
+    );
 
     /** Runs the initialization routines for subsystems */
     public static void runSubsystemInitRoutines() {

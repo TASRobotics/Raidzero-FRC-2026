@@ -27,8 +27,9 @@ public class Shooter extends R0Subsystem<ShooterIO> {
             AngularVelocity target = RotationsPerSecond.of(
                     Kinetics.RPS_TABLE.get(Turret.system().getHubDistance(true).in(Meters)));
 
-            io.setVelocity(target);
-        });
+                io.setVelocity(target);
+            }
+        );
     }
 
     /**
