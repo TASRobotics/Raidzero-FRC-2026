@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<!-- Paths use "." for the separator so they match on Windows and Linux. -->
+<suppressions>
+  <!-- The vendor layer: the only code that may import vendor libraries. -->
+  <suppress checks="IllegalImport" files="raidzero.lib.hardware.ctre."/>
+
+  <!-- Code not yet migrated to the hardware model. Remove each line as its code migrates;
+       never add new ones. -->
+  <suppress checks="IllegalImport" files="raidzero.lib.wrappers."/>
+  <suppress checks="IllegalImport" files="raidzero.robot.Superstructure\.java$"/>
+  <suppress checks="IllegalImport" files="raidzero.robot.subsystems.(drive|intake|shooter|turret)."/>
+</suppressions>

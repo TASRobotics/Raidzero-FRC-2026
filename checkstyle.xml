@@ -4,9 +4,19 @@
     "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <module name="Checker">
+  	<!-- Lists the code allowed to break a rule; see the file for why. -->
+  	<module name="SuppressionFilter">
+    	<property name="file" value="${suppressionsFile}"/>
+  	</module>
   	<module name="TreeWalker">
     	<module name="MissingJavadocMethod">
       		<property name="allowMissingPropertyJavadoc" value="true"/>
+      		<!-- Records' compact constructors only validate; the record's Javadoc covers them. -->
+      		<property name="tokens" value="METHOD_DEF, CTOR_DEF, ANNOTATION_FIELD_DEF"/>
+    	</module>
+    	<!-- Only the vendor layer may use vendor libraries. -->
+    	<module name="IllegalImport">
+      		<property name="illegalPkgs" value="com.ctre, com.revrobotics, com.thethriftybot"/>
     	</module>
   	</module>
 </module>

@@ -9,6 +9,7 @@ plugins {
 checkstyle {
     toolVersion = '10.12.5'
     configFile = rootProject.file('checkstyle.xml')
+    configProperties = [suppressionsFile: rootProject.file('checkstyle-suppressions.xml').path]
 }
 
 java {
